@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
  */
 public class Regex {
 
+    //commit test
+
     public static final Pattern
             EMAIL = Pattern.compile("[A-Za-z0-9._-]+@[A-Za-z0-9-]*\\.[a-z]{2,3}"),
             FILE_NAMES = Pattern.compile(""),
