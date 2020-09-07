@@ -18,7 +18,6 @@ import java.util.stream.Stream;
  * sidebar and navigating to Tasks > verification > test Regex(double click to run).
  */
 public class RegexTests {
-    //5 success and 5 failure test cases
     /**
      * This is a parameterized test for the {@link Regex#EMAIL} regex. The
      * {@link ParameterizedTest} annotation defines this method as a
@@ -105,7 +104,7 @@ public class RegexTests {
     }
 
     //Strings between 10 and 20 characters (inclusive) which have even lengths
-    //FIXME: Are uppercase letters/other symbols considered a char?  Is 10 < L < 20, inclusive also?
+    //FIXME: Are uppercase letters/other symbols considered a char?  Is it 10 < L < 20 inclusive too?
     public static Stream<Arguments> testEvenStringsRegex() {
         return Stream.of(
                 Arguments.of("14 Characters", "thishas14chars", true),
@@ -157,7 +156,85 @@ public class RegexTests {
         );
     }
 
-    //FIXME: add Part 3 test methods here
+    @ParameterizedTest
+    @MethodSource
+    public void testIdentifierRegex(String test, String input, boolean success) {
+        test(input, Regex.IDENTIFIER, success);
+    }
+
+    /**
+     * This is the factory method providing test cases for the parameterized
+     * test above - note that it is static, takes no arguments, and has the same
+     * name as the test. The {@link Arguments} object contains the arguments for
+     * each test to be passed to the function above
+     */
+    public static Stream<Arguments> testIdentifierRegex() {
+        return Stream.of(
+                Arguments.of("Alphanumeric", "getName", true),
+                Arguments.of("Symbols and Alpha", "is-empty?", true),
+                Arguments.of("Only Symbols", "<=>", true),
+                Arguments.of("Period In Word", "get.name", true),
+                Arguments.of("Underscore", "getName_", true),
+                Arguments.of("Forward Slash", "get///Name", true),
+                Arguments.of("Numbers", "life42", true),
+                Arguments.of("Exclamation", "life42!", true),
+                Arguments.of("Spongebob", "SpOnGeBoB", true),
+                Arguments.of("Starts With Period", ".42/11", true),
+                Arguments.of("Negative Number", "-42", true),
+                Arguments.of("Ends With Period", "b2/11.", true),
+                Arguments.of("Starts With Digit", "42=life", false),
+                Arguments.of("No Commas Allowed", "why,are,there,commas,", false),
+                Arguments.of("No Space Allowed", "get Name", false),
+                Arguments.of("Backslash", "li\fe", false),
+                Arguments.of("Single Period", ".", false),
+                Arguments.of("2 Backslashes", "li\\fe", false),
+                Arguments.of("Empty", "", false)
+        );
+    }
+
+//    @ParameterizedTest
+//    @MethodSource
+//    public void testNumberRegex(String test, String input, boolean success) {
+//        test(input, Regex.NUMBER, success);
+//    }
+//
+//    /**
+//     * This is the factory method providing test cases for the parameterized
+//     * test above - note that it is static, takes no arguments, and has the same
+//     * name as the test. The {@link Arguments} object contains the arguments for
+//     * each test to be passed to the function above
+//     */
+//    public static Stream<Arguments> testNumberRegex() {
+//        return Stream.of(
+//                Arguments.of("Integer", "1", true),
+//                Arguments.of("Negative Decimal", "-1.0", true),
+//                Arguments.of("Decimal", "007.000", true),
+//                Arguments.of("Nothing After Decimal", "1.", false),
+//                Arguments.of("Nothing Before Decimal", ".5", false)
+//        );
+//    }
+//
+//    @ParameterizedTest
+//    @MethodSource
+//    public void testStringRegex(String test, String input, boolean success) {
+//        test(input, Regex.STRING, success);
+//    }
+//
+//    /**
+//     * This is the factory method providing test cases for the parameterized
+//     * test above - note that it is static, takes no arguments, and has the same
+//     * name as the test. The {@link Arguments} object contains the arguments for
+//     * each test to be passed to the function above
+//     */
+//    public static Stream<Arguments> testStringRegex() {
+//        return Stream.of(
+//                Arguments.of("Empty", "\"\"", true),
+//                Arguments.of("ABC", "\"abc\"", true),
+//                Arguments.of("Escape", "\"Hello,\\nWorld!\"", true),
+//                Arguments.of("No End Quote", "\"unterminated", false),
+//                Arguments.of("Invalid Escape", "\"invalid\escape\"", false)
+//        );
+//    }
 
     /**
      * Asserts that the input matches the given pattern and returns the matcher
