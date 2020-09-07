@@ -125,23 +125,37 @@ public class RegexTests {
         );
     }
 
-//
-//    @ParameterizedTest
-//    @MethodSource
-//    public void testIntegerListRegex(String test, String input, boolean success) {
-//        test(input, Regex.INTEGER_LIST, success);
-//    }
-//
-//    public static Stream<Arguments> testIntegerListRegex() {
-//        return Stream.of(
-//                Arguments.of("Empty List", "[]", true),
-//                Arguments.of("Single Element", "[1]", true),
-//                Arguments.of("Multiple Elements", "[1,2,3]", true),
-//                Arguments.of("Missing Brackets", "1,2,3", false),
-//                Arguments.of("Missing Commas", "[1 2 3]", false),
-//                Arguments.of("Trailing Comma", "[1,2,3,]", false)
-//        );
-//    }
+    @ParameterizedTest
+    @MethodSource
+    public void testIntegerListRegex(String test, String input, boolean success) {
+        test(input, Regex.INTEGER_LIST, success);
+    }
+
+    public static Stream<Arguments> testIntegerListRegex() {
+        return Stream.of(
+                Arguments.of("Empty List", "[]", true),
+                Arguments.of("Single Element", "[1]", true),
+                Arguments.of("Multiple Elements", "[1,2,3]", true),
+                Arguments.of("Zero In Number", "[100,20,3]", true),
+                Arguments.of("One Space", "[1, 2, 3]", true),
+                Arguments.of("Zero In Single Element", "[10]", true),
+                Arguments.of("Missing Brackets", "1,2,3", false),
+                Arguments.of("Missing Commas", "[1 2 3]", false),
+                Arguments.of("Trailing Comma", "[1,2,3,]", false),
+                Arguments.of("Not A Positive Integer", "[0]", false),
+                Arguments.of("Zero As Element", "[1,2,3,0]", false),
+                Arguments.of("Two Spaces", "[1,2  ,3]", false),
+                Arguments.of("Double Brackets", "[[1,2,3]", false),
+                Arguments.of("Double Brackets Again", "[1,2,3]]", false),
+                Arguments.of("Bracket In Middle", "[1,2,]3]", false),
+                Arguments.of("No Number", "[ ]", false),
+                Arguments.of("Just Comma", "[,]", false),
+                Arguments.of("Just Comma With Space", "[, ]", false),
+                Arguments.of("Letter", " [A]", false),
+                Arguments.of("Symbol", " [*]", false),
+                Arguments.of("Parentheses", "(1, 2, 3)", false)
+        );
+    }
 
     //FIXME: add Part 3 test methods here
 
