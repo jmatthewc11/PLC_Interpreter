@@ -65,7 +65,8 @@ public class RegexTests {
                 Arguments.of("Extension Too Short", "thelegend27@gmail.c", false),
                 Arguments.of("Extension With Number", "thelegend27@gmail.co1", false),
                 Arguments.of("Extension With Uppercase", "thelegend27@gmail.Com", false),
-                Arguments.of("Extension With Symbol", "thelegend27@gmail.c*m", false)
+                Arguments.of("Extension With Symbol", "thelegend27@gmail.c*m", false),
+                Arguments.of("Empty", "", false)
         );
     }
 
@@ -93,7 +94,8 @@ public class RegexTests {
                 Arguments.of("Python File", "scrippy.py", false),
                 Arguments.of("Java Ext in Caps", "Regex.tar.JAVA", false),
                 Arguments.of("Class Ext in Caps", "Regex.tar.CLASS", false),
-                Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false)
+                Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false),
+                Arguments.of("Empty", "", false)
         );
     }
 
@@ -110,6 +112,7 @@ public class RegexTests {
                 Arguments.of("14 Characters", "thishas14chars", true),
                 Arguments.of("10 Characters", "i<3pancakes!", true),    //FIXME: Length is 12, but 10 characters?
                 Arguments.of("6 Characters", "6chars", false),
+                Arguments.of("Empty", "", false),
                 Arguments.of("15 Characters", "i<3pancakes!!", false)   //FIXME: Length is 13, but 15 chars?
 //                Arguments.of("14 Characters", "thishas14chars", true),                   //L = 14, C = 14
 //                Arguments.of("10 Characters", "i<3pancakes!", true),                     //L = 12, C = 10
@@ -152,7 +155,8 @@ public class RegexTests {
                 Arguments.of("Just Comma With Space", "[, ]", false),
                 Arguments.of("Letter", " [A]", false),
                 Arguments.of("Symbol", " [*]", false),
-                Arguments.of("Parentheses", "(1, 2, 3)", false)
+                Arguments.of("Parentheses", "(1, 2, 3)", false),
+                Arguments.of("Empty", "", false)
         );
     }
 
@@ -215,25 +219,36 @@ public class RegexTests {
                 Arguments.of("Negative Only Decimal", "-.", false),
                 Arguments.of("Positive Only", "+", false),
                 Arguments.of("Negative Only", ".", false),
-                Arguments.of("Decimal Only", "-", false)
+                Arguments.of("Decimal Only", "-", false),
+                Arguments.of("Empty", "", false)
         );
     }
 
-//    @ParameterizedTest
-//    @MethodSource
-//    public void testStringRegex(String test, String input, boolean success) {
-//        test(input, Regex.STRING, success);
-//    }
-//
-//    public static Stream<Arguments> testStringRegex() {
-//        return Stream.of(
-//                Arguments.of("Empty", "\"\"", true),
-//                Arguments.of("ABC", "\"abc\"", true),
-//                Arguments.of("Escape", "\"Hello,\\nWorld!\"", true),
-//                Arguments.of("No End Quote", "\"unterminated", false),
-//                Arguments.of("Invalid Escape", "\"invalid\escape\"", false)
-//        );
-//    }
+    //FIXME: what are characters are acceptable for strings?
+    @ParameterizedTest
+    @MethodSource
+    public void testStringRegex(String test, String input, boolean success) {
+        test(input, Regex.STRING, success);
+    }
+
+    public static Stream<Arguments> testStringRegex() {
+        return Stream.of(
+                Arguments.of("Empty", "\"\"", true),
+                Arguments.of("ABC", "\"abc\"", true),
+                Arguments.of("123", "\"123\"", true),
+                Arguments.of("Escape", "\"Hello,\\nWorld!\"", true),
+                Arguments.of("Another Escape", "\"Hello,\\bWorld!\"", true),
+                Arguments.of("Just Escape", "\"\\r\"", true),
+                Arguments.of("No End Quote", "\"unterminated", false),
+                Arguments.of("No Begin Quote", "unterminated\"", false),
+                Arguments.of("No Quotes", "unterminated", false),
+                Arguments.of("Invalid Escape", "\"invalid\\escape\"", false),
+                Arguments.of("Still Invalid Escape", "\"Hello,\\\\\\World!\"", false),
+                Arguments.of("Escape But Wrong", "\"\r\"", false),
+                Arguments.of("Wrong Escape Char Case", "\"Hello,\\NWorld!\"", false),
+                Arguments.of("Too Many Quotes", "\"\"unterminated", false)
+        );
+    }
 
     /**
      * Asserts that the input matches the given pattern and returns the matcher
