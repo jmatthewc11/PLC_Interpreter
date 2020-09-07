@@ -14,7 +14,7 @@ public class Regex {
             EVEN_STRINGS = Pattern.compile("([\\S]{10})|([\\S]{12})|([\\S]{14})|([\\S]{16})|([\\S]{18})|([\\S]{20})"),
             INTEGER_LIST = Pattern.compile("[\\[]([1-9]+[0-9]*|,( ){0,1}([1-9]+[0-9]*))*[\\]]"),
             IDENTIFIER = Pattern.compile("([A-Za-z_\\+\\-\\*\\/\\:!\\?<>=]|[.]+[\\w\\+\\-\\*\\.\\/:!\\?<>=])+[\\w\\+\\-\\*\\.\\/:!\\?<>=]*"),
-            NUMBER = Pattern.compile(""),
+            NUMBER = Pattern.compile("([\\+]|[\\-]){0,1}([\\d]+)+([.][\\d]+)*"),
             STRING = Pattern.compile("");
 
 }

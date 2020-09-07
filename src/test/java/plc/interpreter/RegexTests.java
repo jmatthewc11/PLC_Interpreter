@@ -162,12 +162,6 @@ public class RegexTests {
         test(input, Regex.IDENTIFIER, success);
     }
 
-    /**
-     * This is the factory method providing test cases for the parameterized
-     * test above - note that it is static, takes no arguments, and has the same
-     * name as the test. The {@link Arguments} object contains the arguments for
-     * each test to be passed to the function above
-     */
     public static Stream<Arguments> testIdentifierRegex() {
         return Stream.of(
                 Arguments.of("Alphanumeric", "getName", true),
@@ -178,6 +172,7 @@ public class RegexTests {
                 Arguments.of("Forward Slash", "get///Name", true),
                 Arguments.of("Numbers", "life42", true),
                 Arguments.of("Exclamation", "life42!", true),
+                Arguments.of("Two Periods", "..", true),
                 Arguments.of("Spongebob", "SpOnGeBoB", true),
                 Arguments.of("Starts With Period", ".42/11", true),
                 Arguments.of("Negative Number", "-42", true),
@@ -188,44 +183,48 @@ public class RegexTests {
                 Arguments.of("Backslash", "li\fe", false),
                 Arguments.of("Single Period", ".", false),
                 Arguments.of("2 Backslashes", "li\\fe", false),
+                Arguments.of("Brackets", "[]", false),
+                Arguments.of("Parentheses", "()", false),
                 Arguments.of("Empty", "", false)
         );
     }
 
-//    @ParameterizedTest
-//    @MethodSource
-//    public void testNumberRegex(String test, String input, boolean success) {
-//        test(input, Regex.NUMBER, success);
-//    }
-//
-//    /**
-//     * This is the factory method providing test cases for the parameterized
-//     * test above - note that it is static, takes no arguments, and has the same
-//     * name as the test. The {@link Arguments} object contains the arguments for
-//     * each test to be passed to the function above
-//     */
-//    public static Stream<Arguments> testNumberRegex() {
-//        return Stream.of(
-//                Arguments.of("Integer", "1", true),
-//                Arguments.of("Negative Decimal", "-1.0", true),
-//                Arguments.of("Decimal", "007.000", true),
-//                Arguments.of("Nothing After Decimal", "1.", false),
-//                Arguments.of("Nothing Before Decimal", ".5", false)
-//        );
-//    }
-//
+    @ParameterizedTest
+    @MethodSource
+    public void testNumberRegex(String test, String input, boolean success) {
+        test(input, Regex.NUMBER, success);
+    }
+
+    public static Stream<Arguments> testNumberRegex() {
+        return Stream.of(
+                Arguments.of("Integer", "1", true),
+                Arguments.of("Large Integer", "982345786", true),
+                Arguments.of("Postive Integer", "+436", true),
+                Arguments.of("Negative Integer", "-436", true),
+                Arguments.of("Negative Decimal", "-1.0", true),
+                Arguments.of("Positive Decimal", "+1.0", true),
+                Arguments.of("Decimal", "007.000", true),
+                Arguments.of("Zero", "0", true),
+                Arguments.of("Nothing After Decimal", "1.", false),
+                Arguments.of("Nothing Before Decimal", ".5", false),
+                Arguments.of("Two Positive", "++436", false),
+                Arguments.of("Two Negative", "--436", false),
+                Arguments.of("Middle Positive", "4+36", false),
+                Arguments.of("Middle Negative", "4-36", false),
+                Arguments.of("Positive Only Decimal", "+.", false),
+                Arguments.of("Negative Only Decimal", "-.", false),
+                Arguments.of("Positive Only", "+", false),
+                Arguments.of("Negative Only", ".", false),
+                Arguments.of("Decimal Only", "-", false)
+        );
+    }
+
 //    @ParameterizedTest
 //    @MethodSource
 //    public void testStringRegex(String test, String input, boolean success) {
 //        test(input, Regex.STRING, success);
 //    }
 //
-//    /**
-//     * This is the factory method providing test cases for the parameterized
-//     * test above - note that it is static, takes no arguments, and has the same
-//     * name as the test. The {@link Arguments} object contains the arguments for
-//     * each test to be passed to the function above
-//     */
 //    public static Stream<Arguments> testStringRegex() {
 //        return Stream.of(
 //                Arguments.of("Empty", "\"\"", true),
