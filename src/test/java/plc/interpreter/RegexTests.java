@@ -96,18 +96,19 @@ public class RegexTests {
     }
 
     //Strings between 10 and 20 characters (inclusive) which have even lengths
+    //FIXME: Are uppercase letters considered a char?  Only counting 13 chars?  Is 10 < L < 20, inclusive?
     public static Stream<Arguments> testEvenStringsRegex() {
         return Stream.of(
-                Arguments.of("14 Characters", "thishas14chars", true),  //L = 14, C = 14
-                Arguments.of("10 Characters", "i<3pancakes!", true),    //L = 12, C = 10
-                Arguments.of("10 Characters, 10 Length", "tenchars10", true),    //L = 10, C = 10
-                Arguments.of("16 Characters, 20 Length", "pancakesssssssss!!!!", true),    //L = 20, C = 16
-                Arguments.of("20 Characters, 22 Length", "aaaaaaaaaaaaaaaaaaaa!!", true),    //L = 22, C = 20
-                Arguments.of("Caps", "THISHAS14CHARS", true),  //L = 14, C = 14
-                Arguments.of("6 Characters", "6chars", false),          //L = 6,  C = 6, not enough chars
-                Arguments.of("13 Length", "i<3pancakes!!", false),  //L = 13, C = 10, odd length
-                Arguments.of("21 Chars", "6chars6chars6chars6ch!!!", false),  //L = 24, C = 21, too many chars
-                Arguments.of("9 Characters, 13 Length", "i<3pancake!!!", false)  //L = 13, C = 9, odd length and not enough chars
+                Arguments.of("14 Characters", "thishas14chars", true),                   //L = 14, C = 14
+                Arguments.of("10 Characters", "i<3pancakes!", true),                     //L = 12, C = 10
+                Arguments.of("10 Characters, 10 Length", "tenchars10", true),            //L = 10, C = 10
+                Arguments.of("16 Characters, 20 Length", "pancakesssssssss!!!!", true),  //L = 20, C = 16
+                Arguments.of("Caps", "THISHAS14CHARS", true),                   //L = 14, C = 14, FIXME
+                Arguments.of("15 Characters", "i<3pancakes!!", false),          //FIXME
+                Arguments.of("20 Characters, 22 Length", "aaaaaaaaaaaaaaaaaaaa!!", false), //L = 22, C = 20, too long
+                Arguments.of("6 Characters", "6chars", false),                             //L = 6,  C = 6, not enough chars
+                Arguments.of("11 Chars, 15 Length", "6chars6char!!!", false),              //L = 15, C = 11, odd length
+                Arguments.of("9 Characters, 13 Length", "i<3pancake!!!", false)      //L = 13, C = 9, odd length and not enough chars
         );
     }
 

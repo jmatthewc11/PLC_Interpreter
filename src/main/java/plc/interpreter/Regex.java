@@ -11,7 +11,6 @@ public class Regex {
     public static final Pattern
             EMAIL = Pattern.compile("[A-Za-z0-9._-]+@[A-Za-z0-9-]*\\.[a-z]{2,3}"),
             FILE_NAMES = Pattern.compile(""),
-            //Must have between 10 and 20 alphanumeric characters, and even overall length
             EVEN_STRINGS = Pattern.compile("[A-Za-z0-9]{10,20}"),
             INTEGER_LIST = Pattern.compile(""),
             IDENTIFIER = Pattern.compile(""),
