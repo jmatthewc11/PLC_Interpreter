@@ -70,24 +70,33 @@ public class RegexTests {
         );
     }
 
-//    @ParameterizedTest
-//    @MethodSource
-//    public void testFileNamesRegex(String test, String input, boolean success) {
-//        //this one is different as we're also testing the file name capture
-//        Matcher matcher = test(input, Regex.FILE_NAMES, success);
-//        if (success) {
-//            Assertions.assertEquals(input.substring(0, input.indexOf(".")), matcher.group("name"));
-//        }
-//    }
-//
-//    public static Stream<Arguments> testFileNamesRegex() {
-//        return Stream.of(
-//                Arguments.of("Java File", "Regex.tar.java", true),
-//                Arguments.of("Java Class", "RegexTests.class", true),
-//                Arguments.of("Directory", "directory", false),
-//                Arguments.of("Python File", "scrippy.py", false)
-//        );
-//    }
+    @ParameterizedTest
+    @MethodSource
+    public void testFileNamesRegex(String test, String input, boolean success) {
+        //this one is different as we're also testing the file name capture
+        Matcher matcher = test(input, Regex.FILE_NAMES, success);
+        if (success) {
+            Assertions.assertEquals(input.substring(0, input.indexOf(".")), matcher.group("name"));
+        }
+    }
+
+    //FIXME: What are the allowed characters for file names?
+    public static Stream<Arguments> testFileNamesRegex() {
+        return Stream.of(
+                Arguments.of("Java File", "Regex.tar.java", true),
+                Arguments.of("Java Class", "RegexTests.class", true),
+                Arguments.of("Java File With Class", "Regex.java.class", true),
+                Arguments.of("Java File With Class", "Regex.class.java", true),
+                Arguments.of("File With Underscore", "Re_gex.class", true),
+                Arguments.of("File With Hyphen", "Re-gex.class", true),
+                Arguments.of("File With Caps", "RE-GEX.class", true),
+                Arguments.of("Directory", "directory", false),
+                Arguments.of("Python File", "scrippy.py", false),
+                Arguments.of("Java Ext in Caps", "Regex.tar.JAVA", false),
+                Arguments.of("Class Ext in Caps", "Regex.tar.CLASS", false),
+                Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false)
+        );
+    }
 
     @ParameterizedTest
     @MethodSource
@@ -96,7 +105,7 @@ public class RegexTests {
     }
 
     //Strings between 10 and 20 characters (inclusive) which have even lengths
-    //FIXME: Are uppercase letters considered a char?  Is 10 < L < 20, inclusive also?
+    //FIXME: Are uppercase letters/other symbols considered a char?  Is 10 < L < 20, inclusive also?
     public static Stream<Arguments> testEvenStringsRegex() {
         return Stream.of(
                 Arguments.of("14 Characters", "thishas14chars", true),
