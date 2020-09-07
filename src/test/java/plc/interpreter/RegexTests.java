@@ -49,10 +49,10 @@ public class RegexTests {
                 Arguments.of("Hyphen Before @", "thelegend-@gmail.com", true),
                 Arguments.of("All Caps Before @", "THELEGEND@gmail.com", true),
                 Arguments.of("UF Domain", "otherdomain@ufl.edu", true),
-                Arguments.of("Missing after @", "otherdomain@.edu", true),
-                Arguments.of("Number after @", "thelegend27@gmail27.com", true),
-                Arguments.of("Hyphen after @", "thelegend27@gmail-27.com", true),
-                Arguments.of("Caps after @", "thelegend27@GMAIL.com", true),
+                Arguments.of("Missing After @", "otherdomain@.edu", true),
+                Arguments.of("Number After @", "thelegend27@gmail27.com", true),
+                Arguments.of("Hyphen After @", "thelegend27@gmail-27.com", true),
+                Arguments.of("Caps After @", "thelegend27@GMAIL.com", true),
                 Arguments.of("Org Domain", "otherdomain@something.org", true),
                 Arguments.of("Hyphen After @", "otherdomain@some-thing.org", true),
                 Arguments.of("Missing Domain Dot", "missingdot@gmailcom", false),
@@ -88,21 +88,29 @@ public class RegexTests {
 //                Arguments.of("Python File", "scrippy.py", false)
 //        );
 //    }
-//
-//    @ParameterizedTest
-//    @MethodSource
-//    public void testEvenStringsRegex(String test, String input, boolean success) {
-//        test(input, Regex.EVEN_STRINGS, success);
-//    }
-//
-//    public static Stream<Arguments> testEvenStringsRegex() {
-//        return Stream.of(
-//                Arguments.of("14 Characters", "thishas14chars", true),
-//                Arguments.of("10 Characters", "i<3pancakes!", true),
-//                Arguments.of("6 Characters", "6chars", false),
-//                Arguments.of("15 Characters", "i<3pancakes!!", false)
-//        );
-//    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testEvenStringsRegex(String test, String input, boolean success) {
+        test(input, Regex.EVEN_STRINGS, success);
+    }
+
+    //Strings between 10 and 20 characters (inclusive) which have even lengths
+    public static Stream<Arguments> testEvenStringsRegex() {
+        return Stream.of(
+                Arguments.of("14 Characters", "thishas14chars", true),  //L = 14, C = 14
+                Arguments.of("10 Characters", "i<3pancakes!", true),    //L = 12, C = 10
+                Arguments.of("10 Characters, 10 Length", "tenchars10", true),    //L = 10, C = 10
+                Arguments.of("16 Characters, 20 Length", "pancakesssssssss!!!!", true),    //L = 20, C = 16
+                Arguments.of("20 Characters, 22 Length", "aaaaaaaaaaaaaaaaaaaa!!", true),    //L = 22, C = 20
+                Arguments.of("Caps", "THISHAS14CHARS", true),  //L = 14, C = 14
+                Arguments.of("6 Characters", "6chars", false),          //L = 6,  C = 6, not enough chars
+                Arguments.of("13 Length", "i<3pancakes!!", false),  //L = 13, C = 10, odd length
+                Arguments.of("21 Chars", "6chars6chars6chars6ch!!!", false),  //L = 24, C = 21, too many chars
+                Arguments.of("9 Characters, 13 Length", "i<3pancake!!!", false)  //L = 13, C = 9, odd length and not enough chars
+        );
+    }
+
 //
 //    @ParameterizedTest
 //    @MethodSource
@@ -120,6 +128,8 @@ public class RegexTests {
 //                Arguments.of("Trailing Comma", "[1,2,3,]", false)
 //        );
 //    }
+
+    //FIXME: add Part 3 test methods here
 
     /**
      * Asserts that the input matches the given pattern and returns the matcher
