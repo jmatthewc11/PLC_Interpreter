@@ -13,7 +13,7 @@ public class Regex {
             FILE_NAMES = Pattern.compile("(?<name>[\\w-]+)+[.a-z]*(.java|.class)"),
             EVEN_STRINGS = Pattern.compile("([\\S]{10}|[\\S]{12}|[\\S]{14}|[\\S]{16}|[\\S]{18}|[\\S]{20})"),  //FIXME: very wrong lol
             INTEGER_LIST = Pattern.compile("([\\[])(([1-9]+[0-9]*)+(, {0,1}[1-9]+[0-9]*)*)*([\\]])"),
-            IDENTIFIER = Pattern.compile("(([A-Za-z_\\+\\-\\*\\/\\:!\\?<>.=]+)+([.\\w\\+\\-\\*\\/:!\\?<>=])+)"),
+            IDENTIFIER = Pattern.compile("(([.][.\\w\\+\\-\\*\\/\\:!\\?<>=]+)*([A-Za-z_\\+\\-\\*\\/:!\\?<>=]+[\\d.]*)*)"),
             NUMBER = Pattern.compile("([\\+]|[\\-]){0,1}([\\d]+)+([.][\\d]+)*"),
             STRING = Pattern.compile("(\")([\\w,!\\-\\.+*/=]*([\\\\][bnrt'\"\\\\])*[\\w,!\\-\\.+*/=]*)*(\")");
 

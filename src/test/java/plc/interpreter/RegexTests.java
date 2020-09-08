@@ -65,8 +65,7 @@ public class RegexTests {
                 Arguments.of("Extension Too Short", "thelegend27@gmail.c", false),
                 Arguments.of("Extension With Number", "thelegend27@gmail.co1", false),
                 Arguments.of("Extension With Uppercase", "thelegend27@gmail.Com", false),
-                Arguments.of("Extension With Symbol", "thelegend27@gmail.c*m", false),
-                Arguments.of("EmptyEmail", "", false)
+                Arguments.of("Extension With Symbol", "thelegend27@gmail.c*m", false)
         );
     }
 
@@ -94,8 +93,7 @@ public class RegexTests {
                 Arguments.of("Python File", "scrippy.py", false),
                 Arguments.of("Java Ext in Caps", "Regex.tar.JAVA", false),
                 Arguments.of("Class Ext in Caps", "Regex.tar.CLASS", false),
-                Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false),
-                Arguments.of("EmptyName", "", false)
+                Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false)
         );
     }
 
@@ -155,8 +153,7 @@ public class RegexTests {
                 Arguments.of("Just Comma With Space", "[, ]", false),
                 Arguments.of("Letter", " [A]", false),
                 Arguments.of("Symbol", " [*]", false),
-                Arguments.of("Parentheses", "(1, 2, 3)", false),
-                Arguments.of("EmptyInt", "", false)
+                Arguments.of("Parentheses", "(1, 2, 3)", false)
         );
     }
 
@@ -190,8 +187,7 @@ public class RegexTests {
                 Arguments.of("Single Period", ".", false),
                 Arguments.of("2 Backslashes", "li\\fe", false),
                 Arguments.of("Brackets", "[]", false),
-                Arguments.of("Parentheses", "()", false),
-                Arguments.of("EmptyIdentifier", "", false)
+                Arguments.of("Parentheses", "()", false)
         );
     }
 
@@ -221,8 +217,7 @@ public class RegexTests {
                 Arguments.of("Negative Only Decimal", "-.", false),
                 Arguments.of("Positive Only", "+", false),
                 Arguments.of("Negative Only", ".", false),
-                Arguments.of("Decimal Only", "-", false),
-                Arguments.of("EmptyNum", "", false)
+                Arguments.of("Decimal Only", "-", false)
         );
     }
 
