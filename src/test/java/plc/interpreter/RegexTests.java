@@ -65,6 +65,7 @@ public class RegexTests {
                 Arguments.of("Extension Too Short", "thelegend27@gmail.c", false),
                 Arguments.of("Extension With Number", "thelegend27@gmail.co1", false),
                 Arguments.of("Extension With Uppercase", "thelegend27@gmail.Com", false),
+                Arguments.of("Empty Email", "", false),
                 Arguments.of("Extension With Symbol", "thelegend27@gmail.c*m", false)
         );
     }
@@ -92,6 +93,7 @@ public class RegexTests {
                 Arguments.of("Directory", "directory", false),
                 Arguments.of("Python File", "scrippy.py", false),
                 Arguments.of("Two Periods", "Regex..java", false),
+                Arguments.of("No File Name", "", false),
                 Arguments.of("Two Periods Again", "Regex.tar..java", false),
                 Arguments.of("Period in extension", "Regex.ja.va", false),
                 Arguments.of("Java Ext in Caps", "Regex.tar.JAVA", false),
@@ -106,20 +108,20 @@ public class RegexTests {
         test(input, Regex.EVEN_STRINGS, success);
     }
 
-    //FIXME: L is 10, 12, 14, 16, 18, 20
     public static Stream<Arguments> testEvenStringsRegex() {
         return Stream.of(
                 Arguments.of("14 Characters", "thishas14chars", true),
                 Arguments.of("10 Characters", "i<3pancakes!", true),
                 Arguments.of("12 Characters", "SpOngeBobbbb", true),
                 Arguments.of("16 Characters", "!!!!****????()()", true),
-                Arguments.of("18 Characters", "eighteen chars18/*", true),
+                Arguments.of("18 Characters", "eighteenchars18/**", true),
                 Arguments.of("20 Characters", "2020 V*s*on$#- //(){", true),
                 Arguments.of("6 Characters", "6chars", false),
                 Arguments.of("13 Characters", "i<3pancakes!!", false),
                 Arguments.of("7 Characters", "7charss", false),
                 Arguments.of("19 Characters", "Please Give Me An A", false),
                 Arguments.of("22 Characters", "Soooooooooo many tests", false),
+                Arguments.of("0 Characters", "", false),
                 Arguments.of("21 Characters", "21 Characters HERE   ", false)
         );
     }
@@ -148,6 +150,7 @@ public class RegexTests {
                 Arguments.of("Double Brackets Again", "[1,2,3]]", false),
                 Arguments.of("Bracket In Middle", "[1,2,]3]", false),
                 Arguments.of("No Number", "[ ]", false),
+                Arguments.of("Empty", "", false),
                 Arguments.of("Number With Space", "[1 ]", false),
                 Arguments.of("Just Comma", "[,]", false),
                 Arguments.of("Just Comma With Space", "[, ]", false),
@@ -187,6 +190,9 @@ public class RegexTests {
                 Arguments.of("Single Period", ".", false),
                 Arguments.of("2 Backslashes", "li\\fe", false),
                 Arguments.of("Brackets", "[]", false),
+                Arguments.of("Quote", "\"", false),
+                Arguments.of("Empty", "", false),
+                Arguments.of("Whitespace", "test here", false),
                 Arguments.of("Parentheses", "()", false)
         );
     }
@@ -223,6 +229,7 @@ public class RegexTests {
                 Arguments.of("Middle Negative", "4-36", false),
                 Arguments.of("Positive Only Decimal", "+.", false),
                 Arguments.of("Negative Only Decimal", "-.", false),
+                Arguments.of("Empty", "", false),
                 Arguments.of("Positive Only", "+", false),
                 Arguments.of("Negative Only", ".", false),
                 Arguments.of("Decimal Only", "-", false)
@@ -251,6 +258,7 @@ public class RegexTests {
                 Arguments.of("Invalid Escape", "\"invalid\\escape\"", false),
                 Arguments.of("Still Invalid Escape", "\"Hello,\\\\\\World!\"", false),
                 Arguments.of("Escape But Wrong", "\"\r\"", false),
+                Arguments.of("No Quotes and Empty", "", false),
                 Arguments.of("Wrong Escape Char Case", "\"Hello,\\NWorld!\"", false),
                 Arguments.of("Too Many Quotes", "\"\"unterminated", false)
         );
