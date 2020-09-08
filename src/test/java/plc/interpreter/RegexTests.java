@@ -66,7 +66,7 @@ public class RegexTests {
                 Arguments.of("Extension With Number", "thelegend27@gmail.co1", false),
                 Arguments.of("Extension With Uppercase", "thelegend27@gmail.Com", false),
                 Arguments.of("Extension With Symbol", "thelegend27@gmail.c*m", false),
-                Arguments.of("Empty", "", false)
+                Arguments.of("EmptyEmail", "", false)
         );
     }
 
@@ -80,7 +80,7 @@ public class RegexTests {
         }
     }
 
-    //FIXME: What are the allowed characters for file names?
+    //FIXME: What are the allowed characters for file names/extensions?  Case sensitive for middle extension?
     public static Stream<Arguments> testFileNamesRegex() {
         return Stream.of(
                 Arguments.of("Java File", "Regex.tar.java", true),
@@ -95,7 +95,7 @@ public class RegexTests {
                 Arguments.of("Java Ext in Caps", "Regex.tar.JAVA", false),
                 Arguments.of("Class Ext in Caps", "Regex.tar.CLASS", false),
                 Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false),
-                Arguments.of("Empty", "", false)
+                Arguments.of("EmptyName", "", false)
         );
     }
 
@@ -112,14 +112,14 @@ public class RegexTests {
                 Arguments.of("14 Characters", "thishas14chars", true),
                 Arguments.of("10 Characters", "i<3pancakes!", true),    //FIXME: Length is 12, but 10 characters?
                 Arguments.of("6 Characters", "6chars", false),
-                Arguments.of("Empty", "", false),
                 Arguments.of("15 Characters", "i<3pancakes!!", false)   //FIXME: Length is 13, but 15 chars?
 //                Arguments.of("14 Characters", "thishas14chars", true),                   //L = 14, C = 14
 //                Arguments.of("10 Characters", "i<3pancakes!", true),                     //L = 12, C = 10
 //                Arguments.of("10 Characters, 10 Length", "tenchars10", true),            //L = 10, C = 10
 //                Arguments.of("16 Characters, 20 Length", "pancakesssssssss!!!!", true),  //L = 20, C = 16
-//                Arguments.of("Caps", "THISHAS14CHARS", true),                   //L = 14, C = 14, TODO
-//                Arguments.of("15 Characters", "i<3pancakes!!", false),          //TODO
+//                Arguments.of("Caps", "THISHAS14CHARS", true),                   //L = 14, C = 14,
+//                Arguments.of("15 Characters", "i<3pancakes!!", false),
+//                Arguments.of("Empty", "", false),
 //                Arguments.of("20 Characters, 22 Length", "aaaaaaaaaaaaaaaaaaaa!!", false), //L = 22, C = 20, too long
 //                Arguments.of("6 Characters", "6chars", false)                             //L = 6,  C = 6, not enough chars
 //                Arguments.of("11 Chars, 15 Length", "6chars6char!!!", false),              //L = 15, C = 11, odd length
@@ -156,7 +156,7 @@ public class RegexTests {
                 Arguments.of("Letter", " [A]", false),
                 Arguments.of("Symbol", " [*]", false),
                 Arguments.of("Parentheses", "(1, 2, 3)", false),
-                Arguments.of("Empty", "", false)
+                Arguments.of("EmptyInt", "", false)
         );
     }
 
@@ -177,11 +177,13 @@ public class RegexTests {
                 Arguments.of("Numbers", "life42", true),
                 Arguments.of("Exclamation", "life42!", true),
                 Arguments.of("Two Periods", "..", true),
+                Arguments.of("Single Letter", "A", true),
                 Arguments.of("Spongebob", "SpOnGeBoB", true),
                 Arguments.of("Starts With Period", ".42/11", true),
                 Arguments.of("Negative Number", "-42", true),
                 Arguments.of("Ends With Period", "b2/11.", true),
                 Arguments.of("Starts With Digit", "42=life", false),
+                Arguments.of("Single Digit", "4", false),
                 Arguments.of("No Commas Allowed", "why,are,there,commas,", false),
                 Arguments.of("No Space Allowed", "get Name", false),
                 Arguments.of("Backslash", "li\fe", false),
@@ -189,7 +191,7 @@ public class RegexTests {
                 Arguments.of("2 Backslashes", "li\\fe", false),
                 Arguments.of("Brackets", "[]", false),
                 Arguments.of("Parentheses", "()", false),
-                Arguments.of("Empty", "", false)
+                Arguments.of("EmptyIdentifier", "", false)
         );
     }
 
@@ -220,11 +222,11 @@ public class RegexTests {
                 Arguments.of("Positive Only", "+", false),
                 Arguments.of("Negative Only", ".", false),
                 Arguments.of("Decimal Only", "-", false),
-                Arguments.of("Empty", "", false)
+                Arguments.of("EmptyNum", "", false)
         );
     }
 
-    //FIXME: what are characters are acceptable for strings?
+    //FIXME: what characters are acceptable for strings?
     @ParameterizedTest
     @MethodSource
     public void testStringRegex(String test, String input, boolean success) {
@@ -239,6 +241,8 @@ public class RegexTests {
                 Arguments.of("Escape", "\"Hello,\\nWorld!\"", true),
                 Arguments.of("Another Escape", "\"Hello,\\bWorld!\"", true),
                 Arguments.of("Just Escape", "\"\\r\"", true),
+                Arguments.of("Underscore", "\"Hello_World\"", true),
+                Arguments.of("Period", "\".HelloWorld\"", true),
                 Arguments.of("No End Quote", "\"unterminated", false),
                 Arguments.of("No Begin Quote", "unterminated\"", false),
                 Arguments.of("No Quotes", "unterminated", false),
