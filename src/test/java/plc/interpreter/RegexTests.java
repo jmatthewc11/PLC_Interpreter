@@ -106,25 +106,21 @@ public class RegexTests {
         test(input, Regex.EVEN_STRINGS, success);
     }
 
-    //Strings between 10 and 20 characters (inclusive) which have even lengths
-    //FIXME: Are uppercase letters/other symbols considered a char?  Is it 10 < L < 20 inclusive too?
+    //FIXME: L is 10, 12, 14, 16, 18, 20
     public static Stream<Arguments> testEvenStringsRegex() {
         return Stream.of(
                 Arguments.of("14 Characters", "thishas14chars", true),
-                Arguments.of("10 Characters", "i<3pancakes!", true),    //FIXME: Length is 12, but 10 characters?
+                Arguments.of("10 Characters", "i<3pancakes!", true),
+                Arguments.of("12 Characters", "SpOngeBobbbb", true),
+                Arguments.of("16 Characters", "!!!!****????()()", true),
+                Arguments.of("18 Characters", "eighteen chars18/*", true),
+                Arguments.of("20 Characters", "2020 V*s*on$#- //(){", true),
                 Arguments.of("6 Characters", "6chars", false),
-                Arguments.of("15 Characters", "i<3pancakes!!", false)   //FIXME: Length is 13, but 15 chars?
-//                Arguments.of("14 Characters", "thishas14chars", true),                   //L = 14, C = 14
-//                Arguments.of("10 Characters", "i<3pancakes!", true),                     //L = 12, C = 10
-//                Arguments.of("10 Characters, 10 Length", "tenchars10", true),            //L = 10, C = 10
-//                Arguments.of("16 Characters, 20 Length", "pancakesssssssss!!!!", true),  //L = 20, C = 16
-//                Arguments.of("Caps", "THISHAS14CHARS", true),                   //L = 14, C = 14,
-//                Arguments.of("15 Characters", "i<3pancakes!!", false),
-//                Arguments.of("Empty", "", false),
-//                Arguments.of("20 Characters, 22 Length", "aaaaaaaaaaaaaaaaaaaa!!", false), //L = 22, C = 20, too long
-//                Arguments.of("6 Characters", "6chars", false)                             //L = 6,  C = 6, not enough chars
-//                Arguments.of("11 Chars, 15 Length", "6chars6char!!!", false),              //L = 15, C = 11, odd length
-//                Arguments.of("9 Characters, 13 Length", "i<3pancake!!!", false)      //L = 13, C = 9, odd length and not enough chars
+                Arguments.of("13 Characters", "i<3pancakes!!", false),
+                Arguments.of("7 Characters", "7charss", false),
+                Arguments.of("19 Characters", "Please Give Me An A", false),
+                Arguments.of("22 Characters", "Soooooooooo many tests", false),
+                Arguments.of("21 Characters", "21 Characters HERE   ", false)
         );
     }
 
@@ -233,7 +229,6 @@ public class RegexTests {
         );
     }
 
-    //FIXME: what characters are acceptable for strings?
     @ParameterizedTest
     @MethodSource
     public void testStringRegex(String test, String input, boolean success) {
