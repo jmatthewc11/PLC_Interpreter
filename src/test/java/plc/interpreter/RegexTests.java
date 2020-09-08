@@ -270,5 +270,4 @@ public class RegexTests {
         Assertions.assertEquals(success, matcher.matches());
         return matcher;
     }
-
 }
