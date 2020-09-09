@@ -18,7 +18,7 @@ import java.util.stream.Stream;
  * sidebar and navigating to Tasks > verification > test Regex(double click to run).
  */
 //FIXME:~~~~~~~~~~~~~~~~~~Best guess on what is allowed for everything not specified, update tests and regexes~~~~~~~~~~~~~~~~~~
-//FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~~Check Lexer assignment to see if there is better guidance on Part 3~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Test with expressions from Lexer assignment~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~Go through one more time and submit, try to clean up the expressions?~~~~~~~~~~~~~~~~~~~~~~~~~~
 public class RegexTests {
     /**
@@ -190,7 +190,7 @@ public class RegexTests {
                 Arguments.of("Ends With Period", "b2/11.", true),
                 Arguments.of("Starts With Digit", "42=life", false),
                 Arguments.of("Single Digit", "4", false),
-                Arguments.of("Starts With Decimal", ".42/11", false),
+                Arguments.of("Starts With Decimal", ".42", false),
                 Arguments.of("Starts With Negative Number", "-42", false),
                 Arguments.of("No Commas Allowed", "why,are,there,commas,", false),
                 Arguments.of("No Space Allowed", "get Name", false),
