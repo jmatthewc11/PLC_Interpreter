@@ -17,9 +17,6 @@ import java.util.stream.Stream;
  * gradle test task, which can be done by clicking the Gradle tab in the right
  * sidebar and navigating to Tasks > verification > test Regex(double click to run).
  */
-//FIXME:~~~~~~~~~~~~~~~~~~Best guess on what is allowed for everything not specified, update tests and regexes~~~~~~~~~~~~~~~~~~
-//FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Test with expressions from Lexer assignment~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~Go through one more time and submit, try to clean up the expressions?~~~~~~~~~~~~~~~~~~~~~~~~~~
 public class RegexTests {
     /**
      * This is a parameterized test for the {@link Regex#EMAIL} regex. The
@@ -259,13 +256,14 @@ public class RegexTests {
                 Arguments.of("Another Escape", "\"Hello,\\bWorld!\"", true),
                 Arguments.of("Just Escape", "\"\\r\"", true),
                 Arguments.of("Underscore", "\"Hello_World\"", true),
+                Arguments.of("Another Escape", "\"\r\"", true),
                 Arguments.of("Period", "\".HelloWorld\"", true),
                 Arguments.of("No End Quote", "\"unterminated", false),
                 Arguments.of("No Begin Quote", "unterminated\"", false),
                 Arguments.of("No Quotes", "unterminated", false),
-                Arguments.of("Invalid Escape", "\"invalid\\escape\"", false),
+                Arguments.of("Escape With Invalid Letter", "\"\\d\"", false),
+                Arguments.of("Invalid Escape Again", "\"invalid\\escape\"", false),
                 Arguments.of("Still Invalid Escape", "\"Hello,\\\\\\World!\"", false),
-                Arguments.of("Escape But Wrong", "\"\r\"", false),
                 Arguments.of("No Quotes and Empty", "", false),
                 Arguments.of("Wrong Escape Char Case", "\"Hello,\\NWorld!\"", false),
                 Arguments.of("Too Many Quotes", "\"\"unterminated", false)
