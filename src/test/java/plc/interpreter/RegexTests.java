@@ -17,6 +17,8 @@ import java.util.stream.Stream;
  * gradle test task, which can be done by clicking the Gradle tab in the right
  * sidebar and navigating to Tasks > verification > test Regex(double click to run).
  */
+//FIXME:~~~~~~~~~~~~~~~~~~Best guess on what is allowed for everything not specified, update tests and regexes~~~~~~~~~~~~~~~~~~
+//FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~~Check Lexer assignment to see if there is better guidance on Part 3~~~~~~~~~~~~~~~~~~~~~~~~~~~
 public class RegexTests {
     /**
      * This is a parameterized test for the {@link Regex#EMAIL} regex. The
@@ -80,25 +82,28 @@ public class RegexTests {
         }
     }
 
-    //FIXME: What are the allowed characters for file names/extensions?  Case sensitive for middle extension?
     public static Stream<Arguments> testFileNamesRegex() {
         return Stream.of(
-                Arguments.of("Java File", "Regex.tar.java", true),
+                Arguments.of("Java File", "Regex.java", true),
                 Arguments.of("Java Class", "RegexTests.class", true),
-                Arguments.of("Java File With Class", "Regex.java.class", true),
-                Arguments.of("Java File With Class", "Regex.class.java", true),
                 Arguments.of("File With Underscore", "re_gex.class", true),
                 Arguments.of("File With Hyphen", "Re-gex.class", true),
-                Arguments.of("File With Caps", "rE-GEX.class", true),
+                Arguments.of("File With Number", "regex1.class", true),
+                Arguments.of("File With Caps", "rE-GEX.java", true),
                 Arguments.of("Directory", "directory", false),
                 Arguments.of("Python File", "scrippy.py", false),
                 Arguments.of("Two Periods", "Regex..java", false),
-                Arguments.of("No File Name", "", false),
+                Arguments.of("Whitespace", "Regex Tests.class", false),
+                Arguments.of("Empty", "", false),
+                Arguments.of("No File Name", ".class", false),
+                Arguments.of("Two Extensions", "Regex.tar.java", false),    //FIXME: Are double extensions allowed at all IRL?
+                Arguments.of("Java File With Class", "Regex.java.class", false),    //FIXME  Change RegEx, not allowed
+                Arguments.of("Java Class With File", "Regex.class.java", false),    //FIXME: Change RegEx, not allowed
                 Arguments.of("Two Periods Again", "Regex.tar..java", false),
                 Arguments.of("Period in extension", "Regex.ja.va", false),
-                Arguments.of("Java Ext in Caps", "Regex.tar.JAVA", false),
-                Arguments.of("Class Ext in Caps", "Regex.tar.CLASS", false),
-                Arguments.of("File Name With Invalid Char", "Regex*Tests.class", false)
+                Arguments.of("Java Ext in Caps", "Regex.JAVA", false),
+                Arguments.of("Class Ext in Caps", "Regex.CLASS", false),
+                Arguments.of("Symbols", "#@$*Tests.class", false)           //FIXME: Are symbols allowed?  Which ones?
         );
     }
 
@@ -146,13 +151,16 @@ public class RegexTests {
                 Arguments.of("Not A Positive Integer", "[0]", false),
                 Arguments.of("Zero As Element", "[1,2,3,0]", false),
                 Arguments.of("Two Spaces", "[1,2  ,3]", false),
+                Arguments.of("Negative Element", "[-1]", false),
                 Arguments.of("Double Brackets", "[[1,2,3]", false),
                 Arguments.of("Double Brackets Again", "[1,2,3]]", false),
                 Arguments.of("Bracket In Middle", "[1,2,]3]", false),
-                Arguments.of("No Number", "[ ]", false),
+                Arguments.of("Just Space", "[ ]", false),
+                Arguments.of("Weird Leading Zero", "[1, 01]", false),
                 Arguments.of("Empty", "", false),
                 Arguments.of("Number With Space", "[1 ]", false),
                 Arguments.of("Just Comma", "[,]", false),
+                Arguments.of("Comma Number", "[,1]", false),
                 Arguments.of("Just Comma With Space", "[, ]", false),
                 Arguments.of("Letter", " [A]", false),
                 Arguments.of("Symbol", " [*]", false),
@@ -178,9 +186,8 @@ public class RegexTests {
                 Arguments.of("Exclamation", "life42!", true),
                 Arguments.of("Two Periods", "..", true),
                 Arguments.of("Single Letter", "A", true),
-                Arguments.of("Spongebob", "SpOnGeBoB", true),
-                Arguments.of("Starts With Period", ".42/11", true),
-                Arguments.of("Negative Number", "-42", true),
+                Arguments.of("Starts With Period", ".42/11", true), //FIXME: Can you start with a period?
+                Arguments.of("Negative Number", "-42", true),       //FIXME: Can you start with sign of digit?
                 Arguments.of("Ends With Period", "b2/11.", true),
                 Arguments.of("Starts With Digit", "42=life", false),
                 Arguments.of("Single Digit", "4", false),
@@ -213,8 +220,8 @@ public class RegexTests {
                 Arguments.of("Positive Decimal", "+1.0", true),
                 Arguments.of("Decimal", "007.000", true),
                 Arguments.of("Zero", "0", true),
-                Arguments.of("Zero With Integer", "01", true),
                 Arguments.of("Leading Zero Decimal", "0.01", true),
+                Arguments.of("Leading Zero Number", "01", true),
                 Arguments.of("Positive Leading Zero Decimal", "+0.01", true),
                 Arguments.of("Negative Leading Zero Decimal", "-0.01", true),
                 Arguments.of("Nothing After Decimal", "1.", false),
