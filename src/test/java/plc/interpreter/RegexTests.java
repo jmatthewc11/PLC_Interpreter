@@ -19,6 +19,7 @@ import java.util.stream.Stream;
  */
 //FIXME:~~~~~~~~~~~~~~~~~~Best guess on what is allowed for everything not specified, update tests and regexes~~~~~~~~~~~~~~~~~~
 //FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~~Check Lexer assignment to see if there is better guidance on Part 3~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//FIXME:~~~~~~~~~~~~~~~~~~~~~~~~~Go through one more time and submit, try to clean up the expressions?~~~~~~~~~~~~~~~~~~~~~~~~~~
 public class RegexTests {
     /**
      * This is a parameterized test for the {@link Regex#EMAIL} regex. The
@@ -182,14 +183,15 @@ public class RegexTests {
                 Arguments.of("Underscore", "getName_", true),
                 Arguments.of("Forward Slash", "get///Name", true),
                 Arguments.of("Numbers", "life42", true),
+                Arguments.of("Operation", "/", true),
                 Arguments.of("Exclamation", "life42!", true),
                 Arguments.of("Two Periods", "..", true),
                 Arguments.of("Single Letter", "A", true),
-//                Arguments.of("Starts With Period", ".42/11", true), //FIXME: Can you start with a period?
-//                Arguments.of("Negative Number", "-42", true),       //FIXME: Can you start with sign of digit?
                 Arguments.of("Ends With Period", "b2/11.", true),
                 Arguments.of("Starts With Digit", "42=life", false),
                 Arguments.of("Single Digit", "4", false),
+                Arguments.of("Starts With Decimal", ".42/11", false),
+                Arguments.of("Starts With Negative Number", "-42", false),
                 Arguments.of("No Commas Allowed", "why,are,there,commas,", false),
                 Arguments.of("No Space Allowed", "get Name", false),
                 Arguments.of("Backslash", "li\fe", false),
