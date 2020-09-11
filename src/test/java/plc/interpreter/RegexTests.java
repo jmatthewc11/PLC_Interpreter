@@ -82,25 +82,25 @@ public class RegexTests {
 
     public static Stream<Arguments> testFileNamesRegex() {
         return Stream.of(
-                Arguments.of("Java File", "Regex.java", true),
+                Arguments.of("Java File", "Regex.tar.java", true),
                 Arguments.of("Java Class", "RegexTests.class", true),
                 Arguments.of("Underscore", "re_gex.class", true),
                 Arguments.of("Hyphen", "Re-gex.class", true),
                 Arguments.of("Number", "regex1.java", true),
+                Arguments.of("Symbols", "%*Te:sts.class", true),
+                Arguments.of("Whitespace", "Reg ex.java", true),
+                Arguments.of("Whitespace Again", "Reg ex.t .java", true),
+                Arguments.of("Lots Of Extensions", "Regex.fs.98qj34.^@653ce.class", true),
+                Arguments.of("Period In File Name", "Regex..java", true),
+                Arguments.of("Period In File Name With Extension", "Regex..tar.class", true),
+                Arguments.of("Period In Extension Name", "Regex.tar..java", true),
                 Arguments.of("Directory", "directory", false),
                 Arguments.of("Python File", "scrippy.py", false),
-                Arguments.of("Two Periods", "Regex..java", false),
-                Arguments.of("Whitespace", "Regex Tests.class", false),
                 Arguments.of("Empty", "", false),
                 Arguments.of("No File Name", ".class", false),
-                Arguments.of("Double Extension", "Regex.tar.class", false),
-                Arguments.of("Java File With Class", "Regex.java.class", false),
-                Arguments.of("Java Class With File", "Regex.class.java", false),
-                Arguments.of("Two Periods Again", "Regex.tar..java", false),
                 Arguments.of("Period in extension", "Regex.ja.va", false),
                 Arguments.of("Java Ext in Caps", "Regex.JAVA", false),
-                Arguments.of("Class Ext in Caps", "Regex.CLASS", false),
-                Arguments.of("Symbols", "%*Te:sts.class", false)
+                Arguments.of("Class Ext in Caps", "Regex.CLASS", false)
         );
     }
 
