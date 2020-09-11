@@ -119,6 +119,7 @@ public class RegexTests {
                 Arguments.of("18 Characters", "eighteenchars18/**", true),
                 Arguments.of("20 Characters", "2020 V*s*on$#- //(){", true),
                 Arguments.of("6 Characters", "6chars", false),
+                Arguments.of("2 Characters", "  ", false),
                 Arguments.of("13 Characters", "i<3pancakes!!", false),
                 Arguments.of("7 Characters", "7charss", false),
                 Arguments.of("19 Characters", "Please Give Me An A", false),
@@ -183,12 +184,12 @@ public class RegexTests {
                 Arguments.of("Operation", "/", true),
                 Arguments.of("Exclamation", "life42!", true),
                 Arguments.of("Two Periods", "..", true),
+                Arguments.of("Starts With Decimal", ".42", true),
+                Arguments.of("Starts With Negative Sign", "-42854", true),
                 Arguments.of("Single Letter", "A", true),
                 Arguments.of("Ends With Period", "b2/11.", true),
                 Arguments.of("Starts With Digit", "42=life", false),
                 Arguments.of("Single Digit", "4", false),
-                Arguments.of("Starts With Decimal", ".42", false),
-                Arguments.of("Starts With Negative Number", "-42", false),
                 Arguments.of("No Commas Allowed", "why,are,there,commas,", false),
                 Arguments.of("No Space Allowed", "get Name", false),
                 Arguments.of("Backslash", "li\fe", false),
@@ -197,7 +198,6 @@ public class RegexTests {
                 Arguments.of("Brackets", "[]", false),
                 Arguments.of("Quote", "\"", false),
                 Arguments.of("Empty", "", false),
-                Arguments.of("Whitespace", "test here", false),
                 Arguments.of("Parentheses", "()", false)
         );
     }
