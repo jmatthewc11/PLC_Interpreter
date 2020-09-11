@@ -1,6 +1,6 @@
 package plc.interpreter;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * The lexer works through three main functions:
@@ -38,8 +38,11 @@ public class Lexer {
      * of the input is reached, returning the list of tokens lexed. This should
      * also handle skipping whitespace.
      */
-    private List<Token> lex() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+    private List<Token> lex() throws ParseException {   //TODO
+        List<Token> tokens = new ArrayList<>();
+        //FIXME: while there is more input...
+        tokens.add(lexToken());
+        return tokens;
     }
 
     /**
@@ -105,10 +108,19 @@ public class Lexer {
         private int index = 0;
         private int length = 0;
 
+//        public CharStream() {
+//            this.index = 0;
+//            this.length = 0;
+//        }
+
         /**
          * Returns true if there is a character at index + offset.
          */
-        public boolean has(int offset) {
+        public boolean has(int offset) {    //TODO
+//            if (this.get(offset) /*returns something*/)
+//                return true;
+//            else
+//                return false;
             throw new UnsupportedOperationException(); //TODO
         }
 
@@ -116,6 +128,7 @@ public class Lexer {
          * Gets the character at index + offset.
          */
         public char get(int offset) {
+//            return this[index + offset];
             throw new UnsupportedOperationException(); //TODO
         }
 
@@ -123,25 +136,38 @@ public class Lexer {
          * Advances to the next character, incrementing the current index and
          * length of the literal being built.
          */
+        //FIXME: does it need anything else?
         public void advance() {
-            throw new UnsupportedOperationException(); //TODO
+            index++;
+            length++;
         }
 
         /**
          * Resets the length to zero, skipping any consumed characters.
          */
+        //FIXME: does it need anything else?
         public void reset() {
-            throw new UnsupportedOperationException(); //TODO
+            length = 0;
         }
 
         /**
          * Returns a token of the given type with the built literal. The index
          * of the token should be the <em>starting</em> index.
          */
+        //FIXME: need to preserve the starting index somehow?
         public Token emit(Token.Type type) {
-            throw new UnsupportedOperationException(); //TODO
+            if (type == Token.Type.IDENTIFIER) {
+                return new Token(Token.Type.IDENTIFIER, this.toString(), index);
+            }
+            else if (type == Token.Type.NUMBER) {
+                return new Token(Token.Type.NUMBER, this.toString(), index);
+            }
+            else if (type == Token.Type.STRING) {
+                return new Token(Token.Type.STRING, this.toString(), index);
+            }
+            else {
+                return new Token(Token.Type.OPERATOR, this.toString(), index);
+            }
         }
-
     }
-
 }
