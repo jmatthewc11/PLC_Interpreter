@@ -1,6 +1,8 @@
 package plc.interpreter;
 
+import java.nio.Buffer;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * The lexer works through three main functions:
@@ -39,10 +41,27 @@ public class Lexer {
      * also handle skipping whitespace.
      */
     private List<Token> lex() throws ParseException {   //TODO
+        //want to split the input by whitespace, call lexToken on each
         List<Token> tokens = new ArrayList<>();
+        String[] words = input.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+//            chars.index = i + chars.length;
+//            chars.length = words[i].length();
+//            chars.index = i +
+//            chars.content = words[i];
+            tokens.add(lexToken(words[i], words[i].length()));
+        }
+
+//        String first = input.split(" ")[0];
+//        System.out.println(lexToken());
+
+//        for (int i = 0; i < words.length; i++) {
+//            chars.input = input.split(" ")[i];
+//        }
         //FIXME: while there is more input...
         //loop through input until all tokens are created, try splitting based on whitespace, call next method on each chunk
-        tokens.add(lexToken());
+//        tokens.add(lexToken());
         return tokens;
     }
 
@@ -78,8 +97,13 @@ public class Lexer {
      * }
      * </pre>
      */
-    private Token lexToken() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+    private Token lexToken(String content, int length) throws ParseException {
+        if (match(content, "\\")) {
+            chars.content = content;
+            System.out.println("OK");
+        }
+        return chars.emit(Token.Type.IDENTIFIER);
+//        throw new UnsupportedOperationException(); //TODO
     }
 
     /**
@@ -95,8 +119,13 @@ public class Lexer {
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
      */
-    private boolean match(String... patterns) {
-        throw new UnsupportedOperationException(); //TODO
+    private boolean match(String content, String... patterns) {
+        if (patterns.equals("\\")) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
     /**
@@ -104,16 +133,13 @@ public class Lexer {
      * where in the input string the lexer currently is, and the builder
      * accumulates characters into the literal value for the next token.
      */
-    private final class CharStream {    //creates the tokens out of the input, set up an actual stream, take each word at a time?
+    private final class CharStream {
+        //creates the tokens out of the input, set up an actual stream, take each word at a time?
         //parse string into different chunks, store in the CharStream, use methods
 
         private int index = 0;
         private int length = 0;
-
-//        public CharStream() {
-//            this.index = 0;
-//            this.length = 0;
-//        }
+        private String content;
 
         /**
          * Returns true if there is a character at index + offset.
@@ -159,16 +185,16 @@ public class Lexer {
         //FIXME: need to preserve the starting index somehow?  Starting index is for creating substring eventually
         public Token emit(Token.Type type) {
             if (type == Token.Type.IDENTIFIER) {
-                return new Token(Token.Type.IDENTIFIER, this.toString(), index);
+                return new Token(Token.Type.IDENTIFIER, content, index);
             }
             else if (type == Token.Type.NUMBER) {
-                return new Token(Token.Type.NUMBER, this.toString(), index);
+                return new Token(Token.Type.NUMBER, content, index);
             }
             else if (type == Token.Type.STRING) {
-                return new Token(Token.Type.STRING, this.toString(), index);
+                return new Token(Token.Type.STRING, content, index);
             }
             else {
-                return new Token(Token.Type.OPERATOR, this.toString(), index);
+                return new Token(Token.Type.OPERATOR, content, index);
             }
         }
     }
