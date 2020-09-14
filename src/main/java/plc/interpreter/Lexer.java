@@ -22,9 +22,8 @@ import java.util.stream.Stream;
 public class Lexer {
 
     private final String input;
-//    private int start = 0;
-//    private int current = 0;
     private final CharStream chars = new CharStream();
+    List<Token> tokens = new ArrayList<>();
 
     private Lexer(String input) {
         this.input = input;
@@ -37,20 +36,31 @@ public class Lexer {
         return new Lexer(input).lex();
     }
 
-    /**
-     * Repeatedly lexes the next token using  until the end
+    /* Repeatedly lexes the next token using {@link #lexToken()} until the end
      * of the input is reached, returning the list of tokens lexed. This should
      * also handle skipping whitespace.
      */
     private List<Token> lex() throws ParseException {   //TODO
         //want to split the input by whitespace, call lexToken on each
         //FIXME: can only call lexToken on the entire input, how to break it up?  How to preserve starting index?
-        List<Token> tokens = new ArrayList<>();
-        chars.test_input = input;
-        tokens.add(lexToken());
-//        String test = "kjsne";
+        //lexing token from wherever the charstream is
+        //Alternate between skipping over whitespace, whatever follows that must be a token (so start lexing token) or at the end
+        //must check for end of input
+        //look at next token, sort it into category, operater is left over
+        //char stream is basically an iterator
+        //check whitespace before or after parsing token
+        //lex token figures out what kind of token, then use regex
+        //implement charstream (crafting interpreter), then match/peek, then real implementation
+        //break up tokens based on whitespace first, then call next method
+        while (!chars.endOfInput()) {
+            chars.start = chars.current;
+            tokens.add(lexToken());
+        }
+        return tokens;
 
-//
+//        chars.test_input = input;   //take whole input for...reference?
+//        tokens.add(lexToken());
+
 //        while(!endOfInput()) {
 //            tokens.add(lexToken());
 //        }
@@ -73,7 +83,6 @@ public class Lexer {
         //FIXME: while there is more input...
         //loop through input until all tokens are created, try splitting based on whitespace, call next method on each chunk
 //        tokens.add(lexToken());
-        return tokens;
     }
 
     /**
@@ -110,7 +119,8 @@ public class Lexer {
      */
     private Token lexToken() throws ParseException {  //TODO, keep adding to token until time to emit
 
-        for (int i = 0; i < input.length(); i++) {
+        for (int i = 0; i < chars.test_input.length(); i++) {
+            chars.index++;
             switch (input.charAt(i)) {
                 case '(':
                     chars.token = "(";
@@ -127,6 +137,8 @@ public class Lexer {
                 case '-':
                     chars.token = "-2.0";
                     return chars.emit(Token.Type.NUMBER);
+                default:
+                    chars.advance();
             }
         }
         throw new ParseException("Parse Error", 2);
@@ -173,27 +185,30 @@ public class Lexer {
 
         private int index = 0;
         private int length = 0;
-        private String test_input;
+        private int start = 0;
+        private int current = 0;
+        private String test_input = input;
         private String token;
 
+        //keeps state for the input
         /**
          * Returns true if there is a character at index + offset.
          */
-//        public boolean has(int offset) {    //TODO
-//            int check = index + offset;
+        public boolean has(int offset) {    //TODO
+            int check = index + offset;
 //            char[] check_char = content.toCharArray();
 //            if (check_char[check]) {    /*returns something*/
 //                return true;
 //            else
 //                return false;
-//            throw new UnsupportedOperationException(); //TODO
-//        }
+            throw new UnsupportedOperationException(); //TODO
+        }
 
         /**
          * Gets the character at index + offset.
          */
         public char get(int offset) {
-//            return this[index + offset];
+//            return test_input[index + offset];
             throw new UnsupportedOperationException(); //TODO
         }
 
@@ -213,6 +228,10 @@ public class Lexer {
         //FIXME: does it need anything else?
         public void reset() {
             length = 0;
+        }
+
+        private boolean endOfInput() {
+            return current >= input.length();
         }
 
         /**
