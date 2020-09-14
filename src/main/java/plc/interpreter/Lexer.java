@@ -1,8 +1,6 @@
 package plc.interpreter;
 
-import java.nio.Buffer;
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * The lexer works through three main functions:
@@ -43,17 +41,20 @@ public class Lexer {
     private List<Token> lex() throws ParseException {   //TODO
         //want to split the input by whitespace, call lexToken on each
         //FIXME: can only call lexToken on the entire input, how to break it up?  How to preserve starting index?
-        //lexing token from wherever the charstream is
-        //Alternate between skipping over whitespace, whatever follows that must be a token (so start lexing token) or at the end
+        //lexing token from wherever the charstream is (lexToken)
+        //Alternate between skipping over whitespace, whatever follows that must be a token (so call lexToken) or at the end
         //must check for end of input
         //look at next token, sort it into category, operater is left over
         //char stream is basically an iterator
         //check whitespace before or after parsing token
-        //lex token figures out what kind of token, then use regex
-        //implement charstream (crafting interpreter), then match/peek, then real implementation
+        //lex token figures out what kind of token (based on first char), then use regex to fill in the rest?
+        //implement charstream (crafting interpreter), then match/peek, then real implementation, everything should match up well
         //break up tokens based on whitespace first, then call next method
+        //move things around in the CharStream, verify with peek/match?
         while (!chars.endOfInput()) {
             chars.start = chars.current;
+            //chars.content = whitespace[content]whitespace
+            //if charAt current is whitespace, advance?
             tokens.add(lexToken());
         }
         return tokens;
@@ -119,23 +120,23 @@ public class Lexer {
      */
     private Token lexToken() throws ParseException {  //TODO, keep adding to token until time to emit
 
-        for (int i = 0; i < chars.test_input.length(); i++) {
+        for (int i = 0; i < chars.content.length(); i++) {
             chars.index++;
             switch (input.charAt(i)) {
                 case '(':
-                    chars.token = "(";
+                    chars.content = "(";
                     return chars.emit(Token.Type.IDENTIFIER);
                 case ')':
-                    chars.token = ")";
+                    chars.content = ")";
                     return chars.emit(Token.Type.IDENTIFIER);
                 case '+':
-                    chars.token = "+";
+                    chars.content = "+";
                     return chars.emit(Token.Type.OPERATOR);
                 case 1:
-                    chars.token = "1";
+                    chars.content = "1";
                     return chars.emit(Token.Type.NUMBER);
                 case '-':
-                    chars.token = "-2.0";
+                    chars.content = "-2.0";
                     return chars.emit(Token.Type.NUMBER);
                 default:
                     chars.advance();
@@ -182,41 +183,36 @@ public class Lexer {
     private final class CharStream {
         //creates the tokens out of the input, set up an actual stream, take each word at a time?
         //parse string into different chunks, store in the CharStream, use methods
+        //keeps state for the input, just an iterator
 
         private int index = 0;
         private int length = 0;
         private int start = 0;
         private int current = 0;
-        private String test_input = input;
-        private String token;
+//        private String test_input = input;
+        private String content;
 
-        //keeps state for the input
         /**
          * Returns true if there is a character at index + offset.
          */
-        public boolean has(int offset) {    //TODO
-            int check = index + offset;
-//            char[] check_char = content.toCharArray();
-//            if (check_char[check]) {    /*returns something*/
-//                return true;
-//            else
-//                return false;
-            throw new UnsupportedOperationException(); //TODO
+        public boolean has(int offset) {    //FIXME: may not be totally right, depending on what token is
+            if (index + offset > content.length())
+                return false;
+
+            return true;
         }
 
         /**
          * Gets the character at index + offset.
          */
         public char get(int offset) {
-//            return test_input[index + offset];
-            throw new UnsupportedOperationException(); //TODO
+            return content.charAt(index + offset);
         }
 
         /**
          * Advances to the next character, incrementing the current index and
          * length of the literal being built.
          */
-        //FIXME: does it need anything else?
         public void advance() {
             index++;
             length++;
@@ -225,7 +221,6 @@ public class Lexer {
         /**
          * Resets the length to zero, skipping any consumed characters.
          */
-        //FIXME: does it need anything else?
         public void reset() {
             length = 0;
         }
@@ -238,19 +233,19 @@ public class Lexer {
          * Returns a token of the given type with the built literal. The index
          * of the token should be the <em>starting</em> index.
          */
-        //FIXME: need to preserve the starting index somehow?  Starting index is for creating substring eventually
+        //FIXME: need to preserve the starting index somehow?  Maybe length - index?
         public Token emit(Token.Type type) {
             if (type == Token.Type.IDENTIFIER) {
-                return new Token(Token.Type.IDENTIFIER, token, index);
+                return new Token(Token.Type.IDENTIFIER, content, index);
             }
             else if (type == Token.Type.NUMBER) {
-                return new Token(Token.Type.NUMBER, token, index);
+                return new Token(Token.Type.NUMBER, content, index);
             }
             else if (type == Token.Type.STRING) {
-                return new Token(Token.Type.STRING, token, index);
+                return new Token(Token.Type.STRING, content, index);
             }
             else {
-                return new Token(Token.Type.OPERATOR, token, index);
+                return new Token(Token.Type.OPERATOR, content, index);
             }
         }
     }
