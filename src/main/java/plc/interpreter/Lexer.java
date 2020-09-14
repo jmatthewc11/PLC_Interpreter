@@ -41,6 +41,7 @@ public class Lexer {
     private List<Token> lex() throws ParseException {   //TODO
         List<Token> tokens = new ArrayList<>();
         //FIXME: while there is more input...
+        //loop through input until all tokens are created, try splitting based on whitespace, call next method on each chunk
         tokens.add(lexToken());
         return tokens;
     }
@@ -65,7 +66,7 @@ public class Lexer {
      *         if (!chars.has(0) || match("\'")) {
      *             throw new RuntimeException("Empty character literal.");
      *         } else if (match("\\")) {
-     *             //lex escape characters...
+     *             //lex escape characters...basically calling the RegEx stuff here to get a match
      *         } else {
      *             chars.advance();
      *         }
@@ -103,7 +104,8 @@ public class Lexer {
      * where in the input string the lexer currently is, and the builder
      * accumulates characters into the literal value for the next token.
      */
-    private final class CharStream {
+    private final class CharStream {    //creates the tokens out of the input, set up an actual stream, take each word at a time?
+        //parse string into different chunks, store in the CharStream, use methods
 
         private int index = 0;
         private int length = 0;
@@ -154,7 +156,7 @@ public class Lexer {
          * Returns a token of the given type with the built literal. The index
          * of the token should be the <em>starting</em> index.
          */
-        //FIXME: need to preserve the starting index somehow?
+        //FIXME: need to preserve the starting index somehow?  Starting index is for creating substring eventually
         public Token emit(Token.Type type) {
             if (type == Token.Type.IDENTIFIER) {
                 return new Token(Token.Type.IDENTIFIER, this.toString(), index);
