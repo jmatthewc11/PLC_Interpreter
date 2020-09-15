@@ -103,16 +103,17 @@ public class Lexer {
 
         char c = input.charAt(chars.index);
         chars.content = Character.toString(c);
+        chars.length++;
         if (c == '+' | c == '-') {
             if (Character.isDigit(chars.get(1))) {
-                return lexNumber(c);
+                return lexNumber();
             }
             else {
                 return lexIdentifier(c);
             }
         }
         else if (Character.isDigit(c)) {
-            return lexNumber(c);
+            return lexNumber();
         }
         else if (c == '\"') {
             return lexLiteral(c);
@@ -146,8 +147,11 @@ public class Lexer {
      * which should be a regex. For example, {@code peek("a", "b", "c")} would
      * return true for the sequence {@code 'a', 'b', 'c'}
      */
-    private boolean peek(String... patterns) {
-        return Pattern.matches(String.valueOf(patterns), Character.toString(chars.get(1)));
+    private boolean peek(String patterns) {
+        if (chars.has(1))
+            return Pattern.matches(patterns, Character.toString(chars.get(1)));
+        else
+            return false;
     }
 
     /**
@@ -155,7 +159,7 @@ public class Lexer {
      * if the characters matched.
      *
      */
-    private boolean match(String... patterns) { //only difference is that it increments the index
+    private boolean match(String patterns) { //only difference is that it increments the index
         if (chars.endOfInput()) return false;
         if (!Pattern.matches(String.valueOf(patterns), Character.toString(input.charAt(chars.index)))) return false;
 
@@ -164,21 +168,24 @@ public class Lexer {
         return true;
     }
 
-    private Token lexNumber(char c) {
-
-        while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) {
+    private Token lexNumber() throws ParseException {   //FIXME: how to throw ParseException if there is nothing after the decimal
+        String regex = "([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*";
+        while (chars.has(1) && peek(regex)) {
             chars.content = chars.content + chars.get(1);
             chars.advance();
         }
 
-        if (chars.get(1) == '.' && Character.isDigit(chars.get(2))) {
+        if (chars.has(1) && chars.get(1) == '.' && chars.has(2) && Character.isDigit(chars.get(2))) {
             chars.content = chars.content + '.';
             chars.advance();
 
-            while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) {
+            while (chars.has(1) && peek(regex)) {
                 chars.content = chars.content + chars.get(1);
                 chars.advance();
             }
+        }
+        if (chars.content.charAt(chars.length - 1) == '.') {
+            throw new ParseException("Number ends in a period", 187);
         }
         return chars.emit(Token.Type.NUMBER);
     }
@@ -218,8 +225,8 @@ public class Lexer {
         /**
          * Returns true if there is a character at index + offset.
          */
-        public boolean has(int offset) {    //FIXME: may not be totally right, depending on what token is
-            return index + offset <= input.length();
+        public boolean has(int offset) {
+            return index + offset < input.length();
         }
 
         /**
