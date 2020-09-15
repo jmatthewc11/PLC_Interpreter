@@ -39,8 +39,8 @@ public class Lexer {
      * also handle skipping whitespace.
      */
     private List<Token> lex() throws ParseException {   //TODO
-        //want to split the input by whitespace, call lexToken on each
         //FIXME: can only call lexToken on the entire input, how to break it up?  How to preserve starting index?
+        //want to split the input by whitespace, call lexToken on each
         //lexing token from wherever the charstream is (lexToken)
         //Alternate between skipping over whitespace, whatever follows that must be a token (so call lexToken) or at the end
         //must check for end of input
@@ -52,11 +52,17 @@ public class Lexer {
         //break up tokens based on whitespace first, then call next method
         //move things around in the CharStream, verify with peek/match?
         while (!chars.endOfInput()) {
-            chars.start = chars.current;
+            chars.start = chars.index;
+            if (input.charAt(chars.index) == ' ') {
+                chars.advance();
+                chars.reset();
+                continue;
+            }
             //chars.content = whitespace[content]whitespace
             //if charAt current is whitespace, advance?
             tokens.add(lexToken());
         }
+        chars.reset();
         return tokens;
 
 //        chars.test_input = input;   //take whole input for...reference?
@@ -120,27 +126,30 @@ public class Lexer {
      */
     private Token lexToken() throws ParseException {  //TODO, keep adding to token until time to emit
 
-        for (int i = 0; i < chars.content.length(); i++) {
-            chars.index++;
-            switch (input.charAt(i)) {
-                case '(':
-                    chars.content = "(";
-                    return chars.emit(Token.Type.IDENTIFIER);
-                case ')':
-                    chars.content = ")";
-                    return chars.emit(Token.Type.IDENTIFIER);
-                case '+':
-                    chars.content = "+";
-                    return chars.emit(Token.Type.OPERATOR);
-                case 1:
-                    chars.content = "1";
-                    return chars.emit(Token.Type.NUMBER);
-                case '-':
-                    chars.content = "-2.0";
-                    return chars.emit(Token.Type.NUMBER);
-                default:
-                    chars.advance();
-            }
+        char c = input.charAt(chars.index);
+        switch (c) {
+            case '(':
+                chars.content = "(";
+                chars.advance();
+                return chars.emit(Token.Type.IDENTIFIER);
+            case ')':
+                chars.content = ")";
+                chars.advance();
+                return chars.emit(Token.Type.IDENTIFIER);
+            case '+':
+                chars.content = "+";
+                chars.advance();
+                return chars.emit(Token.Type.OPERATOR);
+            case '1':
+                chars.content = "1";
+                chars.advance();
+                return chars.emit(Token.Type.NUMBER);
+            case '-':
+                chars.content = "-2.0";
+                chars.advance();
+                return chars.emit(Token.Type.NUMBER);
+            default:
+                chars.advance();
         }
         throw new ParseException("Parse Error", 2);
     }
@@ -188,7 +197,7 @@ public class Lexer {
         private int index = 0;
         private int length = 0;
         private int start = 0;
-        private int current = 0;
+//        private int current = -1;
 //        private String test_input = input;
         private String content;
 
@@ -196,10 +205,7 @@ public class Lexer {
          * Returns true if there is a character at index + offset.
          */
         public boolean has(int offset) {    //FIXME: may not be totally right, depending on what token is
-            if (index + offset > content.length())
-                return false;
-
-            return true;
+            return index + offset <= content.length();
         }
 
         /**
@@ -226,26 +232,25 @@ public class Lexer {
         }
 
         private boolean endOfInput() {
-            return current >= input.length();
+            return index >= input.length();
         }
 
         /**
          * Returns a token of the given type with the built literal. The index
          * of the token should be the <em>starting</em> index.
          */
-        //FIXME: need to preserve the starting index somehow?  Maybe length - index?
         public Token emit(Token.Type type) {
             if (type == Token.Type.IDENTIFIER) {
-                return new Token(Token.Type.IDENTIFIER, content, index);
+                return new Token(Token.Type.IDENTIFIER, content, chars.start);
             }
             else if (type == Token.Type.NUMBER) {
-                return new Token(Token.Type.NUMBER, content, index);
+                return new Token(Token.Type.NUMBER, content, chars.start);
             }
             else if (type == Token.Type.STRING) {
-                return new Token(Token.Type.STRING, content, index);
+                return new Token(Token.Type.STRING, content, chars.start);
             }
             else {
-                return new Token(Token.Type.OPERATOR, content, index);
+                return new Token(Token.Type.OPERATOR, content, chars.start);
             }
         }
     }
