@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
  * lot easier. Regex isn't the most performant way to go but it gets the job
  * done, and the focus here is on the concept.
  */
-public class Lexer {    //TODO: ParseException
+public class Lexer {    //TODO: ParseExceptions, probably need to take out leading char right before switch
 
     private final String input;
     private final CharStream chars = new CharStream();
