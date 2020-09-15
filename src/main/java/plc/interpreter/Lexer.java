@@ -1,6 +1,7 @@
 package plc.interpreter;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * The lexer works through three main functions:
@@ -12,7 +13,7 @@ import java.util.*;
  * If the lexer fails to parse something (such as an unterminated string) you
  * should throw a {@link ParseException}.
  *
- * The {@link #peek(String...)} and  functions are
+ * The {@link #(Pattern)} and  functions are
  * helpers, they're not necessary but their use will make the implementation a
  * lot easier. Regex isn't the most performant way to go but it gets the job
  * done, and the focus here is on the concept.
@@ -142,15 +143,15 @@ public class Lexer {
             return lexLiteral();
         }
         else if (Character.isAlphabetic(c)) {
-            lexIdentifier();
+            return lexIdentifier();
         }
         else {
             switch (c) {
                 case '.':   //need to check if something follows it
                     if (chars.has(1))
-                        lexIdentifier();
+                        return lexIdentifier();
                     else
-                        lexOperator();
+                        return lexOperator(c);
                 case '*':
                 case '/':
                 case ':':
@@ -161,7 +162,7 @@ public class Lexer {
                 case '=':
                         lexIdentifier();
                 default:
-                    lexOperator();
+                    return lexOperator(c);
             }
         }
 //        switch (c) {
@@ -189,42 +190,40 @@ public class Lexer {
 //                chars.content = chars.content + c;
 //                chars.advance();
 //        }
-        throw new ParseException("Parse Error", 2);
+//        throw new ParseException("Parse Error", 2);
     }
     /**
      * Returns true if the next sequence of characters match the given patterns,
      * which should be a regex. For example, {@code peek("a", "b", "c")} would
      * return true for the sequence {@code 'a', 'b', 'c'}
      */
-    private boolean peek(String... patterns) {
-        throw new UnsupportedOperationException(); //TODO
-    }
+//    private boolean peek(String... patterns) {
+//        return match(patterns);
+//    }
 
     /**
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
+     *
      */
-    private boolean match(String... patterns) {
-        if (chars.endOfInput()) return false;
-//        if (input.charAt(chars.index) != patterns) return false;    //FIXME: match RegEx here
-
-        chars.index++;
-        return true;
-    }
+//    private boolean match(String... patterns) {
+//        if (chars.endOfInput()) return false;
+//
+//
+//        return Pattern.compile(String.valueOf(patterns)).matcher(chars.get(0)).matches();
+//    }
 
     private Token lexNumber() {
-//        while (isDigit(peek())) advance();
-//
-//        // Look for a fractional part.
+//        while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) chars.advance();
+
+        // Look for a fractional part.
 //        if (peek() == '.' && isDigit(peekNext())) {
 //            // Consume the "."
 //            advance();
 //
 //            while (isDigit(peek())) advance();
 //        }
-//
-//        addToken(NUMBER,
-//                Double.parseDouble(source.substring(start, current)));
+
         return chars.emit(Token.Type.NUMBER);
     }
 
@@ -234,9 +233,8 @@ public class Lexer {
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
-    private Token lexOperator() {
-//        while (isAlphaNumeric(peek())) advance();
-
+    private Token lexOperator(char c) {
+        chars.content = Character.toString(c);
         return chars.emit(Token.Type.OPERATOR);
     }
 
