@@ -61,8 +61,8 @@ public class Lexer {
             //chars.content = whitespace[content]whitespace
             //if charAt current is whitespace, advance?
             tokens.add(lexToken());
+            chars.reset();
         }
-        chars.reset();
         return tokens;
 
 //        chars.test_input = input;   //take whole input for...reference?
@@ -127,30 +127,68 @@ public class Lexer {
     private Token lexToken() throws ParseException {  //TODO, keep adding to token until time to emit
 
         char c = input.charAt(chars.index);
-        switch (c) {
-            case '(':
-                chars.content = "(";
-                chars.advance();
-                return chars.emit(Token.Type.IDENTIFIER);
-            case ')':
-                chars.content = ")";
-                chars.advance();
-                return chars.emit(Token.Type.IDENTIFIER);
-            case '+':
-                chars.content = "+";
-                chars.advance();
-                return chars.emit(Token.Type.OPERATOR);
-            case '1':
-                chars.content = "1";
-                chars.advance();
-                return chars.emit(Token.Type.NUMBER);
-            case '-':
-                chars.content = "-2.0";
-                chars.advance();
-                return chars.emit(Token.Type.NUMBER);
-            default:
-                chars.advance();
+        if (c == '+' | c == '-') {
+            if (Character.isDigit(chars.get(1))) {
+                return lexNumber();
+            }
+            else {
+                return lexIdentifier();
+            }
         }
+        else if (Character.isDigit(c)) {
+            return lexNumber();
+        }
+        else if (c == '\"') {
+            return lexLiteral();
+        }
+        else if (Character.isAlphabetic(c)) {
+            lexIdentifier();
+        }
+        else {
+            switch (c) {
+                case '.':   //need to check if something follows it
+                    if (chars.has(1))
+                        lexIdentifier();
+                    else
+                        lexOperator();
+                case '*':
+                case '/':
+                case ':':
+                case '!':
+                case '?':
+                case '<':
+                case '>':
+                case '=':
+                        lexIdentifier();
+                default:
+                    lexOperator();
+            }
+        }
+//        switch (c) {
+//            case '(':
+////                chars.content = "(";
+//                chars.advance();
+//                return chars.emit(Token.Type.IDENTIFIER);
+//            case ')':
+////                chars.content = ")";
+//                chars.advance();
+//                return chars.emit(Token.Type.IDENTIFIER);
+//            case '+':
+////                chars.content = "+";
+//                chars.advance();
+//                return chars.emit(Token.Type.OPERATOR);
+//            case '1':
+////                chars.content = "1";
+//                chars.advance();
+//                return chars.emit(Token.Type.NUMBER);
+//            case '-':
+////                chars.content = "-2.0";
+//                chars.advance();
+//                return chars.emit(Token.Type.NUMBER);
+//            default:
+//                chars.content = chars.content + c;
+//                chars.advance();
+//        }
         throw new ParseException("Parse Error", 2);
     }
     /**
@@ -166,23 +204,47 @@ public class Lexer {
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
      */
-    private boolean match(String content, String... patterns) {
-        if (patterns.equals("\\")) {
-            return true;
-        }
-        else {
-            return false;
-        }
+    private boolean match(String... patterns) {
+        if (chars.endOfInput()) return false;
+//        if (input.charAt(chars.index) != patterns) return false;    //FIXME: match RegEx here
+
+        chars.index++;
+        return true;
     }
 
-//    private char advance() {
-//        current++;
-//        return input.charAt(current - 1);
-//    }
+    private Token lexNumber() {
+//        while (isDigit(peek())) advance();
 //
-//    private boolean endOfInput() {
-//        return current >= input.length();
-//    }
+//        // Look for a fractional part.
+//        if (peek() == '.' && isDigit(peekNext())) {
+//            // Consume the "."
+//            advance();
+//
+//            while (isDigit(peek())) advance();
+//        }
+//
+//        addToken(NUMBER,
+//                Double.parseDouble(source.substring(start, current)));
+        return chars.emit(Token.Type.NUMBER);
+    }
+
+    private Token lexIdentifier() {
+//        while (isAlphaNumeric(peek())) advance();
+
+        return chars.emit(Token.Type.IDENTIFIER);
+    }
+
+    private Token lexOperator() {
+//        while (isAlphaNumeric(peek())) advance();
+
+        return chars.emit(Token.Type.OPERATOR);
+    }
+
+    private Token lexLiteral() {
+//        while (isAlphaNumeric(peek())) advance();
+
+        return chars.emit(Token.Type.STRING);
+    }
 
     /**
      * This is basically a sequence of characters. The index is used to maintain
@@ -197,22 +259,20 @@ public class Lexer {
         private int index = 0;
         private int length = 0;
         private int start = 0;
-//        private int current = -1;
-//        private String test_input = input;
         private String content;
 
         /**
          * Returns true if there is a character at index + offset.
          */
         public boolean has(int offset) {    //FIXME: may not be totally right, depending on what token is
-            return index + offset <= content.length();
+            return index + offset <= input.length();
         }
 
         /**
          * Gets the character at index + offset.
          */
         public char get(int offset) {
-            return content.charAt(index + offset);
+            return input.charAt(index + offset);
         }
 
         /**
