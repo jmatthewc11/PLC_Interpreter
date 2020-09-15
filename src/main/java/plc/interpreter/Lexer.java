@@ -17,7 +17,9 @@ import java.util.regex.Pattern;
  * lot easier. Regex isn't the most performant way to go but it gets the job
  * done, and the focus here is on the concept.
  */
-public class Lexer {    //TODO: ParseExceptions, probably need to take out leading char right before switch
+public class Lexer {
+    //TODO: ParseExceptions, probably need to take out leading char right before switch
+    //TODO: When done, make sure ParseException error lines line up
 
     private final String input;
     private final CharStream chars = new CharStream();
@@ -188,7 +190,7 @@ public class Lexer {    //TODO: ParseExceptions, probably need to take out leadi
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexLiteral() {  //TODO
+    private Token lexLiteral() {
         chars.advance();
         String regex = "[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*";
         while (chars.has(0) && chars.get(0) != '\"') {
@@ -254,10 +256,6 @@ public class Lexer {    //TODO: ParseExceptions, probably need to take out leadi
         private boolean endOfInput() {
             return index >= input.length();
         }
-
-//        private boolean endOfInputString() {
-//            return index + 2 >= input.length();
-//        }
 
         /**
          * Returns a token of the given type with the built literal. The index
