@@ -40,12 +40,36 @@ final class LexerTests {
 
     private static Stream<Arguments> testNumber() {
         return Stream.of(
-                Arguments.of("1", true),
-                Arguments.of("-1.0", true),
-                Arguments.of("007.000", true),
-                Arguments.of("1.", false),
-                Arguments.of(".5", false),
-                Arguments.of("+-10", false)
+            Arguments.of("Integer", "1", true),
+            Arguments.of("Large Integer", "982345786", true),
+            Arguments.of("Postive Integer", "+436", true),
+            Arguments.of("Negative Integer", "-436", true),
+            Arguments.of("Negative Decimal", "-1.0", true),
+            Arguments.of("Positive Decimal", "+1.0", true),
+            Arguments.of("Decimal", "007.000", true),
+            Arguments.of("Zero", "0", true),
+            Arguments.of("Leading Zero Decimal", "0.01", true),
+            Arguments.of("Leading Zero Number", "01", true),
+            Arguments.of("Positive Leading Zero Decimal", "+0.01", true),
+            Arguments.of("Negative Leading Zero Decimal", "-0.01", true),
+            Arguments.of("Nothing After Decimal", "1.", false),
+            Arguments.of("Nothing Before Decimal", ".5", false),
+            Arguments.of("Negative And Nothing After Decimal", "1.-", false),
+            Arguments.of("Positive And Nothing Before Decimal", "+.5", false),
+            Arguments.of("Positive After", "1+", false),
+            Arguments.of("Negative After", "1-", false),
+            Arguments.of("Both Signs", "+-1", false),
+            Arguments.of("Both Signs Again", "-+1", false),
+            Arguments.of("Two Positive", "++1", false),
+            Arguments.of("Two Negative", "--1", false),
+            Arguments.of("Middle Positive", "1+1", false),
+            Arguments.of("Middle Negative", "1-1", false),
+            Arguments.of("Positive Only Decimal", "+.", false),
+            Arguments.of("Negative Only Decimal", "-.", false),
+            Arguments.of("Empty", "", false),
+            Arguments.of("Positive Only", "+", false),
+            Arguments.of("Negative Only", ".", false),
+            Arguments.of("Decimal Only", "-", false)
         );
     }
 

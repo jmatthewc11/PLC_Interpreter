@@ -168,7 +168,7 @@ public class Lexer {
         return true;
     }
 
-    private Token lexNumber() throws ParseException {   //FIXME: how to throw ParseException if there is nothing after the decimal
+    private Token lexNumber() throws ParseException {
         String regex = "([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*";
         while (chars.has(1) && peek(regex)) {
             chars.content = chars.content + chars.get(1);
