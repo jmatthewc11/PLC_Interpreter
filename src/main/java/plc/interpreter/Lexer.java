@@ -103,7 +103,7 @@ public class Lexer {    //TODO: ParseExceptions, probably need to take out leadi
             return lexNumber();
         }
         else if (c == '\"') {
-            return lexLiteral(c);
+            return lexLiteral();
         }
         else if (Character.isAlphabetic(c)) {
             return lexIdentifier();
@@ -188,10 +188,26 @@ public class Lexer {    //TODO: ParseExceptions, probably need to take out leadi
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexLiteral(char c) {  //TODO
-//        while (isAlphaNumeric(peek())) advance();
-        chars.content = Character.toString(c);
-        return chars.emit(Token.Type.STRING);
+    private Token lexLiteral() {  //TODO
+        chars.advance();
+        String regex = "[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*";
+        while (chars.has(0) && chars.get(0) != '\"') {
+            match(regex);
+        }
+
+        int quoteCheck = 0;
+        if (!chars.has(0)) {
+            quoteCheck = -1;
+        }
+
+        if (chars.get(quoteCheck) == ('\"')) {
+            chars.content = chars.content + chars.get(0);
+            chars.length++;
+            return chars.emit(Token.Type.STRING);
+        }
+        else {
+            throw new ParseException("Unterminated literal", 209);
+        }
     }
 
     /**
@@ -238,6 +254,10 @@ public class Lexer {    //TODO: ParseExceptions, probably need to take out leadi
         private boolean endOfInput() {
             return index >= input.length();
         }
+
+//        private boolean endOfInputString() {
+//            return index + 2 >= input.length();
+//        }
 
         /**
          * Returns a token of the given type with the built literal. The index
