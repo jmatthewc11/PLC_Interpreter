@@ -24,11 +24,31 @@ final class LexerTests {
 
     private static Stream<Arguments> testIdentifier() {
         return Stream.of(
-                Arguments.of("getName", true),
-                Arguments.of("is-empty?", true),
-                Arguments.of("<=>", true),
-                Arguments.of("42=life", false),
-                Arguments.of("why,are,there,commas,", false)
+                Arguments.of("Alphanumeric", "getName", true),
+                Arguments.of("Symbols and Alpha", "is-empty?", true),
+                Arguments.of("Only Symbols", "<=>", true),
+                Arguments.of("Period In Word", "get.name", true),
+                Arguments.of("Underscore", "getName_", true),
+                Arguments.of("Forward Slash", "get///Name", true),
+                Arguments.of("Numbers", "life42", true),
+                Arguments.of("Operation", "/", true),
+                Arguments.of("Exclamation", "life42!", true),
+                Arguments.of("Two Periods", "..", true),
+                Arguments.of("Starts With Decimal", ".42", true),
+                Arguments.of("Starts With Negative Sign", "-42854", true),
+                Arguments.of("Single Letter", "A", true),
+                Arguments.of("Ends With Period", "b2/11.", true),
+                Arguments.of("Starts With Digit", "42=life", false),
+                Arguments.of("Single Digit", "4", false),
+                Arguments.of("No Commas Allowed", "why,are,there,commas,", false),
+                Arguments.of("No Space Allowed", "get Name", false),
+                Arguments.of("Backslash", "li\fe", false),
+                Arguments.of("Single Period", ".", false),
+                Arguments.of("2 Backslashes", "li\\fe", false),
+                Arguments.of("Brackets", "[]", false),
+                Arguments.of("Quote", "\"", false),
+                Arguments.of("Empty", "", false),
+                Arguments.of("Parentheses", "()", false)
         );
     }
 
@@ -81,11 +101,22 @@ final class LexerTests {
 
     private static Stream<Arguments> testString() {
         return Stream.of(
-                Arguments.of("\"\"", true),
-                Arguments.of("\"abc\"", true),
-                Arguments.of("\"Hello,\nWorld\"", true),
-                Arguments.of("\"unterminated", false),
-                Arguments.of("\"invalid escape \\uXYZ\"", false)
+                Arguments.of("Empty", "\"\"", true),
+                Arguments.of("ABC", "\"abc\"", true),
+                Arguments.of("Escape A Letter", "\"Hello,\\nWorld!\"", true),
+                Arguments.of("Random Chars", "\"dsi'b38^_.&(*n_ne\"", true),
+                Arguments.of("Whitespace", "\"so tired\"", true),
+                Arguments.of("Another Escape", "\"Hello,\\bWorld!\"", true),
+                Arguments.of("Escape A Char With A Letter", "\"\\r\"", true),
+                Arguments.of("Quote In Middle", "\"Hell\"o_World\"", true),
+                Arguments.of("Another Escape", "\"\r\"", true),
+                Arguments.of("No End Quote", "\"unterminated", false),
+                Arguments.of("No Begin Quote", "unterminated\"", false),
+                Arguments.of("No Quotes", "unterminated", false),
+                Arguments.of("Escape With Invalid Letter", "\"\\d\"", false),
+                Arguments.of("Invalid Escape Again", "\"invalid\\escape\"", false),
+                Arguments.of("Still Invalid Escape", "\"Hello,\\\\\\World!\"", false),
+                Arguments.of("Wrong Escape Char Case", "\"Hello,\\NWorld!\"", false)
         );
     }
 
@@ -99,7 +130,10 @@ final class LexerTests {
         return Stream.of(
                 Arguments.of("(", true),
                 Arguments.of("#", true),
+                Arguments.of("~", true),
+                Arguments.of("]", true),
                 Arguments.of(" ", false),
+                Arguments.of("\r", false),
                 Arguments.of("\t", false)
         );
     }

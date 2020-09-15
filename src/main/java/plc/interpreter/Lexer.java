@@ -1,7 +1,6 @@
 package plc.interpreter;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -36,7 +35,8 @@ public class Lexer {
         return new Lexer(input).lex();
     }
 
-    /* Repeatedly lexes the next token using {@link #lexToken()} until the end
+    /**
+     * Repeatedly lexes the next token using {@link #lexToken()} until the end
      * of the input is reached, returning the list of tokens lexed. This should
      * also handle skipping whitespace.
      */
@@ -55,7 +55,7 @@ public class Lexer {
         //move things around in the CharStream, verify with peek/match?
         while (!chars.endOfInput()) {
             chars.start = chars.index;
-            if (input.charAt(chars.index) == ' ') {
+            if (chars.get(0) == ' ' || chars.get(0) == '\t' || chars.get(0) == '\r') {
                 chars.advance();
                 chars.reset();
                 continue;
@@ -99,7 +99,7 @@ public class Lexer {
      * }
      * </pre>
      */
-    private Token lexToken() throws ParseException {  //TODO, keep adding to token until time to emit
+    private Token lexToken() throws ParseException {
 
         char c = input.charAt(chars.index);
         chars.content = Character.toString(c);
@@ -127,7 +127,7 @@ public class Lexer {
                     if (chars.has(1))
                         return lexIdentifier(c);
                     else
-                        return lexOperator(c);
+                        return lexOperator();
                 case '*':
                 case '/':
                 case ':':
@@ -138,7 +138,7 @@ public class Lexer {
                 case '=':
                         lexIdentifier(c);
                 default:
-                    return lexOperator(c);
+                    return lexOperator();
             }
         }
     }
@@ -157,7 +157,6 @@ public class Lexer {
     /**
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
-     *
      */
     private boolean match(String patterns) { //only difference is that it increments the index
         if (chars.endOfInput()) return false;
@@ -190,18 +189,17 @@ public class Lexer {
         return chars.emit(Token.Type.NUMBER);
     }
 
-    private Token lexIdentifier(char c) {
+    private Token lexIdentifier(char c) {   //TODO
 //        while (isAlphaNumeric(peek())) advance();
         chars.content = Character.toString(c);
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
-    private Token lexOperator(char c) {
-        chars.content = Character.toString(c);
+    private Token lexOperator() {
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexLiteral(char c) {
+    private Token lexLiteral(char c) {  //TODO
 //        while (isAlphaNumeric(peek())) advance();
         chars.content = Character.toString(c);
         return chars.emit(Token.Type.STRING);
