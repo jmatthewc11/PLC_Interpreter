@@ -1,6 +1,7 @@
 package plc.interpreter;
 
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -59,39 +60,11 @@ public class Lexer {
                 chars.reset();
                 continue;
             }
-            //chars.content = whitespace[content]whitespace
-            //if charAt current is whitespace, advance?
             tokens.add(lexToken());
             chars.reset();
             chars.content = "";
         }
         return tokens;
-
-//        chars.test_input = input;   //take whole input for...reference?
-//        tokens.add(lexToken());
-
-//        while(!endOfInput()) {
-//            tokens.add(lexToken());
-//        }
-//        String[] words = input.split(" ");
-//
-//        for (int i = 0; i < words.length; i++) {
-////            chars.index = i + chars.length;
-////            chars.length = words[i].length();
-////            chars.index = i +
-////            chars.content = words[i];
-//            tokens.add(lexToken(words[i], words[i].length()));
-//        }
-
-//        String first = input.split(" ")[0];
-//        System.out.println(lexToken());
-
-//        for (int i = 0; i < words.length; i++) {
-//            chars.input = input.split(" ")[i];
-//        }
-        //FIXME: while there is more input...
-        //loop through input until all tokens are created, try splitting based on whitespace, call next method on each chunk
-//        tokens.add(lexToken());
     }
 
     /**
@@ -129,6 +102,7 @@ public class Lexer {
     private Token lexToken() throws ParseException {  //TODO, keep adding to token until time to emit
 
         char c = input.charAt(chars.index);
+        chars.content = Character.toString(c);
         if (c == '+' | c == '-') {
             if (Character.isDigit(chars.get(1))) {
                 return lexNumber(c);
@@ -166,65 +140,46 @@ public class Lexer {
                     return lexOperator(c);
             }
         }
-//        switch (c) {
-//            case '(':
-////                chars.content = "(";
-//                chars.advance();
-//                return chars.emit(Token.Type.IDENTIFIER);
-//            case ')':
-////                chars.content = ")";
-//                chars.advance();
-//                return chars.emit(Token.Type.IDENTIFIER);
-//            case '+':
-////                chars.content = "+";
-//                chars.advance();
-//                return chars.emit(Token.Type.OPERATOR);
-//            case '1':
-////                chars.content = "1";
-//                chars.advance();
-//                return chars.emit(Token.Type.NUMBER);
-//            case '-':
-////                chars.content = "-2.0";
-//                chars.advance();
-//                return chars.emit(Token.Type.NUMBER);
-//            default:
-//                chars.content = chars.content + c;
-//                chars.advance();
-//        }
-//        throw new ParseException("Parse Error", 2);
     }
     /**
      * Returns true if the next sequence of characters match the given patterns,
      * which should be a regex. For example, {@code peek("a", "b", "c")} would
      * return true for the sequence {@code 'a', 'b', 'c'}
      */
-//    private boolean peek(String... patterns) {
-//        return match(patterns);
-//    }
+    private boolean peek(String... patterns) {
+        return Pattern.matches(String.valueOf(patterns), Character.toString(chars.get(1)));
+    }
 
     /**
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
      *
      */
-//    private boolean match(String... patterns) {
-//        if (chars.endOfInput()) return false;
-//
-//
-//        return Pattern.compile(String.valueOf(patterns)).matcher(chars.get(0)).matches();
-//    }
+    private boolean match(String... patterns) { //only difference is that it increments the index
+        if (chars.endOfInput()) return false;
+        if (!Pattern.matches(String.valueOf(patterns), Character.toString(input.charAt(chars.index)))) return false;
+
+        chars.content = chars.content + input.charAt(chars.index);
+        chars.index++;
+        return true;
+    }
 
     private Token lexNumber(char c) {
-//        while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) chars.advance();
 
-        // Look for a fractional part.
-//        if (peek() == '.' && isDigit(peekNext())) {
-//            // Consume the "."
-//            advance();
-//
-//            while (isDigit(peek())) advance();
-//        }
-        chars.content = Character.toString(c);
+        while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) {
+            chars.content = chars.content + chars.get(1);
+            chars.advance();
+        }
+
+        if (chars.get(1) == '.' && Character.isDigit(chars.get(2))) {
+            chars.content = chars.content + '.';
+            chars.advance();
+
+            while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) {
+                chars.content = chars.content + chars.get(1);
+                chars.advance();
+            }
+        }
         return chars.emit(Token.Type.NUMBER);
     }
 
