@@ -2,7 +2,6 @@ package plc.interpreter;
 
 import java.util.*;
 import java.util.regex.Pattern;
-
 /**
  * The lexer works through three main functions:
  *
@@ -18,7 +17,7 @@ import java.util.regex.Pattern;
  * lot easier. Regex isn't the most performant way to go but it gets the job
  * done, and the focus here is on the concept.
  */
-public class Lexer {
+public class Lexer {    //TODO: ParseException
 
     private final String input;
     private final CharStream chars = new CharStream();
@@ -40,19 +39,7 @@ public class Lexer {
      * of the input is reached, returning the list of tokens lexed. This should
      * also handle skipping whitespace.
      */
-    private List<Token> lex() throws ParseException {   //TODO
-        //FIXME: can only call lexToken on the entire input, how to break it up?  How to preserve starting index?
-        //want to split the input by whitespace, call lexToken on each
-        //lexing token from wherever the charstream is (lexToken)
-        //Alternate between skipping over whitespace, whatever follows that must be a token (so call lexToken) or at the end
-        //must check for end of input
-        //look at next token, sort it into category, operater is left over
-        //char stream is basically an iterator
-        //check whitespace before or after parsing token
-        //lex token figures out what kind of token (based on first char), then use regex to fill in the rest?
-        //implement charstream (crafting interpreter), then match/peek, then real implementation, everything should match up well
-        //break up tokens based on whitespace first, then call next method
-        //move things around in the CharStream, verify with peek/match?
+    private List<Token> lex() throws ParseException {
         while (!chars.endOfInput()) {
             chars.start = chars.index;
             if (chars.get(0) == ' ' || chars.get(0) == '\t' || chars.get(0) == '\r') {
@@ -109,7 +96,7 @@ public class Lexer {
                 return lexNumber();
             }
             else {
-                return lexIdentifier(c);
+                return lexIdentifier();
             }
         }
         else if (Character.isDigit(c)) {
@@ -119,13 +106,13 @@ public class Lexer {
             return lexLiteral(c);
         }
         else if (Character.isAlphabetic(c)) {
-            return lexIdentifier(c);
+            return lexIdentifier();
         }
         else {
             switch (c) {
                 case '.':   //need to check if something follows it
                     if (chars.has(1))
-                        return lexIdentifier(c);
+                        return lexIdentifier();
                     else
                         return lexOperator();
                 case '*':
@@ -136,7 +123,7 @@ public class Lexer {
                 case '<':
                 case '>':
                 case '=':
-                        lexIdentifier(c);
+                        return lexIdentifier();
                 default:
                     return lexOperator();
             }
@@ -158,11 +145,11 @@ public class Lexer {
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
      */
-    private boolean match(String patterns) { //only difference is that it increments the index
+    private boolean match(String patterns) {
         if (chars.endOfInput()) return false;
-        if (!Pattern.matches(String.valueOf(patterns), Character.toString(input.charAt(chars.index)))) return false;
+        if (!Pattern.matches(String.valueOf(patterns), Character.toString(chars.get(0)))) return false;
 
-        chars.content = chars.content + input.charAt(chars.index);
+        chars.content = chars.content + chars.get(0);
         chars.index++;
         return true;
     }
@@ -189,9 +176,11 @@ public class Lexer {
         return chars.emit(Token.Type.NUMBER);
     }
 
-    private Token lexIdentifier(char c) {   //TODO
-//        while (isAlphaNumeric(peek())) advance();
-        chars.content = Character.toString(c);
+    private Token lexIdentifier() {
+        String regex = "[\\w+\\-*/.:!?<>=]";
+        chars.content = "";
+
+        while (match(regex)) {}
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
@@ -211,10 +200,6 @@ public class Lexer {
      * accumulates characters into the literal value for the next token.
      */
     private final class CharStream {
-        //creates the tokens out of the input, set up an actual stream, take each word at a time?
-        //parse string into different chunks, store in the CharStream, use methods
-        //keeps state for the input, just an iterator
-
         private int index = 0;
         private int length = 0;
         private int start = 0;
