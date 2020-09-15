@@ -63,6 +63,7 @@ public class Lexer {
             //if charAt current is whitespace, advance?
             tokens.add(lexToken());
             chars.reset();
+            chars.content = "";
         }
         return tokens;
 
@@ -130,26 +131,26 @@ public class Lexer {
         char c = input.charAt(chars.index);
         if (c == '+' | c == '-') {
             if (Character.isDigit(chars.get(1))) {
-                return lexNumber();
+                return lexNumber(c);
             }
             else {
-                return lexIdentifier();
+                return lexIdentifier(c);
             }
         }
         else if (Character.isDigit(c)) {
-            return lexNumber();
+            return lexNumber(c);
         }
         else if (c == '\"') {
-            return lexLiteral();
+            return lexLiteral(c);
         }
         else if (Character.isAlphabetic(c)) {
-            return lexIdentifier();
+            return lexIdentifier(c);
         }
         else {
             switch (c) {
                 case '.':   //need to check if something follows it
                     if (chars.has(1))
-                        return lexIdentifier();
+                        return lexIdentifier(c);
                     else
                         return lexOperator(c);
                 case '*':
@@ -160,7 +161,7 @@ public class Lexer {
                 case '<':
                 case '>':
                 case '=':
-                        lexIdentifier();
+                        lexIdentifier(c);
                 default:
                     return lexOperator(c);
             }
@@ -213,7 +214,7 @@ public class Lexer {
 //        return Pattern.compile(String.valueOf(patterns)).matcher(chars.get(0)).matches();
 //    }
 
-    private Token lexNumber() {
+    private Token lexNumber(char c) {
 //        while (peek("([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*")) chars.advance();
 
         // Look for a fractional part.
@@ -223,13 +224,13 @@ public class Lexer {
 //
 //            while (isDigit(peek())) advance();
 //        }
-
+        chars.content = Character.toString(c);
         return chars.emit(Token.Type.NUMBER);
     }
 
-    private Token lexIdentifier() {
+    private Token lexIdentifier(char c) {
 //        while (isAlphaNumeric(peek())) advance();
-
+        chars.content = Character.toString(c);
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
@@ -238,9 +239,9 @@ public class Lexer {
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexLiteral() {
+    private Token lexLiteral(char c) {
 //        while (isAlphaNumeric(peek())) advance();
-
+        chars.content = Character.toString(c);
         return chars.emit(Token.Type.STRING);
     }
 
@@ -298,6 +299,7 @@ public class Lexer {
          * of the token should be the <em>starting</em> index.
          */
         public Token emit(Token.Type type) {
+            chars.index++;
             if (type == Token.Type.IDENTIFIER) {
                 return new Token(Token.Type.IDENTIFIER, content, chars.start);
             }
