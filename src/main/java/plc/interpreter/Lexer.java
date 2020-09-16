@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
  * done, and the focus here is on the concept.
  */
 public class Lexer {
-    //TODO: ParseExceptions, probably need to take out leading char right before switch
+    //TODO: ParseExceptions, when to throw them?
     //TODO: When done, make sure ParseException error lines line up
 
     private final CharStream chars;
@@ -45,7 +45,7 @@ public class Lexer {
     private List<Token> lex() throws ParseException {
         while (!chars.endOfInput()) {
             chars.start = chars.index;
-            if (chars.get(0) == ' ' || chars.get(0) == '\t' || chars.get(0) == '\r') {
+            if (chars.get(0) == ' ' || chars.get(0) == '\t' || chars.get(0) == '\r' || chars.get(0) == '\n') {
                 chars.advance();
                 chars.reset();
                 continue;

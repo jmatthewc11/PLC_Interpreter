@@ -174,6 +174,26 @@ final class LexerTests {
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
+    @Test
+    void testExample4() {
+        String input = "\n \r[x 10] (23rt-equals? x 10.))";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.OPERATOR, "[", 3),
+                new Token(Token.Type.IDENTIFIER, "x", 4),
+                new Token(Token.Type.NUMBER, "10", 6),
+                new Token(Token.Type.OPERATOR, "]", 8),
+                new Token(Token.Type.OPERATOR, "(", 10),
+                new Token(Token.Type.NUMBER, "23", 11),
+                new Token(Token.Type.IDENTIFIER, "rt-equals?", 13),
+                new Token(Token.Type.IDENTIFIER, "x", 24),
+                new Token(Token.Type.NUMBER, "10", 26),
+                new Token(Token.Type.OPERATOR, ".", 28),
+                new Token(Token.Type.OPERATOR, ")", 29),
+                new Token(Token.Type.OPERATOR, ")", 30)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
     /**
      * Tests that the input lexes to the (single) expected token if successful,
      * else throws a {@link ParseException} otherwise.
