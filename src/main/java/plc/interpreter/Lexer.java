@@ -138,8 +138,8 @@ public class Lexer {
     }
 
     private boolean isIdentifier(char nextChar) {
-        return  (nextChar >= 'a' && nextChar <= 'z') ||
-                (nextChar >= 'A' && nextChar <= 'Z') ||
+        return  Character.isAlphabetic(nextChar) ||
+                Character.isDigit(nextChar) ||
                 nextChar == '_' || nextChar == '+' ||
                 nextChar == '-' || nextChar == '*' ||
                 nextChar == '/' || nextChar == '.' ||
@@ -197,9 +197,11 @@ public class Lexer {
 
     private Token lexIdentifier() {
         String regex = "[\\w+\\-*/.:!?<>=]";
-        chars.content = "";
 
-        while (match(regex)) {}
+        while (chars.has(1) && peek(regex)) {
+            chars.content = chars.content + chars.get(1);
+            chars.advance();
+        }
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
