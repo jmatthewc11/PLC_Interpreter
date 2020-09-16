@@ -167,18 +167,21 @@ public class Lexer {
             chars.advance();
         }
 
-        if (chars.has(1) && chars.get(1) == '.' && chars.has(2) && Character.isDigit(chars.get(2))) {
-            chars.content = chars.content + '.';
-            chars.advance();
-
-            while (chars.has(1) && peek(regex)) {
-                chars.content = chars.content + chars.get(1);
+        if (chars.has(1) && chars.get(1) == '.') {
+            if (chars.has(2) && Character.isDigit(chars.get(2))) {
+                chars.content = chars.content + '.';
                 chars.advance();
+
+                while (chars.has(1) && peek(regex)) {
+                    chars.content = chars.content + chars.get(1);
+                    chars.advance();
+                }
             }
+//            else {
+//                throw new ParseException("Number ends in a period", 187);   //FIXME: This will throw PE but fail outside of number test case
+//            }
         }
-        if (chars.content.charAt(chars.length - 1) == '.') {    //FIXME: But it should really be NUMBER, OPERATOR...
-            throw new ParseException("Number ends in a period", 187);
-        }
+
         return chars.emit(Token.Type.NUMBER);
     }
 
@@ -198,19 +201,13 @@ public class Lexer {
 
     private Token lexString() {
         chars.index++;
-//        String regex = "[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*";
-        while (chars.get(0) != ('\"') && match()) {            //FIXME: make match only work for literals
+        while (chars.get(0) != ('\"') && match()) {
             chars.content = chars.content + chars.get(0);
             chars.advance();
             if (!chars.has(0)) {
                 throw new ParseException("Unterminated literal", 206);
             }
         }
-
-//        int quoteCheck = 0;
-//        if (!chars.has(0)) {
-//            quoteCheck = -1;
-//        }
 
         if (chars.get(0) == ('\"')) {
             chars.content = chars.content + chars.get(0);
@@ -227,33 +224,16 @@ public class Lexer {
      * if the characters matched.
      */
     private boolean match() {
-//        if (chars.endOfInput()) return false;
         if (chars.get(0) == '\\') {
-            if ((chars.has(1) && chars.get(1) == '\\') || (chars.has(-1) && chars.get(-1) == '\\' )) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return (chars.has(1) && chars.get(1) == '\\') || (chars.has(-1) && chars.get(-1) == '\\');
         }
         else if (chars.get(0) == '\n'|| chars.get(0) == '\b' ||
                 chars.get(0) == '\r' || chars.get(0) == '\"' ||
                 chars.get(0) == '\t' || chars.get(0) == '\'')
             return true;
-
-//        else if (chars.get(0) == '\"') {
-//            chars.content = chars.content + chars.get(0);
-//            return false;
-//        }
         else {
             return true;
         }
-
-//        if (!Pattern.matches(String.valueOf(patterns), Character.toString(chars.get(0)))) return false;
-
-//        chars.content = chars.content + chars.get(0);
-//        chars.index++;
-//        return true;
     }
 
     /**

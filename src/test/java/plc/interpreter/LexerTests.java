@@ -74,7 +74,7 @@ final class LexerTests {
                 Arguments.of("01", true),
                 Arguments.of("+0.01", true),
                 Arguments.of("-0.01", true),
-//                Arguments.of("1.", false),    //FIXME: IOOB
+//                Arguments.of("1.", false),    //FIXME: PE
 //                Arguments.of(".5", false),    //FIXME: PE
 //                Arguments.of("+-10", false),  //FIXME: PE
                 Arguments.of("1.-", false),
