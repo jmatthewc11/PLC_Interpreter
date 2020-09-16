@@ -117,8 +117,8 @@ public class Lexer {
         }
         else {
             switch (c) {
-                case '.':   //need to check if something follows it
-                    if (chars.has(1))
+                case '.':   //need to check if next char is another identifier
+                    if (isIdentifier(chars.get(1)))
                         return lexIdentifier();
                     else
                         return lexOperator();
@@ -135,6 +135,17 @@ public class Lexer {
                     return lexOperator();
             }
         }
+    }
+
+    private boolean isIdentifier(char nextChar) {
+        return  (nextChar >= 'a' && nextChar <= 'z') ||
+                (nextChar >= 'A' && nextChar <= 'Z') ||
+                nextChar == '_' || nextChar == '+' ||
+                nextChar == '-' || nextChar == '*' ||
+                nextChar == '/' || nextChar == '.' ||
+                nextChar == ':' || nextChar == '!' ||
+                nextChar == '?' || nextChar == '<' ||
+                nextChar == '>' || nextChar == '=';
     }
 
     /**
@@ -178,7 +189,7 @@ public class Lexer {
                 chars.advance();
             }
         }
-        if (chars.content.charAt(chars.length - 1) == '.') {
+        if (chars.content.charAt(chars.length - 1) == '.') {    //FIXME: But it should really be NUMBER, OPERATOR...
             throw new ParseException("Number ends in a period", 187);
         }
         return chars.emit(Token.Type.NUMBER);
