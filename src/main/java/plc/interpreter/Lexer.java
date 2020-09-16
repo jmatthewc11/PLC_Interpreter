@@ -37,21 +37,6 @@ public class Lexer {
         return new Lexer(input).lex();
     }
 
-//    private final String input;
-//    private final CharStream chars = new CharStream();
-//    List<Token> tokens = new ArrayList<>();
-//
-//    private Lexer(String input) {
-//        this.input = input;
-//    }
-
-//    /**
-//     * Lexes the input and returns the list of tokens.
-//     */
-//    public static List<Token> lex(String input) throws ParseException {
-//        return new Lexer(input).lex();
-//    }
-
     /**
      * Repeatedly lexes the next token using {@link #lexToken()} until the end
      * of the input is reached, returning the list of tokens lexed. This should
@@ -110,7 +95,7 @@ public class Lexer {
      */
     private Token lexToken() throws ParseException {
 
-        char c = chars.get(chars.index);
+        char c = chars.get(0);
         chars.content = Character.toString(c);
         chars.length++;
         if (c == '+' | c == '-') {
