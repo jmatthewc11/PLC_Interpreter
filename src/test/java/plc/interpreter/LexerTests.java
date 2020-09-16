@@ -109,8 +109,8 @@ final class LexerTests {
                 Arguments.of("\"\r\"", true),
                 Arguments.of("\"\ba9\n\"", true),
                 Arguments.of("\"Hello,\nWorld\"", true),
-                Arguments.of("\"unterminated", false)
-                //Arguments.of("\"invalid escape \\uXYZ\"", false)  //FIXME: infinite loop probable here, never gives result
+                Arguments.of("\"unterminated", false),
+                Arguments.of("\"invalid escape \\uXYZ\"", false)
         );
     }
 

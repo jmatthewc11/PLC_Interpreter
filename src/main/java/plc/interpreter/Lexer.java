@@ -160,19 +160,6 @@ public class Lexer {
             return false;
     }
 
-    /**
-     * Returns true in the same way as peek, but also advances the CharStream to
-     * if the characters matched.
-     */
-    private boolean match(String patterns) {
-        if (chars.endOfInput()) return false;
-        if (!Pattern.matches(String.valueOf(patterns), Character.toString(chars.get(0)))) return false;
-
-        chars.content = chars.content + chars.get(0);
-        chars.index++;
-        return true;
-    }
-
     private Token lexNumber() throws ParseException {
         String regex = "([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*";
         while (chars.has(1) && peek(regex)) {
@@ -210,18 +197,22 @@ public class Lexer {
     }
 
     private Token lexString() {
-        chars.advance();
-        String regex = "[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*";
-        while (chars.has(0) && chars.get(0) != '\"') {
-            match(regex);
+        chars.index++;
+//        String regex = "[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*";
+        while (chars.get(0) != ('\"') && match()) {            //FIXME: make match only work for literals
+            chars.content = chars.content + chars.get(0);
+            chars.advance();
+            if (!chars.has(0)) {
+                throw new ParseException("Unterminated literal", 206);
+            }
         }
 
-        int quoteCheck = 0;
-        if (!chars.has(0)) {
-            quoteCheck = -1;
-        }
+//        int quoteCheck = 0;
+//        if (!chars.has(0)) {
+//            quoteCheck = -1;
+//        }
 
-        if (chars.get(quoteCheck) == ('\"')) {
+        if (chars.get(0) == ('\"')) {
             chars.content = chars.content + chars.get(0);
             chars.length++;
             return chars.emit(Token.Type.STRING);
@@ -229,6 +220,40 @@ public class Lexer {
         else {
             throw new ParseException("Unterminated literal", 209);
         }
+    }
+
+    /**
+     * Returns true in the same way as peek, but also advances the CharStream to
+     * if the characters matched.
+     */
+    private boolean match() {
+//        if (chars.endOfInput()) return false;
+        if (chars.get(0) == '\\') {
+            if ((chars.has(1) && chars.get(1) == '\\') || (chars.has(-1) && chars.get(-1) == '\\' )) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else if (chars.get(0) == '\n'|| chars.get(0) == '\b' ||
+                chars.get(0) == '\r' || chars.get(0) == '\"' ||
+                chars.get(0) == '\t' || chars.get(0) == '\'')
+            return true;
+
+//        else if (chars.get(0) == '\"') {
+//            chars.content = chars.content + chars.get(0);
+//            return false;
+//        }
+        else {
+            return true;
+        }
+
+//        if (!Pattern.matches(String.valueOf(patterns), Character.toString(chars.get(0)))) return false;
+
+//        chars.content = chars.content + chars.get(0);
+//        chars.index++;
+//        return true;
     }
 
     /**
