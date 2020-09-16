@@ -1,18 +1,20 @@
 package plc.interpreter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
+
 /**
  * The lexer works through three main functions:
  *
  *  - {@link #lex()}, which repeatedly calls lexToken() and skips whitespace
- *  - , which lexes the next token
+ *  - {@link #lexToken()}, which lexes the next token
  *  - {@link CharStream}, which manages the state of the lexer and literals
  *
  * If the lexer fails to parse something (such as an unterminated string) you
  * should throw a {@link ParseException}.
  *
- * The {@link #(Pattern)} and  functions are
+ * The  and  functions are
  * helpers, they're not necessary but their use will make the implementation a
  * lot easier. Regex isn't the most performant way to go but it gets the job
  * done, and the focus here is on the concept.
@@ -21,12 +23,11 @@ public class Lexer {
     //TODO: ParseExceptions, probably need to take out leading char right before switch
     //TODO: When done, make sure ParseException error lines line up
 
-    private final String input;
-    private final CharStream chars = new CharStream();
+    private final CharStream chars;
     List<Token> tokens = new ArrayList<>();
 
     private Lexer(String input) {
-        this.input = input;
+        chars = new CharStream(input);
     }
 
     /**
@@ -35,6 +36,21 @@ public class Lexer {
     public static List<Token> lex(String input) throws ParseException {
         return new Lexer(input).lex();
     }
+
+//    private final String input;
+//    private final CharStream chars = new CharStream();
+//    List<Token> tokens = new ArrayList<>();
+//
+//    private Lexer(String input) {
+//        this.input = input;
+//    }
+
+//    /**
+//     * Lexes the input and returns the list of tokens.
+//     */
+//    public static List<Token> lex(String input) throws ParseException {
+//        return new Lexer(input).lex();
+//    }
 
     /**
      * Repeatedly lexes the next token using {@link #lexToken()} until the end
@@ -68,29 +84,33 @@ public class Lexer {
      * {@code
      *     private plc.interpreter.Token lexCharacter() {
      *         if (!match("\'")) {
-     *             //your lexer should prevent this from happening, as it should
-     *             //only try to lex a character literal if the next character
-     *             //begins a character literal.
-     *             throw new RuntimeException("Next character does not begin a character literal.");
+     *             //Your lexer should prevent this from happening, as it should
+     *             // only try to lex a character literal if the next character
+     *             // begins a character literal.
+     *             //Additionally, the index being passed back is a 'ballpark'
+     *             // value. If we were doing proper diagnostics, we would want
+     *             // to provide a range covering the entire error. It's really
+     *             // only for debugging / proof of concept.
+     *             throw new ParseException("Next character does not begin a character literal.", chars.index);
      *         }
      *         if (!chars.has(0) || match("\'")) {
-     *             throw new RuntimeException("Empty character literal.");
+     *             throw new ParseException("Empty character literal.",  chars.index);
      *         } else if (match("\\")) {
-     *             //lex escape characters...basically calling the RegEx stuff here to get a match
+     *             //lex escape characters...
      *         } else {
      *             chars.advance();
      *         }
      *         if (!match("\'")) {
-     *             throw new RuntimeException("Unterminated character literal.");
+     *             throw new ParseException("Unterminated character literal.", chars.index);
      *         }
-     *         return new plc.interpreter.Token(plc.interpreter.Token.Type.CHARACTER, chars.emit());
+     *         return chars.emit(Token.Type.CHARACTER);
      *     }
      * }
      * </pre>
      */
     private Token lexToken() throws ParseException {
 
-        char c = input.charAt(chars.index);
+        char c = chars.get(chars.index);
         chars.content = Character.toString(c);
         chars.length++;
         if (c == '+' | c == '-') {
@@ -105,7 +125,7 @@ public class Lexer {
             return lexNumber();
         }
         else if (c == '\"') {
-            return lexLiteral();
+            return lexString();
         }
         else if (Character.isAlphabetic(c)) {
             return lexIdentifier();
@@ -131,6 +151,7 @@ public class Lexer {
             }
         }
     }
+
     /**
      * Returns true if the next sequence of characters match the given patterns,
      * which should be a regex. For example, {@code peek("a", "b", "c")} would
@@ -190,7 +211,7 @@ public class Lexer {
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexLiteral() {
+    private Token lexString() {
         chars.advance();
         String regex = "[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*";
         while (chars.has(0) && chars.get(0) != '\"') {
@@ -221,7 +242,12 @@ public class Lexer {
         private int index = 0;
         private int length = 0;
         private int start = 0;
+        private String input;
         private String content;
+
+        private CharStream(String input) {
+            this.input = input;
+        }
 
         /**
          * Returns true if there is a character at index + offset.
@@ -264,16 +290,16 @@ public class Lexer {
         public Token emit(Token.Type type) {
             chars.index++;
             if (type == Token.Type.IDENTIFIER) {
-                return new Token(Token.Type.IDENTIFIER, content, chars.start);
+                return new Token(Token.Type.IDENTIFIER, content, start);
             }
             else if (type == Token.Type.NUMBER) {
-                return new Token(Token.Type.NUMBER, content, chars.start);
+                return new Token(Token.Type.NUMBER, content, start);
             }
             else if (type == Token.Type.STRING) {
-                return new Token(Token.Type.STRING, content, chars.start);
+                return new Token(Token.Type.STRING, content, start);
             }
             else {
-                return new Token(Token.Type.OPERATOR, content, chars.start);
+                return new Token(Token.Type.OPERATOR, content, start);
             }
         }
     }
