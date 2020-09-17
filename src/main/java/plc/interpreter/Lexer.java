@@ -20,8 +20,8 @@ import java.util.regex.Pattern;
  * done, and the focus here is on the concept.
  */
 public class Lexer {
-    //FIXME: should consecutive operators be grabbed as a single token (ex. && or |. or ]])?
-    //FIXME: ParseExceptions, when to throw them?
+    //FIXME: Take context into account for ParseExceptions.  Go as far as you can, then check if the whole
+    // proposed token matches the expected regex
 
     //FIXME:
     // (1) Keep the starting index, advance until whatever using length
@@ -186,9 +186,9 @@ public class Lexer {
                     chars.advance();
                 }
             }
-//            else {
-//                throw new ParseException("Number ends in a period", chars.start);   //FIXME: This will throw PE but fail outside of number test case
-//            }
+            else {
+                throw new ParseException("Number ends in a period", chars.start);   //FIXME: This will throw PE but fail outside of number test case
+            }
         }
 
         return chars.emit(Token.Type.NUMBER);
@@ -204,7 +204,7 @@ public class Lexer {
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
-    private Token lexOperator() {       //peek at next char to see if it is also an operator or whitespace
+    private Token lexOperator() {
         return chars.emit(Token.Type.OPERATOR);
     }
 

@@ -62,21 +62,21 @@ final class LexerTests {
 
     private static Stream<Arguments> testNumber() {
         return Stream.of(
-                Arguments.of("1", true),
-                Arguments.of("-1.0", true),
-                Arguments.of("007.000", true),
-                Arguments.of("1", true),
-                Arguments.of("982345786", true),
-                Arguments.of("+436", true),
-                Arguments.of("-436", true),
-                Arguments.of("-1.0", true),
-                Arguments.of("+1.0", true),
-                Arguments.of("0", true),
-                Arguments.of("0.01", true),
-                Arguments.of("01", true),
-                Arguments.of("+0.01", true),
-                Arguments.of("-0.01", true),
-                Arguments.of("1.", false),      //FIXME: PE, EXAMPLE
+//                Arguments.of("1", true),
+//                Arguments.of("-1.0", true),
+//                Arguments.of("007.000", true),
+//                Arguments.of("1", true),
+//                Arguments.of("982345786", true),
+//                Arguments.of("+436", true),
+//                Arguments.of("-436", true),
+//                Arguments.of("-1.0", true),
+//                Arguments.of("+1.0", true),
+//                Arguments.of("0", true),
+//                Arguments.of("0.01", true),
+//                Arguments.of("01", true),
+//                Arguments.of("+0.01", true),
+//                Arguments.of("-0.01", true),
+                Arguments.of("1.", false),      //FIXME: PE, EXAMPLE, should fail because the context around it is wrong
 //                Arguments.of(".5", false),    //FIXME: PE
 //                Arguments.of("+-10", false),  //FIXME: PE
                 Arguments.of("1.-", false),
@@ -87,7 +87,7 @@ final class LexerTests {
 //                Arguments.of("--1", false),   //FIXME: PE
                 Arguments.of("1+1", false),
                 Arguments.of("1-1", false),
-//                Arguments.of("+.", false),    //FIXME: PE
+                Arguments.of("+.", false),      //FIXME: PE
 //                Arguments.of("-.", false),    //FIXME: PE
                 Arguments.of("", false)
 //                Arguments.of("1+", false),    //FIXME: PE, IOOB
@@ -138,10 +138,10 @@ final class LexerTests {
 
     private static Stream<Arguments> testOperator() {
         return Stream.of(
-//                Arguments.of("(", true),
-//                Arguments.of("#", true),
-//                Arguments.of("|", true),
-                Arguments.of("&&", true),   //FIXME: grabs single token and ends...needs to check for more?
+                Arguments.of("(", true),
+                Arguments.of("#", true),
+                Arguments.of("|", true),
+                Arguments.of("&", true),
                 Arguments.of(" ", false),
                 Arguments.of("\r", false),
                 Arguments.of("\n", false),
@@ -194,6 +194,7 @@ final class LexerTests {
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
+    //FIXME: tests are not going to be gibberish, write more accurate ones
     @Test
     void testExample4() {
         String input = "\n \r[x 10] (23rt-equals? x 10.))";
@@ -208,7 +209,7 @@ final class LexerTests {
                 new Token(Token.Type.IDENTIFIER, "x", 24),
                 new Token(Token.Type.NUMBER, "10", 26),
                 new Token(Token.Type.OPERATOR, ".", 28),
-                new Token(Token.Type.OPERATOR, ")", 29),    //FIXME: update when operator question is answered
+                new Token(Token.Type.OPERATOR, ")", 29),
                 new Token(Token.Type.OPERATOR, ")", 30)
         );
         Assertions.assertEquals(expected, Lexer.lex(input));
