@@ -127,7 +127,7 @@ public class Lexer {
         else {
             switch (c) {
                 case '.':   //need to check if next char is another identifier
-                    if (isIdentifier(chars.get(1)))
+                    if (chars.has(1) && isIdentifier(chars.get(1)))
                         return lexIdentifier();
                     else
                         return lexOperator();
@@ -186,9 +186,9 @@ public class Lexer {
                     chars.advance();
                 }
             }
-            else {
-                throw new ParseException("Number ends in a period", chars.start);   //FIXME: This will throw PE but fail outside of number test case
-            }
+//            else {
+//                throw new ParseException("Number ends in a period", chars.start);   //FIXME: This will throw PE but fail outside of number test case
+//            }
         }
 
         return chars.emit(Token.Type.NUMBER);
@@ -293,6 +293,10 @@ public class Lexer {
 
         private boolean endOfInput() {
             return index >= input.length();
+        }
+
+        private boolean matchRegex(String pattern) {
+            return Pattern.matches(pattern, chars.content);
         }
 
         /**

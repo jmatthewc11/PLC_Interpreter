@@ -66,30 +66,30 @@ final class LexerTests {
 //                Arguments.of("-1.0", true),
 //                Arguments.of("007.000", true),
 //                Arguments.of("1", true),
-//                Arguments.of("982345786", true),
+//                Arguments.of("982345786", true),    //5
 //                Arguments.of("+436", true),
 //                Arguments.of("-436", true),
 //                Arguments.of("-1.0", true),
 //                Arguments.of("+1.0", true),
-//                Arguments.of("0", true),
+//                Arguments.of("0", true),            //10
 //                Arguments.of("0.01", true),
 //                Arguments.of("01", true),
 //                Arguments.of("+0.01", true),
 //                Arguments.of("-0.01", true),
-                Arguments.of("1.", false),      //FIXME: PE, EXAMPLE, should fail because the context around it is wrong
-//                Arguments.of(".5", false),    //FIXME: PE
+//                Arguments.of("1.", false),          //15
+                Arguments.of(".5", false)    //FIXME: PE
 //                Arguments.of("+-10", false),  //FIXME: PE
-                Arguments.of("1.-", false),
+//                Arguments.of("1.-", false),
 //                Arguments.of("+.5", false),   //FIXME: PE
 //                Arguments.of("+-1", false),   //FIXME: PE
 //                Arguments.of("-+1", false),   //FIXME: PE
 //                Arguments.of("++1", false),   //FIXME: PE
-//                Arguments.of("--1", false),   //FIXME: PE
-                Arguments.of("1+1", false),
-                Arguments.of("1-1", false),
-                Arguments.of("+.", false),      //FIXME: PE
+//                Arguments.of("--1", false)    //FIXME: PE
+//                Arguments.of("1+1", false),
+//                Arguments.of("1-1", false),
+//                Arguments.of("+.", false),      //FIXME: PE
 //                Arguments.of("-.", false),    //FIXME: PE
-                Arguments.of("", false)
+//                Arguments.of("", false),
 //                Arguments.of("1+", false),    //FIXME: PE, IOOB
 //                Arguments.of("1-", false),    //FIXME: PE, IOOB
 //                Arguments.of("+", false),     //FIXME: PE, IOOB
@@ -194,7 +194,6 @@ final class LexerTests {
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
-    //FIXME: tests are not going to be gibberish, write more accurate ones
     @Test
     void testExample4() {
         String input = "\n \r[x 10] (23rt-equals? x 10.))";
