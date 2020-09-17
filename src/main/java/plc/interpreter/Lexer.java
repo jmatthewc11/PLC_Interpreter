@@ -20,8 +20,17 @@ import java.util.regex.Pattern;
  * done, and the focus here is on the concept.
  */
 public class Lexer {
-    //TODO: ParseExceptions, when to throw them?
-    //TODO: When done, make sure ParseException error lines line up
+    //FIXME: should consecutive operators be grabbed as a single token (ex. && or |. or ]])?
+    //FIXME: ParseExceptions, when to throw them?
+
+    //FIXME:
+    // (1) Keep the starting index, advance until whatever using length
+    // (2) When you get to emit(), substring(start, start + length) for the literal
+
+    //FIXME:
+    // Shouldn't go char by char.  For number:
+    // (1) If it starts with +/-/digit, peek next char to see if it matches NUMBER or IDENTIFIER
+    // (2) If it does, advance, and peek again
 
     private final CharStream chars;
     List<Token> tokens = new ArrayList<>();
@@ -178,7 +187,7 @@ public class Lexer {
                 }
             }
 //            else {
-//                throw new ParseException("Number ends in a period", 187);   //FIXME: This will throw PE but fail outside of number test case
+//                throw new ParseException("Number ends in a period", chars.start);   //FIXME: This will throw PE but fail outside of number test case
 //            }
         }
 
@@ -195,7 +204,7 @@ public class Lexer {
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
-    private Token lexOperator() {
+    private Token lexOperator() {       //peek at next char to see if it is also an operator or whitespace
         return chars.emit(Token.Type.OPERATOR);
     }
 
@@ -205,7 +214,7 @@ public class Lexer {
             chars.content = chars.content + chars.get(0);
             chars.advance();
             if (!chars.has(0)) {
-                throw new ParseException("Unterminated literal", 206);
+                throw new ParseException("Unterminated literal", chars.start);
             }
         }
 
@@ -215,7 +224,7 @@ public class Lexer {
             return chars.emit(Token.Type.STRING);
         }
         else {
-            throw new ParseException("Unterminated literal", 209);
+            throw new ParseException("Unterminated literal", chars.start);
         }
     }
 

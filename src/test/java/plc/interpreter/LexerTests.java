@@ -27,6 +27,8 @@ final class LexerTests {
                 Arguments.of("getName", true),
                 Arguments.of("is-empty?", true),
                 Arguments.of("<=>", true),
+                Arguments.of("++", true),
+                Arguments.of(">=", true),
                 Arguments.of("get.name", true),
                 Arguments.of("getName_", true),
                 Arguments.of("get///Name", true),
@@ -74,7 +76,7 @@ final class LexerTests {
                 Arguments.of("01", true),
                 Arguments.of("+0.01", true),
                 Arguments.of("-0.01", true),
-//                Arguments.of("1.", false),    //FIXME: PE
+                Arguments.of("1.", false),    //FIXME: PE, EXAMPLE
 //                Arguments.of(".5", false),    //FIXME: PE
 //                Arguments.of("+-10", false),  //FIXME: PE
                 Arguments.of("1.-", false),
@@ -122,9 +124,13 @@ final class LexerTests {
 
     private static Stream<Arguments> testOperator() {
         return Stream.of(
-                Arguments.of("(", true),
-                Arguments.of("#", true),
+//                Arguments.of("(", true),
+//                Arguments.of("#", true),
+//                Arguments.of("|", true),
+                Arguments.of("&&", true),   //FIXME: grabs single token and ends...needs to check for more?
                 Arguments.of(" ", false),
+                Arguments.of("\r", false),
+                Arguments.of("\n", false),
                 Arguments.of("\t", false)
         );
     }
@@ -188,7 +194,7 @@ final class LexerTests {
                 new Token(Token.Type.IDENTIFIER, "x", 24),
                 new Token(Token.Type.NUMBER, "10", 26),
                 new Token(Token.Type.OPERATOR, ".", 28),
-                new Token(Token.Type.OPERATOR, ")", 29),
+                new Token(Token.Type.OPERATOR, ")", 29),    //FIXME: update when operator question is answered
                 new Token(Token.Type.OPERATOR, ")", 30)
         );
         Assertions.assertEquals(expected, Lexer.lex(input));
