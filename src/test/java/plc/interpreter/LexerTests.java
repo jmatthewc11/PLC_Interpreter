@@ -76,7 +76,7 @@ final class LexerTests {
                 Arguments.of("01", true),
                 Arguments.of("+0.01", true),
                 Arguments.of("-0.01", true),
-                Arguments.of("1.", false),    //FIXME: PE, EXAMPLE
+                Arguments.of("1.", false),      //FIXME: PE, EXAMPLE
 //                Arguments.of(".5", false),    //FIXME: PE
 //                Arguments.of("+-10", false),  //FIXME: PE
                 Arguments.of("1.-", false),
@@ -112,7 +112,21 @@ final class LexerTests {
                 Arguments.of("\"\ba9\n\"", true),
                 Arguments.of("\"Hello,\nWorld\"", true),
                 Arguments.of("\"unterminated", false),
-                Arguments.of("\"invalid escape \\uXYZ\"", false)
+                Arguments.of("\"invalid escape \\uXYZ\"", false),
+                Arguments.of("\"Hello,\\nWorld!\"", true),      //FIXME: UL
+                Arguments.of("\"dsi'b38^_.&(*n_ne\"", true),
+                Arguments.of("\"so tired\"", true),
+                Arguments.of("\"Hello,\\bWorld!\"", true),      //FIXME: UL
+                Arguments.of("\"\\r\"", true),                  //FIXME: UL
+                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: IOOB
+                Arguments.of("\"\r\"", true),
+                Arguments.of("\"unterminated", false),
+                Arguments.of("unterminated\"", false),          //FIXME: PE, IOOB
+                Arguments.of("unterminated", false),            //FIXME: PE
+                Arguments.of("\"\\d\"", false),
+                Arguments.of("\"invalid\\escape\"", false),
+                Arguments.of("\"Hello,\\\\\\World!\"", false),  //FIXME: PE, probably because of how I'm trying to handle escape chars
+                Arguments.of("\"Hello,\\NWorld!\"", false)
         );
     }
 
