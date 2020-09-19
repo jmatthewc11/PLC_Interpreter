@@ -233,16 +233,15 @@ public class Lexer {
      * if the characters matched.
      */
     private boolean match() {
-        if (chars.get(0) == '\\') {
-            return (chars.has(1) && chars.get(1) == '\\') || (chars.has(-1) && chars.get(-1) == '\\');
-        }
-        else if (chars.get(0) == '\n'|| chars.get(0) == '\b' ||
-                chars.get(0) == '\r' || chars.get(0) == '\"' ||
-                chars.get(0) == '\t' || chars.get(0) == '\'')
+        if (chars.get(0) == '\n'|| chars.get(0) == '\b' ||
+            chars.get(0) == '\r' || chars.get(0) == '\"' ||
+            chars.get(0) == '\t' || chars.get(0) == '\'')
             return true;
-        else {
-            return true;
-        }
+        else return chars.get(0) != '\\' ||
+                (chars.get(1) == 'b' || chars.get(1) == 'n' ||
+                chars.get(1) == 'r' || chars.get(1) == 't' ||
+                chars.get(1) == '\'' || chars.get(1) == '\"' ||
+                chars.get(1) == '\\');
     }
 
     /**
