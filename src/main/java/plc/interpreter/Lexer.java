@@ -20,9 +20,6 @@ import java.util.regex.Pattern;
  * done, and the focus here is on the concept.
  */
 public class Lexer {
-    //FIXME: Take context into account for ParseExceptions.  Go as far as you can, then check if the whole
-    // proposed token matches the expected regex
-
     //FIXME:
     // (1) Keep the starting index, advance until whatever using length
     // (2) When you get to emit(), substring(start, start + length) for the literal
@@ -208,9 +205,9 @@ public class Lexer {
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexString() {
+    private Token lexString() throws ParseException{
         chars.index++;
-        while (chars.get(0) != ('\"') && match()) {
+        while (chars.get(0) != ('\"') && matchString()) {
             chars.content = chars.content + chars.get(0);
             chars.advance();
             if (!chars.has(0)) {
@@ -218,21 +215,30 @@ public class Lexer {
             }
         }
 
+        String regex = "(\")[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*(\")";
         if (chars.get(0) == ('\"')) {
             chars.content = chars.content + chars.get(0);
             chars.length++;
-            return chars.emit(Token.Type.STRING);
+            if (chars.matchRegex(regex))
+                return chars.emit(Token.Type.STRING);
+            else
+                throw new ParseException("String literal does not match regex", chars.start);
         }
         else {
             throw new ParseException("Unterminated literal", chars.start);
         }
     }
 
-    /**
+    /*
      * Returns true in the same way as peek, but also advances the CharStream to
      * if the characters matched.
      */
-    private boolean match() {
+//    private boolean match() {return false}
+
+    /**
+     * For matching String literal edge cases
+     */
+    private boolean matchString() {
         if (chars.get(0) == '\n'|| chars.get(0) == '\b' ||
             chars.get(0) == '\r' || chars.get(0) == '\"' ||
             chars.get(0) == '\t' || chars.get(0) == '\'')
