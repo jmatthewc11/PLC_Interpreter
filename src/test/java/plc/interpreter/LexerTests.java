@@ -120,19 +120,24 @@ final class LexerTests {
                 Arguments.of("\"so tired\"", true),
                 Arguments.of("\"Hello,\\bWorld!\"", true),      //10
                 Arguments.of("\"\\r\"", true),
-//                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: SEE NOTE BELOW, IOOB
+//                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: (1) SEE NOTE BELOW, IOOB
                 Arguments.of("\"\r\"", true),
                 Arguments.of("\"invalid escape \\uXYZ\"", false),
                 Arguments.of("\"unterminated", false),          //15
-//                Arguments.of("unterminated\"", false),          //FIXME: IOOB, won't hit lexString(?)
+//                Arguments.of("unterminated\"", false),          //FIXME: (2) SEE NOTE BELOW, IOOB
                 Arguments.of("unterminated", false),
                 Arguments.of("\"\\d\"", false),
                 Arguments.of("\"invalid\\escape\"", false),
                 Arguments.of("\"Hello,\\\\\\World!\"", false),  //20
                 Arguments.of("\"Hello,\\NWorld!\"", false)
-        );  //FIXME: If we match until ", string will cut off in the middle if there is " in the middle
-        //FIXME: How to look ahead to see where the last double quote is and match the stuff in between?
+        );  //FIXME: (1) If we match until ", string will cut off in the middle if there is " in the middle
+            //FIXME: How to look ahead to see where the last double quote is and match the stuff in between?
+            //FIXME: Practical to match everything between the first and last quote?
+
+            //FIXME: (2) Should this return identifier, operator?  Or identifier and throw exception since it's
+            //FIXME: the beginning of a String literal that goes unterminated?
     }
+
 
     @ParameterizedTest
     @MethodSource

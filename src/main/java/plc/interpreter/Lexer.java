@@ -220,7 +220,7 @@ public class Lexer {
             throw new ParseException("Not a valid String literal", chars.start);
         }
 
-        String regex = "(\")[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*(\")";
+        String regex = "\"([^\"\\\\]|\\\\[bnrt\'\"\\\\])*\"";
         if (chars.get(0) == ('\"')) {
             chars.content = chars.content + chars.get(0);
             chars.length++;
