@@ -93,11 +93,11 @@ final class LexerTests {
                 Arguments.of("+.", false),
                 Arguments.of("-.", false),
                 Arguments.of("", false),
-//                Arguments.of("1+", false),                      //FIXME: IOOB
-//                Arguments.of("1-", false),          //30        //FIXME: IOOB
-//                Arguments.of("+", false),                       //FIXME: IOOB
-                Arguments.of(".", false)
-//                Arguments.of("-", false)                        //FIXME: IOOB
+                Arguments.of("1+", false),
+                Arguments.of("1-", false),          //30
+                Arguments.of("+", false),
+                Arguments.of(".", false),
+                Arguments.of("-", false)
         );
     }
 
@@ -246,13 +246,17 @@ final class LexerTests {
 
     @Test
     void testExample6() {
-        String input = "(print \"Hello, World!\" let x ";
+        String input = "(print \"Hello, World!\" let x 'b''";
         List<Token> expected = Arrays.asList(
                 new Token(Token.Type.OPERATOR, "(", 0),
                 new Token(Token.Type.IDENTIFIER, "print", 1),
                 new Token(Token.Type.STRING, "\"Hello, World!\"", 7),
                 new Token(Token.Type.IDENTIFIER, "let", 23),
-                new Token(Token.Type.IDENTIFIER, "x", 27)
+                new Token(Token.Type.IDENTIFIER, "x", 27),
+                new Token(Token.Type.OPERATOR, "'", 29),
+                new Token(Token.Type.IDENTIFIER, "b", 30),
+                new Token(Token.Type.OPERATOR, "'", 31),
+                new Token(Token.Type.OPERATOR, "'", 32)
         );
         Assertions.assertEquals(expected, Lexer.lex(input));
     }

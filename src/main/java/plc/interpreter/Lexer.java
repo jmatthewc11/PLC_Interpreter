@@ -105,7 +105,7 @@ public class Lexer {
         chars.content = Character.toString(c);
         chars.length++;
         if (c == '+' | c == '-') {
-            if (Character.isDigit(chars.get(1))) {
+            if (chars.has(1) && Character.isDigit(chars.get(1))) {
                 return lexNumber();
             }
             else {
@@ -167,7 +167,7 @@ public class Lexer {
     }
 
     private Token lexNumber() throws ParseException {
-        String regex = "([\\+]|[\\-]){0,1}[\\d]+([.][\\d]+)*";
+        String regex = "[+-]?[0-9]+(\\\\.[0-9]+)?";
         while (chars.has(1) && peek(regex)) {
             chars.content = chars.content + chars.get(1);
             chars.advance();
@@ -183,9 +183,6 @@ public class Lexer {
                     chars.advance();
                 }
             }
-//            else {
-//                throw new ParseException("Number ends in a period", chars.start);   //FIXME: This will throw PE but fail outside of number test case
-//            }
         }
 
         return chars.emit(Token.Type.NUMBER);
@@ -218,7 +215,7 @@ public class Lexer {
         }
         else {      //just a quote mark cannot be a valid String literal
             throw new ParseException("Not a valid String literal", chars.start);
-        }
+        }           //FIXME: is a single quote mark always the beginning of a String literal or can it be an operator
 
         String regex = "\"([^\"\\\\]|\\\\[bnrt\'\"\\\\])*\"";
         if (chars.get(0) == ('\"')) {
@@ -233,12 +230,6 @@ public class Lexer {
             throw new ParseException("Unterminated literal", chars.start);
         }
     }
-
-    /*
-     * Returns true in the same way as peek, but also advances the CharStream to
-     * if the characters matched.
-     */
-//    private boolean match() {return false}
 
     /**
      * For matching String literal edge cases
@@ -301,10 +292,16 @@ public class Lexer {
             length = 0;
         }
 
+        /**
+         * Checks for the end of the input.
+         */
         private boolean endOfInput() {
             return index >= input.length();
         }
 
+        /**
+         * Checks that the entire built token actually matches the intended regex
+         */
         private boolean matchRegex(String pattern) {
             return Pattern.matches(pattern, chars.content);
         }
