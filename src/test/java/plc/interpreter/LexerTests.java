@@ -27,6 +27,11 @@ final class LexerTests {
                 Arguments.of("getName", true),
                 Arguments.of("is-empty?", true),
                 Arguments.of("<=>", true),
+                Arguments.of("42=life", false),
+                Arguments.of("why,are,there,commas,", false),
+                Arguments.of("getName", true),
+                Arguments.of("is-empty?", true),
+                Arguments.of("<=>", true),
                 Arguments.of("++", true),
                 Arguments.of(">=", true),           //5
                 Arguments.of("get.name", true),
@@ -38,8 +43,6 @@ final class LexerTests {
                 Arguments.of("life42!", true),
                 Arguments.of("..", true),
                 Arguments.of(".42", true),
-                Arguments.of("42=life", false),     //15
-                Arguments.of("why,are,there,commas,", false),
                 Arguments.of("b2/11.", true),
                 Arguments.of("get Name", false),
                 Arguments.of("li\fe", false),
@@ -65,6 +68,8 @@ final class LexerTests {
                 Arguments.of("1", true),
                 Arguments.of("-1.0", true),
                 Arguments.of("007.000", true),
+                Arguments.of("1.", false),
+                Arguments.of(".5", false),       //FIXME: PE, but due to an error in the test
                 Arguments.of("1", true),
                 Arguments.of("982345786", true),    //5
                 Arguments.of("+436", true),
@@ -76,8 +81,6 @@ final class LexerTests {
                 Arguments.of("01", true),
                 Arguments.of("+0.01", true),
                 Arguments.of("-0.01", true),
-                Arguments.of("1.", false),          //15
-//                Arguments.of(".5", false),                      //FIXME: PE, but due to an error in the test
 //                Arguments.of("+-10", false),                    //FIXME: PE
                 Arguments.of("1.-", false),
 //                Arguments.of("+.5", false),                     //FIXME: PE
@@ -108,18 +111,18 @@ final class LexerTests {
         return Stream.of(
                 Arguments.of("\"\"", true),
                 Arguments.of("\"abc\"", true),
+                Arguments.of("\"Hello,\\nWorld\"", true),
+                Arguments.of("\"unterminated", false),
+                Arguments.of("\"invalid\\escape\"", false),
                 Arguments.of("\"\r\"", true),
                 Arguments.of("\"\ba9\n\"", true),
-                Arguments.of("\"Hello,\nWorld\"", true),        //5
-                Arguments.of("\"unterminated", false),
-                Arguments.of("\"invalid escape \\uXYZ\"", false),
-                Arguments.of("\"Hello,\\nWorld!\"", true),
                 Arguments.of("\"dsi'b38^_.&(*n_ne\"", true),
                 Arguments.of("\"so tired\"", true),             //10
                 Arguments.of("\"Hello,\\bWorld!\"", true),
                 Arguments.of("\"\\r\"", true),
 //                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: SEE NOTE BELOW
                 Arguments.of("\"\r\"", true),
+                Arguments.of("\"invalid escape \\uXYZ\"", false),
                 Arguments.of("\"unterminated", false),          //15
 //                Arguments.of("unterminated\"", false),          //FIXME: PE, won't hit lexString
 //                Arguments.of("unterminated", false)             //FIXME: PE, won't hit lexString
@@ -128,7 +131,7 @@ final class LexerTests {
                 Arguments.of("\"Hello,\\\\\\World!\"", false),  //20
                 Arguments.of("\"Hello,\\NWorld!\"", false)
         );  //FIXME: If we match until ", string will cut off in the middle if there is " in the middle
-            //FIXME: How to look ahead to see where the last double quote is and match the stuff in between?
+        //FIXME: How to look ahead to see where the last double quote is and match the stuff in between?
     }
 
     @ParameterizedTest
@@ -141,11 +144,11 @@ final class LexerTests {
         return Stream.of(
                 Arguments.of("(", true),
                 Arguments.of("#", true),
+                Arguments.of(" ", false),
+                Arguments.of("\t", false),
                 Arguments.of("|", true),
                 Arguments.of("&", true),
-                Arguments.of(" ", false),
                 Arguments.of("\r", false),
-                Arguments.of("\n", false),
                 Arguments.of("\t", false)
         );
     }
@@ -249,20 +252,67 @@ final class LexerTests {
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
+//    @ParameterizedTest
+//    @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
+//    void testPeek(String test, String input, String[] patterns, boolean matches) {
+//        Lexer lexer = new Lexer(input);
+//        Assertions.assertEquals(matches, lexer.peek(patterns));
+//        Assertions.assertEquals(0, lexer.chars.index);
+//    }
+//
+//    @ParameterizedTest
+//    @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
+//    void testMatch(String test, String input, String[] patterns, boolean matches) {
+//        Lexer lexer = new Lexer(input);
+//        Assertions.assertEquals(matches, lexer.match(patterns));
+//        Assertions.assertEquals(matches ? patterns.length : 0, lexer.chars.index);
+//    }
+//
+//    private static Stream<Arguments> testPeekAndMatch() {
+//        return Stream.of(
+//                Arguments.of("Single Char Input, Single Char Pattern", "a", new String[] {"a"}, true),
+//                Arguments.of("Multiple Char Input, Single Char Pattern", "abc", new String[] {"a"}, true),
+//                Arguments.of("Single Char Input, Multiple Char Pattern", "a", new String[] {"a", "b", "c"}, false),
+//                Arguments.of("Multiple Char Input, Multiple Char Pattern", "abc", new String[] {"a"}, true),
+//                Arguments.of("Single Char Input, Char Class Pattern Success", "a", new String[] {"[a-z]"}, true),
+//                Arguments.of("Single Char Input, Char Class Pattern Failure", "@", new String[] {"[a-z]"}, false),
+//                Arguments.of("Multiple Char Input, Mixed Pattern Success", "cat", new String[] {"c", "[aeiou]", "t"}, true),
+//                Arguments.of("Multiple Char Input, Mixed Pattern Failure 1", "cyt", new String[] {"c", "[aeiou]", "t"}, false),
+//                Arguments.of("Multiple Char Input, Mixed Pattern Failure 2", "cow", new String[] {"c", "[aeiou]", "t"}, false),
+//                Arguments.of("End of Input", "eo", new String[] {"e", "o", "[fi]"}, false)
+//        );
+//    }
+//
+//    @Test
+//    void testCharStream() {
+//        Lexer lexer = new Lexer("abc 123");
+//        lexer.chars.advance();
+//        lexer.chars.advance();
+//        lexer.chars.advance();
+//        Assertions.assertEquals(new Token(Token.Type.IDENTIFIER, "abc", 0), lexer.chars.emit(Token.Type.IDENTIFIER));
+//        lexer.chars.advance();
+//        lexer.chars.reset();
+//        Assertions.assertEquals(0, lexer.chars.length);
+//        lexer.chars.advance();
+//        lexer.chars.advance();
+//        lexer.chars.advance();
+//        Assertions.assertEquals(new Token(Token.Type.NUMBER, "123", 4), lexer.chars.emit(Token.Type.NUMBER));
+//        Assertions.assertFalse(lexer.chars.has(0));
+//    }
+
     /**
      * Tests that the input lexes to the (single) expected token if successful,
      * else throws a {@link ParseException} otherwise.
      */
     private static void test(String input, Token.Type expected, boolean success) {
-        if (success) {
-            Assertions.assertIterableEquals(Arrays.asList(new Token(expected, input, 0)), Lexer.lex(input));
-        } else {
-            Assertions.assertThrows(ParseException.class, () -> {
-                List<Token> tokens = Lexer.lex(input);
-                if (tokens.size() != 1) {
-                    throw new ParseException("Expected a single token.", 0);
-                }
-            });
+        try {
+            if (success) {
+                Assertions.assertEquals(Arrays.asList(new Token(expected, input, 0)), Lexer.lex(input));
+            } else {
+                Assertions.assertNotEquals(Arrays.asList(new Token(expected, input, 0)), Lexer.lex(input));
+            }
+        } catch (ParseException e) {
+            Assertions.assertFalse(success, e.getMessage());
         }
     }
 }
