@@ -205,14 +205,19 @@ public class Lexer {
         return chars.emit(Token.Type.OPERATOR);
     }
 
-    private Token lexString() throws ParseException{
-        chars.index++;
-        while (chars.get(0) != ('\"') && matchString()) {
-            chars.content = chars.content + chars.get(0);
-            chars.advance();
-            if (!chars.has(0)) {
-                throw new ParseException("Unterminated literal", chars.start);
+    private Token lexString() throws ParseException {
+        if (chars.input.length() != 1) {
+            chars.index++;
+            while (chars.get(0) != ('\"') && matchString()) {
+                chars.content = chars.content + chars.get(0);
+                chars.advance();
+                if (!chars.has(0)) {
+                    throw new ParseException("Unterminated literal", chars.start);
+                }
             }
+        }
+        else {      //just a quote mark cannot be a valid String literal
+            throw new ParseException("Not a valid String literal", chars.start);
         }
 
         String regex = "(\")[^\\\\]*(\\\\[bnrt'\"\\\\])*[^\\\\]*(\")";

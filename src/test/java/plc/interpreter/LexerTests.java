@@ -24,36 +24,36 @@ final class LexerTests {
 
     private static Stream<Arguments> testIdentifier() {
         return Stream.of(
-                Arguments.of("getName", true),
-                Arguments.of("is-empty?", true),
-                Arguments.of("<=>", true),
-                Arguments.of("42=life", false),
-                Arguments.of("why,are,there,commas,", false),   //5
-                Arguments.of("getName", true),
-                Arguments.of("is-empty?", true),
-                Arguments.of("<=>", true),
-                Arguments.of("++", true),
-                Arguments.of(">=", true),                       //10
-                Arguments.of("get.name", true),
-                Arguments.of("getName_", true),
-                Arguments.of("get///Name", true),
-                Arguments.of("life42", true),
-                Arguments.of("/", true),                        //15
-                Arguments.of("A", true),
-                Arguments.of("life42!", true),
-                Arguments.of("..", true),
-                Arguments.of(".42", true),
-                Arguments.of("b2/11.", true),                   //20
-                Arguments.of("get Name", false),
-                Arguments.of("li\fe", false),
-                Arguments.of("li\\fe", false),
-                Arguments.of("[]", false),
-                Arguments.of("", false),                        //25
-                Arguments.of("()", false),
-//                Arguments.of("\"", false),          //FIXME: IOOB
-                Arguments.of(".", false),
-                Arguments.of("4", false),
-                Arguments.of("-42854", false)                   //30
+            Arguments.of("getName", true),
+            Arguments.of("is-empty?", true),
+            Arguments.of("<=>", true),
+            Arguments.of("42=life", false),
+            Arguments.of("why,are,there,commas,", false),   //5
+            Arguments.of("getName", true),
+            Arguments.of("is-empty?", true),
+            Arguments.of("<=>", true),
+            Arguments.of("++", true),
+            Arguments.of(">=", true),                       //10
+            Arguments.of("get.name", true),
+            Arguments.of("getName_", true),
+            Arguments.of("get///Name", true),
+            Arguments.of("life42", true),
+            Arguments.of("/", true),                        //15
+            Arguments.of("A", true),
+            Arguments.of("life42!", true),
+            Arguments.of("..", true),
+            Arguments.of(".42", true),
+            Arguments.of("b2/11.", true),                   //20
+            Arguments.of("get Name", false),
+            Arguments.of("li\fe", false),
+            Arguments.of("li\\fe", false),
+            Arguments.of("[]", false),
+            Arguments.of("", false),                        //25
+            Arguments.of("()", false),
+            Arguments.of("\"", false),
+            Arguments.of(".", false),
+            Arguments.of("4", false),
+            Arguments.of("-42854", false)                   //30
         );
     }
 
