@@ -28,32 +28,32 @@ final class LexerTests {
                 Arguments.of("is-empty?", true),
                 Arguments.of("<=>", true),
                 Arguments.of("42=life", false),
-                Arguments.of("why,are,there,commas,", false),
+                Arguments.of("why,are,there,commas,", false),   //5
                 Arguments.of("getName", true),
                 Arguments.of("is-empty?", true),
                 Arguments.of("<=>", true),
                 Arguments.of("++", true),
-                Arguments.of(">=", true),           //5
+                Arguments.of(">=", true),                       //10
                 Arguments.of("get.name", true),
                 Arguments.of("getName_", true),
                 Arguments.of("get///Name", true),
                 Arguments.of("life42", true),
-                Arguments.of("/", true),            //10
+                Arguments.of("/", true),                        //15
                 Arguments.of("A", true),
                 Arguments.of("life42!", true),
                 Arguments.of("..", true),
                 Arguments.of(".42", true),
-                Arguments.of("b2/11.", true),
+                Arguments.of("b2/11.", true),                   //20
                 Arguments.of("get Name", false),
                 Arguments.of("li\fe", false),
-                Arguments.of("li\\fe", false),      //20
+                Arguments.of("li\\fe", false),
                 Arguments.of("[]", false),
-                Arguments.of("", false),
-                Arguments.of("()", false)
-//                Arguments.of("\"", false),                    //FIXME: PE, IOOB
-//                Arguments.of(".", false),           //25      //FIXME: PE
-//                Arguments.of("4", false),                     //FIXME: PE
-//                Arguments.of("-42854", false)                 //FIXME: PE
+                Arguments.of("", false),                        //25
+                Arguments.of("()", false),
+//                Arguments.of("\"", false),          //FIXME: IOOB
+                Arguments.of(".", false),
+                Arguments.of("4", false),
+                Arguments.of("-42854", false)                   //30
         );
     }
 
@@ -69,35 +69,35 @@ final class LexerTests {
                 Arguments.of("-1.0", true),
                 Arguments.of("007.000", true),
                 Arguments.of("1.", false),
-                Arguments.of(".5", false),       //FIXME: PE, but due to an error in the test
+                Arguments.of(".5", false),          //5
                 Arguments.of("1", true),
-                Arguments.of("982345786", true),    //5
+                Arguments.of("982345786", true),
                 Arguments.of("+436", true),
                 Arguments.of("-436", true),
-                Arguments.of("-1.0", true),
+                Arguments.of("-1.0", true),         //10
                 Arguments.of("+1.0", true),
-                Arguments.of("0", true),            //10
+                Arguments.of("0", true),
                 Arguments.of("0.01", true),
                 Arguments.of("01", true),
-                Arguments.of("+0.01", true),
+                Arguments.of("+0.01", true),        //15
                 Arguments.of("-0.01", true),
-//                Arguments.of("+-10", false),                    //FIXME: PE
+                Arguments.of("+-10", false),
                 Arguments.of("1.-", false),
-//                Arguments.of("+.5", false),                     //FIXME: PE
-//                Arguments.of("+-1", false),         //20        //FIXME: PE
-//                Arguments.of("-+1", false),                     //FIXME: PE
-//                Arguments.of("++1", false),                     //FIXME: PE
-//                Arguments.of("--1", false),                     //FIXME: PE
+                Arguments.of("+.5", false),
+                Arguments.of("+-1", false),         //20
+                Arguments.of("-+1", false),
+                Arguments.of("++1", false),
+                Arguments.of("--1", false),
                 Arguments.of("1+1", false),
                 Arguments.of("1-1", false),         //25
-//                Arguments.of("+.", false),                      //FIXME: PE
-//                Arguments.of("-.", false),                      //FIXME: PE
-                Arguments.of("", false)
-//                Arguments.of("1+", false),                      //FIXME: PE, IOOB
-//                Arguments.of("1-", false),          //30        //FIXME: PE, IOOB
-//                Arguments.of("+", false),                       //FIXME: PE, IOOB
-//                Arguments.of(".", false),                       //FIXME: PE
-//                Arguments.of("-", false)                        //FIXME: PE, IOOB
+                Arguments.of("+.", false),
+                Arguments.of("-.", false),
+                Arguments.of("", false),
+//                Arguments.of("1+", false),                      //FIXME: IOOB
+//                Arguments.of("1-", false),          //30        //FIXME: IOOB
+//                Arguments.of("+", false),                       //FIXME: IOOB
+                Arguments.of(".", false)
+//                Arguments.of("-", false)                        //FIXME: IOOB
         );
     }
 
@@ -113,19 +113,19 @@ final class LexerTests {
                 Arguments.of("\"abc\"", true),
                 Arguments.of("\"Hello,\\nWorld\"", true),
                 Arguments.of("\"unterminated", false),
-                Arguments.of("\"invalid\\escape\"", false),
+                Arguments.of("\"invalid\\escape\"", false),     //5
                 Arguments.of("\"\r\"", true),
                 Arguments.of("\"\ba9\n\"", true),
                 Arguments.of("\"dsi'b38^_.&(*n_ne\"", true),
-                Arguments.of("\"so tired\"", true),             //10
-                Arguments.of("\"Hello,\\bWorld!\"", true),
+                Arguments.of("\"so tired\"", true),
+                Arguments.of("\"Hello,\\bWorld!\"", true),      //10
                 Arguments.of("\"\\r\"", true),
-//                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: SEE NOTE BELOW
+//                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: SEE NOTE BELOW, IOOB
                 Arguments.of("\"\r\"", true),
                 Arguments.of("\"invalid escape \\uXYZ\"", false),
                 Arguments.of("\"unterminated", false),          //15
-//                Arguments.of("unterminated\"", false),          //FIXME: PE, won't hit lexString
-//                Arguments.of("unterminated", false)             //FIXME: PE, won't hit lexString
+//                Arguments.of("unterminated\"", false),          //FIXME: IOOB, won't hit lexString(?)
+                Arguments.of("unterminated", false),
                 Arguments.of("\"\\d\"", false),
                 Arguments.of("\"invalid\\escape\"", false),
                 Arguments.of("\"Hello,\\\\\\World!\"", false),  //20
