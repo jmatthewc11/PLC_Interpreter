@@ -20,15 +20,6 @@ import java.util.regex.Pattern;
  * done, and the focus here is on the concept.
  */
 public class Lexer {
-    //FIXME:
-    // (1) Keep the starting index, advance until whatever using length
-    // (2) When you get to emit(), substring(start, start + length) for the literal
-
-    //FIXME:
-    // Shouldn't go char by char.  For number:
-    // (1) If it starts with +/-/digit, peek next char to see if it matches NUMBER or IDENTIFIER
-    // (2) If it does, advance, and peek again
-
     private final CharStream chars;
     List<Token> tokens = new ArrayList<>();
 
@@ -252,8 +243,6 @@ public class Lexer {
                 chars.content = chars.content + chars.get(-1);
                 return true;
             }
-//            else if (chars.get(0) == '\n' || chars.get(0) == '\r' || chars.get(0) == '\t')
-//                return true;
             else
                 return false;
         }
