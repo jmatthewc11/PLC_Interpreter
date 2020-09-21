@@ -205,17 +205,22 @@ public class Lexer {
     private Token lexString() throws ParseException {
         if (chars.input.length() != 1) {
             chars.index++;
-            while (chars.get(0) != ('\"') && matchString()) {
-                chars.content = chars.content + chars.get(0);
-                chars.advance();
-                if (!chars.has(0)) {
-                    throw new ParseException("Unterminated literal", chars.start);
+            if (chars.has(0)) {
+                while (chars.get(0) != ('\"') && matchString()) {
+                    chars.content = chars.content + chars.get(0);
+                    chars.advance();
+                    if (!chars.has(0)) {
+                        throw new ParseException("Unterminated literal", chars.start);
+                    }
                 }
             }
+            else {
+                throw new ParseException("Not a valid String literal", chars.start);
+            }
         }
-        else {      //just a quote mark cannot be a valid String literal
+        else {
             throw new ParseException("Not a valid String literal", chars.start);
-        }           //FIXME: is a single quote mark always the beginning of a String literal or can it be an operator
+        }
 
         String regex = "\"([^\"\\\\]|\\\\[bnrt\'\"\\\\])*\"";
         if (chars.get(0) == ('\"')) {
@@ -239,11 +244,22 @@ public class Lexer {
             chars.get(0) == '\r' || chars.get(0) == '\"' ||
             chars.get(0) == '\t' || chars.get(0) == '\'')
             return true;
-        else return chars.get(0) != '\\' ||
-                (chars.get(1) == 'b' || chars.get(1) == 'n' ||
-                chars.get(1) == 'r' || chars.get(1) == 't' ||
-                chars.get(1) == '\'' || chars.get(1) == '\"' ||
-                chars.get(1) == '\\');
+        else if (chars.get(0) == '\\') {
+            chars.advance();
+            if (chars.get(0) == '\\' || chars.get(0) == '\'' || chars.get(0) == '\"'
+                    || chars.get(0) == 'b' || chars.get(0) == 'n'
+                    || chars.get(0) == 'r' || chars.get(0) == 't') {
+                chars.content = chars.content + chars.get(-1);
+                return true;
+            }
+//            else if (chars.get(0) == '\n' || chars.get(0) == '\r' || chars.get(0) == '\t')
+//                return true;
+            else
+                return false;
+        }
+        else {
+            return true;
+        }
     }
 
     /**

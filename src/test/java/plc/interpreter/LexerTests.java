@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
@@ -111,31 +112,30 @@ final class LexerTests {
         return Stream.of(
                 Arguments.of("\"\"", true),
                 Arguments.of("\"abc\"", true),
+                Arguments.of("\"Hello,\\\\\nWorld\"", true),
                 Arguments.of("\"Hello,\\nWorld\"", true),
+                Arguments.of("\"Hello,\nWorld\"", true),        //5
                 Arguments.of("\"unterminated", false),
-                Arguments.of("\"invalid\\escape\"", false),     //5
+                Arguments.of("\"invalid\\escape\"", false),
                 Arguments.of("\"\r\"", true),
                 Arguments.of("\"\ba9\n\"", true),
-                Arguments.of("\"dsi'b38^_.&(*n_ne\"", true),
+                Arguments.of("\"dsi'b38^_.&(*n_ne\"", true),    //10
                 Arguments.of("\"so tired\"", true),
-                Arguments.of("\"Hello,\\bWorld!\"", true),      //10
+                Arguments.of("\"Hello,\\bWorld!\"", true),
                 Arguments.of("\"\\r\"", true),
-//                Arguments.of("\"Hell\"o_World\"", true),        //FIXME: (1) SEE NOTE BELOW, IOOB
                 Arguments.of("\"\r\"", true),
+                Arguments.of("\" string \\\"abc 123\"", true),  //15
+                Arguments.of("\"Hello \\\" World\"", true),
                 Arguments.of("\"invalid escape \\uXYZ\"", false),
-                Arguments.of("\"unterminated", false),          //15
-//                Arguments.of("unterminated\"", false),          //FIXME: (2) SEE NOTE BELOW, IOOB
+                Arguments.of("\" string \\\"", false),
+                Arguments.of("\"unterminated", false),
+                Arguments.of("unterminated\"", false),          //20
                 Arguments.of("unterminated", false),
                 Arguments.of("\"\\d\"", false),
                 Arguments.of("\"invalid\\escape\"", false),
-                Arguments.of("\"Hello,\\\\\\World!\"", false),  //20
-                Arguments.of("\"Hello,\\NWorld!\"", false)
-        );  //FIXME: (1) If we match until ", string will cut off in the middle if there is " in the middle
-            //FIXME: How to look ahead to see where the last double quote is and match the stuff in between?
-            //FIXME: Practical to match everything between the first and last quote?
-
-            //FIXME: (2) Should this return identifier, operator?  Or identifier and throw exception since it's
-            //FIXME: the beginning of a String literal that goes unterminated?
+                Arguments.of("\"Hello,\\\\\\World!\"", false),
+                Arguments.of("\"Hello,\\NWorld!\"", false)      //25
+        );
     }
 
 
@@ -261,53 +261,18 @@ final class LexerTests {
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
-//    @ParameterizedTest
-//    @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
-//    void testPeek(String test, String input, String[] patterns, boolean matches) {
-//        Lexer lexer = new Lexer(input);
-//        Assertions.assertEquals(matches, lexer.peek(patterns));
-//        Assertions.assertEquals(0, lexer.chars.index);
-//    }
-//
-//    @ParameterizedTest
-//    @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
-//    void testMatch(String test, String input, String[] patterns, boolean matches) {
-//        Lexer lexer = new Lexer(input);
-//        Assertions.assertEquals(matches, lexer.match(patterns));
-//        Assertions.assertEquals(matches ? patterns.length : 0, lexer.chars.index);
-//    }
-//
-//    private static Stream<Arguments> testPeekAndMatch() {
-//        return Stream.of(
-//                Arguments.of("Single Char Input, Single Char Pattern", "a", new String[] {"a"}, true),
-//                Arguments.of("Multiple Char Input, Single Char Pattern", "abc", new String[] {"a"}, true),
-//                Arguments.of("Single Char Input, Multiple Char Pattern", "a", new String[] {"a", "b", "c"}, false),
-//                Arguments.of("Multiple Char Input, Multiple Char Pattern", "abc", new String[] {"a"}, true),
-//                Arguments.of("Single Char Input, Char Class Pattern Success", "a", new String[] {"[a-z]"}, true),
-//                Arguments.of("Single Char Input, Char Class Pattern Failure", "@", new String[] {"[a-z]"}, false),
-//                Arguments.of("Multiple Char Input, Mixed Pattern Success", "cat", new String[] {"c", "[aeiou]", "t"}, true),
-//                Arguments.of("Multiple Char Input, Mixed Pattern Failure 1", "cyt", new String[] {"c", "[aeiou]", "t"}, false),
-//                Arguments.of("Multiple Char Input, Mixed Pattern Failure 2", "cow", new String[] {"c", "[aeiou]", "t"}, false),
-//                Arguments.of("End of Input", "eo", new String[] {"e", "o", "[fi]"}, false)
-//        );
-//    }
-//
-//    @Test
-//    void testCharStream() {
-//        Lexer lexer = new Lexer("abc 123");
-//        lexer.chars.advance();
-//        lexer.chars.advance();
-//        lexer.chars.advance();
-//        Assertions.assertEquals(new Token(Token.Type.IDENTIFIER, "abc", 0), lexer.chars.emit(Token.Type.IDENTIFIER));
-//        lexer.chars.advance();
-//        lexer.chars.reset();
-//        Assertions.assertEquals(0, lexer.chars.length);
-//        lexer.chars.advance();
-//        lexer.chars.advance();
-//        lexer.chars.advance();
-//        Assertions.assertEquals(new Token(Token.Type.NUMBER, "123", 4), lexer.chars.emit(Token.Type.NUMBER));
-//        Assertions.assertFalse(lexer.chars.has(0));
-//    }
+    @Test
+    void testExample7() {
+        String input = "\"(print \\\"\tHello, W\norld!\\\" \"let ++ 'b";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.STRING, "\"(print \\\"\tHello, W\norld!\\\" \"", 0),
+                new Token(Token.Type.IDENTIFIER, "let", 29),
+                new Token(Token.Type.IDENTIFIER, "++", 33),
+                new Token(Token.Type.OPERATOR, "'", 36),
+                new Token(Token.Type.IDENTIFIER, "b", 37)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
 
     /**
      * Tests that the input lexes to the (single) expected token if successful,
