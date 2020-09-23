@@ -91,18 +91,18 @@ public final class Lexer {
     Token lexToken() throws ParseException {
         if (peek("[+-]")) {
             chars.advance();
-            if (!peek("[0-9]")) {   //FIXME: take out negation
-//                chars.advance();
-//                return lexNumber();
-//            }
-//            else {
+            if (peek("[0-9]")) {
+                chars.advance();
+                return lexNumber();
+            }
+            else {
                 return lexIdentifier();
             }
         }
-//        else if (peek("[0-9]")) {
-//            chars.advance();
-//            return lexNumber();
-//        }
+        else if (peek("[0-9]")) {
+            chars.advance();
+            return lexNumber();
+        }
 //        else if (match("\"")) {
 //            return lexString();
 //        }
@@ -144,10 +144,10 @@ public final class Lexer {
         int i = 0;
         int count = 0;
         int offset = 0;
-        for (i = 0; i < patterns.length; i++) {   //only 1 char at a time, they move together
+        for (i = 0; i < patterns.length; i++) {
             if (chars.has(offset)) {
                 if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
-                    count++;        //advance all the way to the end of the input
+                    count++;
                     offset++;
                 }
                 else {
@@ -155,7 +155,7 @@ public final class Lexer {
                 }
             }
             else {
-                break;
+                return false;
             }
         }
         return (count == 0 || i == patterns.length);
@@ -172,8 +172,12 @@ public final class Lexer {
         for (i = 0; i < patterns.length; i++) {   //only 1 char at a time, they move together
             if (chars.has(offset)) {
                 if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
-                    count++;        //advance all the way to the end of the input
+                    count++;
                     offset++;
+                    while (chars.has(offset) && Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
+                        count++;
+                        offset++;
+                    }
                 }
                 else {
                     return false;
@@ -195,20 +199,9 @@ public final class Lexer {
     }
 
     Token lexNumber() throws ParseException {
-//        String regex = "[+-]?[0-9]+(\\\\.[0-9]+)?";
-        while (match("[0-9]")) {
-            //can't combine here because there's not way to have both sides of the decimal be option
-        }
+        while (match("[0-9]")) {}
+        while (match("[.]", "[0-9]+")) {}
 
-        while (match("[.][0-9]+")) {
-//                while (match("")) {
-//            chars.content = chars.content + chars.get(1);
-//            chars.advance();
-            }
-//            else {
-//                return chars.emit(Token.Type.NUMBER);
-//            }
-//        }
         return chars.emit(Token.Type.NUMBER);
     }
 
