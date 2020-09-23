@@ -103,9 +103,10 @@ public final class Lexer {
             chars.advance();
             return lexNumber();
         }
-//        else if (match("\"")) {
-//            return lexString();
-//        }
+        else if (peek("\"")) {
+            chars.advance();
+            return lexString();
+        }
         else if (peek("[a-zA-Z]")) {
             return lexIdentifier();
         }
@@ -197,63 +198,30 @@ public final class Lexer {
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
-//    Token lexString() throws ParseException {
-//        if (chars.input.length() != 1) {
-//            chars.index++;
-//            if (chars.has(0)) {
-//                while (chars.get(0) != ('\"') && matchString()) {
-//                    chars.content = chars.content + chars.get(0);
-//                    chars.advance();
-//                    if (!chars.has(0)) {
-//                        throw new ParseException("Unterminated literal", chars.start);
-//                    }
-//                }
-//            }
-//            else {
-//                throw new ParseException("Not a valid String literal", chars.start);
-//            }
-//        }
-//        else {
-//            throw new ParseException("Not a valid String literal", chars.start);
-//        }
-//
-//        String regex = "\"([^\"\\\\]|\\\\[bnrt\'\"\\\\])*\"";
-//        if (chars.get(0) == ('\"')) {
-//            chars.content = chars.content + chars.get(0);
-//            chars.length++;
-//            if (chars.matchRegex(regex))
-//                return chars.emit(Token.Type.STRING);
-//            else
-//                throw new ParseException("String literal does not match regex", chars.start);
-//        }
-//        else {
-//            throw new ParseException("Unterminated literal", chars.start);
-//        }
-//    }
+    Token lexString() throws ParseException {
+        while (!peek("\"")) {
+            if (peek("\n") || peek("\r") || peek("\b") || peek("\t")) {
+                chars.advance();
+            }
+            else if (peek("\\\\")) {
+                chars.advance();
+                if (peek("\"") || peek("\'") || peek("r") || peek("b") ||
+                    peek("t") || peek("n") || peek("\\\\")) {
+                    chars.advance();
+                }
+                else
+                    throw new ParseException("Not a valid String literal", chars.index);
+            }
+            else
+                if (!match("[^\\\"\\\\]"))
+                    break;
+        }
 
-//    /**
-//     * For matching String literal edge cases
-//     */
-//    private boolean matchString() {
-//        if (chars.get(0) == '\n'|| chars.get(0) == '\b' ||
-//            chars.get(0) == '\r' || chars.get(0) == '\"' ||
-//            chars.get(0) == '\t' || chars.get(0) == '\'')
-//            return true;
-//        else if (chars.get(0) == '\\') {
-//            chars.advance();
-//            if (chars.get(0) == '\\' || chars.get(0) == '\'' || chars.get(0) == '\"'
-//                    || chars.get(0) == 'b' || chars.get(0) == 'n'
-//                    || chars.get(0) == 'r' || chars.get(0) == 't') {
-//                chars.content = chars.content + chars.get(-1);
-//                return true;
-//            }
-//            else
-//                return false;
-//        }
-//        else {
-//            return true;
-//        }
-//    }
+        if (match("\""))
+                return chars.emit(Token.Type.STRING);
+        else
+            throw new ParseException("Not a valid String literal", chars.index);
+    }
 
     /**
      * This is basically a sequence of characters. The index is used to maintain
