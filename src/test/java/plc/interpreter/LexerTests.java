@@ -300,6 +300,7 @@ final class LexerTests {
                 Arguments.of("Multiple Char Input, Mixed Pattern Success", "cat", new String[] {"c", "[aeiou]", "t"}, true),
                 Arguments.of("Multiple Char Input, Mixed Pattern Failure 1", "cyt", new String[] {"c", "[aeiou]", "t"}, false),
                 Arguments.of("Multiple Char Input, Mixed Pattern Failure 2", "cow", new String[] {"c", "[aeiou]", "t"}, false),
+                Arguments.of("Multiple Char Input, Mixed Pattern Failure 3", "tot", new String[] {"c", "[aeiou]", "t"}, false),
                 Arguments.of("End of Input", "eo", new String[] {"e", "o", "[fi]"}, false)
         );
     }

@@ -38,7 +38,7 @@ public final class Lexer {
      * of the input is reached, returning the list of tokens lexed. This should
      * also handle skipping whitespace.
      */
-    private List<Token> lex() throws ParseException {
+    List<Token> lex() throws ParseException {
         List<Token> tokens = new ArrayList<>();
         while (chars.has(0)) {
             if (chars.get(0) == ' ' || chars.get(0) == '\t' || chars.get(0) == '\r' || chars.get(0) == '\n') {
@@ -240,9 +240,7 @@ public final class Lexer {
         /**
          * Returns true if there is a character at index + offset.
          */
-        boolean has(int offset) {
-            return index + offset < input.length();
-        }
+        boolean has(int offset) { return index + offset < input.length(); }
 
         /**
          * Gets the character at index + offset.
