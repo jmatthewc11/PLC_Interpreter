@@ -91,18 +91,18 @@ public final class Lexer {
     Token lexToken() throws ParseException {
         if (peek("[+-]")) {
             chars.advance();
-            if (peek("[0-9]")) {
-                chars.advance();
-                return lexNumber();
-            }
-            else {
+            if (!peek("[0-9]")) {   //FIXME: take out negation
+//                chars.advance();
+//                return lexNumber();
+//            }
+//            else {
                 return lexIdentifier();
             }
         }
-        else if (peek("[0-9]")) {
-            chars.advance();
-            return lexNumber();
-        }
+//        else if (peek("[0-9]")) {
+//            chars.advance();
+//            return lexNumber();
+//        }
 //        else if (match("\"")) {
 //            return lexString();
 //        }
@@ -158,7 +158,7 @@ public final class Lexer {
                 break;
             }
         }
-        return count != 0;
+        return (count == 0 || i == patterns.length);
     }
 
     /**
@@ -183,14 +183,13 @@ public final class Lexer {
                 break;
             }
         }
-        if (count == 0) {
+        if (count == 0 || i != patterns.length) {
             return false;
         }
-        else {
-            while (count < i) {
-                chars.advance();
-                count++;
-            }
+
+        while (count > 0) {
+            chars.advance();
+            count--;
         }
         return true;
     }
@@ -198,26 +197,24 @@ public final class Lexer {
     Token lexNumber() throws ParseException {
 //        String regex = "[+-]?[0-9]+(\\\\.[0-9]+)?";
         while (match("[0-9]")) {
-//            chars.content = chars.content + chars.get(1);
-//            chars.advance();
+            //can't combine here because there's not way to have both sides of the decimal be option
         }
 
-        if (peek("[.]")) {
-            if (peek("[0-9]"))
-                while (match("[0-9]")) {
+        while (match("[.][0-9]+")) {
+//                while (match("")) {
 //            chars.content = chars.content + chars.get(1);
 //            chars.advance();
             }
-            else {
-                return chars.emit(Token.Type.NUMBER);
-            }
-        }
+//            else {
+//                return chars.emit(Token.Type.NUMBER);
+//            }
+//        }
         return chars.emit(Token.Type.NUMBER);
     }
 
     Token lexIdentifier() {
 //        String regex = "[\\w+\\-*/.:!?<>=]";
-        while (match("[\\w+*/.:!?<>=-]")) {
+        while (match("[A-Za-z_+\\-*/.:!?<>=]")) {
 //            chars.content = chars.content + chars.get(1);
 //            chars.advance();
         }

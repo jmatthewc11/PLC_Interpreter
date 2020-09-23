@@ -66,7 +66,7 @@ final class LexerTests {
 
     private static Stream<Arguments> testNumber() {
         return Stream.of(
-                Arguments.of("1", true),
+//                Arguments.of("1", true),
                 Arguments.of("-1.0", true)
 //                Arguments.of("007.000", true),
 //                Arguments.of("1.", false),
@@ -296,7 +296,7 @@ final class LexerTests {
                 Arguments.of("Multiple Char Input, Single Char Pattern", "abc", new String[] {"a"}, true),
                 Arguments.of("Single Char Input, Multiple Char Pattern", "a", new String[] {"a", "b", "c"}, false),
                 Arguments.of("Multiple Char Input, Multiple Char Pattern", "abc", new String[] {"a"}, true),
-                Arguments.of("Single Char Input, Char Class Pattern Success", "a", new String[] {"[a-z]"}, true),
+                Arguments.of("Single Char Input, Char Class Pattern Success", "a", new String[] {"[a-z]"}, true),   //5
                 Arguments.of("Single Char Input, Char Class Pattern Failure", "@", new String[] {"[a-z]"}, false),
                 Arguments.of("Multiple Char Input, Mixed Pattern Success", "cat", new String[] {"c", "[aeiou]", "t"}, true),
                 Arguments.of("Multiple Char Input, Mixed Pattern Failure 1", "cyt", new String[] {"c", "[aeiou]", "t"}, false),
