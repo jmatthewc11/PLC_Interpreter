@@ -2,7 +2,7 @@ package plc.interpreter;
 
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.regex.Pattern;
+import java.util.regex.Pattern;
 
 /**
  * The lexer works through three main functions:
@@ -93,43 +93,45 @@ public final class Lexer {
             if (chars.has(1) && Character.isDigit(chars.get(1))) {
                 return lexNumber();
             }
-            else {
-                return lexIdentifier();
-            }
+//            else {
+//                return lexIdentifier();
+//            }
         }
-        else if (match("[0-9]")) {
+        else if (peek("[0-9]")) {
+            chars.advance();
             return lexNumber();
         }
-        else if (match("\"")) {
-            return lexString();
-        }
-        else if (match("[a-zA-z")) {
-            return lexIdentifier();
-        }
-        else if (match("[.]")) {
-            if (chars.has(1) && isIdentifier(chars.get(1)))
-                return lexIdentifier();
-            else
-                return chars.emit(Token.Type.OPERATOR);
-        }
-        else if (match("[+-*/.:!?<>=]")) {
-            return lexIdentifier();
-        }
+//        else if (match("\"")) {
+//            return lexString();
+//        }
+//        else if (match("[a-zA-z")) {
+//            return lexIdentifier();
+//        }
+//        else if (match("[.]")) {
+//            if (chars.has(1) && match("[+-*/.:!?<>=]"))
+//                return lexIdentifier();
+//            else
+//                return chars.emit(Token.Type.OPERATOR);
+//        }
+//        else if (match("[+-*/.:!?<>=]")) {
+//            return lexIdentifier();
+//        }
         else {
             return chars.emit(Token.Type.OPERATOR);
         }
+        return chars.emit(Token.Type.OPERATOR); //FIXME: take this out later
     }
 
-    boolean isIdentifier(char nextChar) {
-        return  Character.isAlphabetic(nextChar) ||
-                Character.isDigit(nextChar) ||
-                nextChar == '_' || nextChar == '+' ||
-                nextChar == '-' || nextChar == '*' ||
-                nextChar == '/' || nextChar == '.' ||
-                nextChar == ':' || nextChar == '!' ||
-                nextChar == '?' || nextChar == '<' ||
-                nextChar == '>' || nextChar == '=';
-    }
+//    boolean isIdentifier(char nextChar) {
+//        return  Character.isAlphabetic(nextChar) ||
+//                Character.isDigit(nextChar) ||
+//                nextChar == '_' || nextChar == '+' ||
+//                nextChar == '-' || nextChar == '*' ||
+//                nextChar == '/' || nextChar == '.' ||
+//                nextChar == ':' || nextChar == '!' ||
+//                nextChar == '?' || nextChar == '<' ||
+//                nextChar == '>' || nextChar == '=';
+//    }
 
     /**
      * Returns true if the next sequence of characters match the given patterns,
@@ -137,80 +139,98 @@ public final class Lexer {
      * return true for the sequence {@code 'a', 'b', 'c'}
      */
     boolean peek(String... patterns) {
-        if (chars.has(1))
-            return Pattern.matches(patterns, Character.toString(chars.get(1)));
-        else
-            return false;
+        int i = 0;
+        for (i = 0; i < patterns.length; i++) {   //only 1 char at a time, they move together
+            while (chars.has(0)) {
+                if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(0))).matches()) {
+                    return true;
+                }
+            }
+        }
+        return i == patterns.length;
     }
 
+    /**
+     * Returns true in the same way as peek, but also advances the CharStream too
+     * if the characters matched.
+     */
     boolean match(String... patterns) {
-
+        for (String pattern : patterns) {   //only 1 char at a time, they move together
+            while (chars.has(0)) {
+                if (Pattern.compile(pattern).matcher(Character.toString(chars.get(0))).matches()) {
+                    chars.advance();    //FIXME: advance all the way to the end of the input
+                } else {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     Token lexNumber() throws ParseException {
-        String regex = "[+-]?[0-9]+(\\\\.[0-9]+)?";
-        while (chars.has(1) && peek(regex)) {
-            chars.content = chars.content + chars.get(1);
-            chars.advance();
+//        String regex = "[+-]?[0-9]+(\\\\.[0-9]+)?";
+        while (match("[0-9]+(\\.[0-9]+)?")) {
+//            chars.content = chars.content + chars.get(1);
+//            chars.advance();
         }
 
-        if (chars.has(1) && chars.get(1) == '.') {
-            if (chars.has(2) && Character.isDigit(chars.get(2))) {
-                chars.content = chars.content + '.';
-                chars.advance();
-
-                while (chars.has(1) && peek(regex)) {
-                    chars.content = chars.content + chars.get(1);
-                    chars.advance();
-                }
-            }
-        }
+//        if (chars.has(1) && chars.get(1) == '.') {
+//            if (chars.has(2) && Character.isDigit(chars.get(2))) {
+//                chars.content = chars.content + '.';
+//                chars.advance();
+//
+//                while (chars.has(1) && peek(regex)) {
+//                    chars.content = chars.content + chars.get(1);
+//                    chars.advance();
+//                }
+//            }
+//        }
         return chars.emit(Token.Type.NUMBER);
     }
 
-    Token lexIdentifier() {
-        String regex = "[\\w+\\-*/.:!?<>=]";
+//    Token lexIdentifier() {
+//        String regex = "[\\w+\\-*/.:!?<>=]";
+//
+//        while (chars.has(1) && peek(regex)) {
+//            chars.content = chars.content + chars.get(1);
+//            chars.advance();
+//        }
+//        return chars.emit(Token.Type.IDENTIFIER);
+//    }
 
-        while (chars.has(1) && peek(regex)) {
-            chars.content = chars.content + chars.get(1);
-            chars.advance();
-        }
-        return chars.emit(Token.Type.IDENTIFIER);
-    }
-
-    Token lexString() throws ParseException {
-        if (chars.input.length() != 1) {
-            chars.index++;
-            if (chars.has(0)) {
-                while (chars.get(0) != ('\"') && matchString()) {
-                    chars.content = chars.content + chars.get(0);
-                    chars.advance();
-                    if (!chars.has(0)) {
-                        throw new ParseException("Unterminated literal", chars.start);
-                    }
-                }
-            }
-            else {
-                throw new ParseException("Not a valid String literal", chars.start);
-            }
-        }
-        else {
-            throw new ParseException("Not a valid String literal", chars.start);
-        }
-
-        String regex = "\"([^\"\\\\]|\\\\[bnrt\'\"\\\\])*\"";
-        if (chars.get(0) == ('\"')) {
-            chars.content = chars.content + chars.get(0);
-            chars.length++;
-            if (chars.matchRegex(regex))
-                return chars.emit(Token.Type.STRING);
-            else
-                throw new ParseException("String literal does not match regex", chars.start);
-        }
-        else {
-            throw new ParseException("Unterminated literal", chars.start);
-        }
-    }
+//    Token lexString() throws ParseException {
+//        if (chars.input.length() != 1) {
+//            chars.index++;
+//            if (chars.has(0)) {
+//                while (chars.get(0) != ('\"') && matchString()) {
+//                    chars.content = chars.content + chars.get(0);
+//                    chars.advance();
+//                    if (!chars.has(0)) {
+//                        throw new ParseException("Unterminated literal", chars.start);
+//                    }
+//                }
+//            }
+//            else {
+//                throw new ParseException("Not a valid String literal", chars.start);
+//            }
+//        }
+//        else {
+//            throw new ParseException("Not a valid String literal", chars.start);
+//        }
+//
+//        String regex = "\"([^\"\\\\]|\\\\[bnrt\'\"\\\\])*\"";
+//        if (chars.get(0) == ('\"')) {
+//            chars.content = chars.content + chars.get(0);
+//            chars.length++;
+//            if (chars.matchRegex(regex))
+//                return chars.emit(Token.Type.STRING);
+//            else
+//                throw new ParseException("String literal does not match regex", chars.start);
+//        }
+//        else {
+//            throw new ParseException("Unterminated literal", chars.start);
+//        }
+//    }
 
 //    /**
 //     * For matching String literal edge cases
@@ -244,9 +264,7 @@ public final class Lexer {
     static final class CharStream {
         private int index = 0;      //where we are in the input
         private int length = 0;     //how many chars are part of the built literal
-//        private int start = 0;
         private String input;
-//        private String content;
 
         CharStream(String input) {
             this.input = input;
@@ -283,35 +301,21 @@ public final class Lexer {
         }
 
         /**
-         * Checks for the end of the input.
-         */
-//        private boolean endOfInput() {
-//            return index >= input.length();
-//        }
-
-        /**
-         * Checks that the entire built token actually matches the intended regex
-         */
-//        private boolean matchRegex(String pattern) {
-//            return Pattern.matches(pattern, chars.content);
-//        }
-
-        /**
          * Returns a token of the given type with the built literal. The index
          * of the token should be the <em>starting</em> index.
          */
         Token emit(Token.Type type) {
             if (type == Token.Type.IDENTIFIER) {
-                return new Token(Token.Type.IDENTIFIER, input.substring(index - length, length + 1), index - length);
+                return new Token(Token.Type.IDENTIFIER, input.substring(index - length), index - length);
             }
             else if (type == Token.Type.NUMBER) {
-                return new Token(Token.Type.NUMBER, input.substring(index - length, length + 1), index - length);
+                return new Token(Token.Type.NUMBER, input.substring(index - length), index - length);
             }
             else if (type == Token.Type.STRING) {
-                return new Token(Token.Type.STRING, input.substring(index - length, length + 1), index - length);
+                return new Token(Token.Type.STRING, input.substring(index - length), index - length);
             }
             else {
-                return new Token(Token.Type.OPERATOR, input.substring(index - length, length + 1), index - length);
+                return new Token(Token.Type.OPERATOR, input.substring(index - length), index - length);
             }
         }
     }
