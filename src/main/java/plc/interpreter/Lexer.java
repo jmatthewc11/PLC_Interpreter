@@ -89,13 +89,15 @@ public final class Lexer {
      * </pre>
      */
     Token lexToken() throws ParseException {
-        if (match("[+-]")) {
-            if (chars.has(1) && Character.isDigit(chars.get(1))) {
+        if (peek("[+-]")) {
+            chars.advance();
+            if (peek("[0-9]")) {
+                chars.advance();
                 return lexNumber();
             }
-//            else {
-//                return lexIdentifier();
-//            }
+            else {
+                return lexIdentifier();
+            }
         }
         else if (peek("[0-9]")) {
             chars.advance();
@@ -104,18 +106,18 @@ public final class Lexer {
 //        else if (match("\"")) {
 //            return lexString();
 //        }
-//        else if (match("[a-zA-z")) {
-//            return lexIdentifier();
-//        }
-//        else if (match("[.]")) {
-//            if (chars.has(1) && match("[+-*/.:!?<>=]"))
-//                return lexIdentifier();
+        else if (match("[a-zA-z]")) {
+            return lexIdentifier();
+        }
+        else if (match("[.]")) {
+            if (chars.has(1) && match("[+-*/.:!?<>=]"))
+                return lexIdentifier();
 //            else
 //                return chars.emit(Token.Type.OPERATOR);
-//        }
-//        else if (match("[+-*/.:!?<>=]")) {
-//            return lexIdentifier();
-//        }
+        }
+        else if (match("[+-*/.:!?<>=]")) {
+            return lexIdentifier();
+        }
         else {
             return chars.emit(Token.Type.OPERATOR);
         }
@@ -140,14 +142,23 @@ public final class Lexer {
      */
     boolean peek(String... patterns) {
         int i = 0;
+        int count = 0;
+        int offset = 0;
         for (i = 0; i < patterns.length; i++) {   //only 1 char at a time, they move together
-            while (chars.has(0)) {
-                if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(0))).matches()) {
-                    return true;
+            if (chars.has(offset)) {
+                if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
+                    count++;        //advance all the way to the end of the input
+                    offset++;
+                }
+                else {
+                    return false;
                 }
             }
+            else {
+                break;
+            }
         }
-        return i == patterns.length;
+        return count != 0;
     }
 
     /**
@@ -155,48 +166,68 @@ public final class Lexer {
      * if the characters matched.
      */
     boolean match(String... patterns) {
-        for (String pattern : patterns) {   //only 1 char at a time, they move together
-            while (chars.has(0)) {
-                if (Pattern.compile(pattern).matcher(Character.toString(chars.get(0))).matches()) {
-                    chars.advance();    //FIXME: advance all the way to the end of the input
-                } else {
+        int i = 0;
+        int count = 0;
+        int offset = 0;
+        for (i = 0; i < patterns.length; i++) {   //only 1 char at a time, they move together
+            if (chars.has(offset)) {
+                if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
+                    count++;        //advance all the way to the end of the input
+                    offset++;
+                }
+                else {
                     return false;
                 }
             }
+            else {
+                break;
+            }
         }
-        return false;
+        if (count == 0) {
+            return false;
+        }
+        else {
+            while (count < i) {
+                chars.advance();
+                count++;
+            }
+        }
+        return true;
     }
 
     Token lexNumber() throws ParseException {
 //        String regex = "[+-]?[0-9]+(\\\\.[0-9]+)?";
-        while (match("[0-9]+(\\.[0-9]+)?")) {
+        while (match("[0-9]")) {
 //            chars.content = chars.content + chars.get(1);
 //            chars.advance();
         }
 
-//        if (chars.has(1) && chars.get(1) == '.') {
-//            if (chars.has(2) && Character.isDigit(chars.get(2))) {
-//                chars.content = chars.content + '.';
-//                chars.advance();
-//
-//                while (chars.has(1) && peek(regex)) {
-//                    chars.content = chars.content + chars.get(1);
-//                    chars.advance();
-//                }
-//            }
-//        }
+        if (peek("[.]")) {
+            if (peek("[0-9]"))
+                while (match("[0-9]")) {
+//            chars.content = chars.content + chars.get(1);
+//            chars.advance();
+            }
+            else {
+                return chars.emit(Token.Type.NUMBER);
+            }
+        }
         return chars.emit(Token.Type.NUMBER);
     }
 
-//    Token lexIdentifier() {
+    Token lexIdentifier() {
 //        String regex = "[\\w+\\-*/.:!?<>=]";
-//
+        while (match("[\\w+*/.:!?<>=-]")) {
+//            chars.content = chars.content + chars.get(1);
+//            chars.advance();
+        }
+
 //        while (chars.has(1) && peek(regex)) {
 //            chars.content = chars.content + chars.get(1);
 //            chars.advance();
 //        }
-//        return chars.emit(Token.Type.IDENTIFIER);
-//    }
+        return chars.emit(Token.Type.IDENTIFIER);
+    }
 
 //    Token lexString() throws ParseException {
 //        if (chars.input.length() != 1) {
@@ -262,9 +293,9 @@ public final class Lexer {
      * accumulates characters into the literal value for the next token.
      */
     static final class CharStream {
-        private int index = 0;      //where we are in the input
-        private int length = 0;     //how many chars are part of the built literal
-        private String input;
+        final String input;
+        int index = 0;      //where we are in the input
+        int length = 0;     //how many chars are part of the built literal
 
         CharStream(String input) {
             this.input = input;

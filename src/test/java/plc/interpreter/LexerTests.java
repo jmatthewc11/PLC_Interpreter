@@ -25,36 +25,36 @@ final class LexerTests {
 
     private static Stream<Arguments> testIdentifier() {
         return Stream.of(
-            Arguments.of("getName", true),
-            Arguments.of("is-empty?", true),
-            Arguments.of("<=>", true),
-            Arguments.of("42=life", false),
-            Arguments.of("why,are,there,commas,", false),   //5
-            Arguments.of("getName", true),
-            Arguments.of("is-empty?", true),
-            Arguments.of("<=>", true),
-            Arguments.of("++", true),
-            Arguments.of(">=", true),                       //10
-            Arguments.of("get.name", true),
-            Arguments.of("getName_", true),
-            Arguments.of("get///Name", true),
-            Arguments.of("life42", true),
-            Arguments.of("/", true),                        //15
-            Arguments.of("A", true),
-            Arguments.of("life42!", true),
-            Arguments.of("..", true),
-            Arguments.of(".42", true),
-            Arguments.of("b2/11.", true),                   //20
-            Arguments.of("get Name", false),
-            Arguments.of("li\fe", false),
-            Arguments.of("li\\fe", false),
-            Arguments.of("[]", false),
-            Arguments.of("", false),                        //25
-            Arguments.of("()", false),
-            Arguments.of("\"", false),
-            Arguments.of(".", false),
-            Arguments.of("4", false),
-            Arguments.of("-42854", false)                   //30
+            Arguments.of("getName", true)
+//            Arguments.of("is-empty?", true),
+//            Arguments.of("<=>", true),
+//            Arguments.of("42=life", false),
+//            Arguments.of("why,are,there,commas,", false),   //5
+//            Arguments.of("getName", true),
+//            Arguments.of("is-empty?", true),
+//            Arguments.of("<=>", true),
+//            Arguments.of("++", true),
+//            Arguments.of(">=", true),                       //10
+//            Arguments.of("get.name", true),
+//            Arguments.of("getName_", true),
+//            Arguments.of("get///Name", true),
+//            Arguments.of("life42", true),
+//            Arguments.of("/", true),                        //15
+//            Arguments.of("A", true),
+//            Arguments.of("life42!", true),
+//            Arguments.of("..", true),
+//            Arguments.of(".42", true),
+//            Arguments.of("b2/11.", true),                   //20
+//            Arguments.of("get Name", false),
+//            Arguments.of("li\fe", false),
+//            Arguments.of("li\\fe", false),
+//            Arguments.of("[]", false),
+//            Arguments.of("", false),                        //25
+//            Arguments.of("()", false),
+//            Arguments.of("\"", false),
+//            Arguments.of(".", false),
+//            Arguments.of("4", false),
+//            Arguments.of("-42854", false)                   //30
         );
     }
 
@@ -272,6 +272,54 @@ final class LexerTests {
                 new Token(Token.Type.IDENTIFIER, "b", 37)
         );
         Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @ParameterizedTest
+    @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
+    void testPeek(String test, String input, String[] patterns, boolean matches) {
+        Lexer lexer = new Lexer(input);
+        Assertions.assertEquals(matches, lexer.peek(patterns));
+        Assertions.assertEquals(0, lexer.chars.index);
+    }
+
+    @ParameterizedTest
+    @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
+    void testMatch(String test, String input, String[] patterns, boolean matches) {
+        Lexer lexer = new Lexer(input);
+        Assertions.assertEquals(matches, lexer.match(patterns));
+        Assertions.assertEquals(matches ? patterns.length : 0, lexer.chars.index);
+    }
+
+    private static Stream<Arguments> testPeekAndMatch() {
+        return Stream.of(
+                Arguments.of("Single Char Input, Single Char Pattern", "a", new String[] {"a"}, true),
+                Arguments.of("Multiple Char Input, Single Char Pattern", "abc", new String[] {"a"}, true),
+                Arguments.of("Single Char Input, Multiple Char Pattern", "a", new String[] {"a", "b", "c"}, false),
+                Arguments.of("Multiple Char Input, Multiple Char Pattern", "abc", new String[] {"a"}, true),
+                Arguments.of("Single Char Input, Char Class Pattern Success", "a", new String[] {"[a-z]"}, true),
+                Arguments.of("Single Char Input, Char Class Pattern Failure", "@", new String[] {"[a-z]"}, false),
+                Arguments.of("Multiple Char Input, Mixed Pattern Success", "cat", new String[] {"c", "[aeiou]", "t"}, true),
+                Arguments.of("Multiple Char Input, Mixed Pattern Failure 1", "cyt", new String[] {"c", "[aeiou]", "t"}, false),
+                Arguments.of("Multiple Char Input, Mixed Pattern Failure 2", "cow", new String[] {"c", "[aeiou]", "t"}, false),
+                Arguments.of("End of Input", "eo", new String[] {"e", "o", "[fi]"}, false)
+        );
+    }
+
+    @Test
+    void testCharStream() {
+        Lexer lexer = new Lexer("abc 123");
+        lexer.chars.advance();
+        lexer.chars.advance();
+        lexer.chars.advance();
+        Assertions.assertEquals(new Token(Token.Type.IDENTIFIER, "abc", 0), lexer.chars.emit(Token.Type.IDENTIFIER));
+        lexer.chars.advance();
+        lexer.chars.reset();
+        Assertions.assertEquals(0, lexer.chars.length);
+        lexer.chars.advance();
+        lexer.chars.advance();
+        lexer.chars.advance();
+        Assertions.assertEquals(new Token(Token.Type.NUMBER, "123", 4), lexer.chars.emit(Token.Type.NUMBER));
+        Assertions.assertFalse(lexer.chars.has(0));
     }
 
     /**
