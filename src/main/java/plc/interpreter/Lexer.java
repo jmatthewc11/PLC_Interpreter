@@ -106,34 +106,20 @@ public final class Lexer {
 //        else if (match("\"")) {
 //            return lexString();
 //        }
-        else if (match("[a-zA-z]")) {
+        else if (peek("[a-zA-Z]")) {
             return lexIdentifier();
         }
-        else if (match("[.]")) {
-            if (chars.has(1) && match("[+-*/.:!?<>=]"))
-                return lexIdentifier();
-//            else
-//                return chars.emit(Token.Type.OPERATOR);
+        else if (peek("[.]", "[A-Za-z0-9_+*./:!?<>=-]")) {
+            return lexIdentifier();
         }
-        else if (match("[+-*/.:!?<>=]")) {
+        else if (peek("[+*/:!?<>=-]")) {
             return lexIdentifier();
         }
         else {
+            chars.advance();
             return chars.emit(Token.Type.OPERATOR);
         }
-        return chars.emit(Token.Type.OPERATOR); //FIXME: take this out later
     }
-
-//    boolean isIdentifier(char nextChar) {
-//        return  Character.isAlphabetic(nextChar) ||
-//                Character.isDigit(nextChar) ||
-//                nextChar == '_' || nextChar == '+' ||
-//                nextChar == '-' || nextChar == '*' ||
-//                nextChar == '/' || nextChar == '.' ||
-//                nextChar == ':' || nextChar == '!' ||
-//                nextChar == '?' || nextChar == '<' ||
-//                nextChar == '>' || nextChar == '=';
-//    }
 
     /**
      * Returns true if the next sequence of characters match the given patterns,
@@ -206,16 +192,8 @@ public final class Lexer {
     }
 
     Token lexIdentifier() {
-//        String regex = "[\\w+\\-*/.:!?<>=]";
-        while (match("[A-Za-z_+\\-*/.:!?<>=]")) {
-//            chars.content = chars.content + chars.get(1);
-//            chars.advance();
-        }
+        while (match("[A-Za-z0-9_+*/.:!?<>=-]")) {}
 
-//        while (chars.has(1) && peek(regex)) {
-//            chars.content = chars.content + chars.get(1);
-//            chars.advance();
-//        }
         return chars.emit(Token.Type.IDENTIFIER);
     }
 
@@ -327,16 +305,16 @@ public final class Lexer {
          */
         Token emit(Token.Type type) {
             if (type == Token.Type.IDENTIFIER) {
-                return new Token(Token.Type.IDENTIFIER, input.substring(index - length), index - length);
+                return new Token(Token.Type.IDENTIFIER, input.substring(index - length, index), index - length);
             }
             else if (type == Token.Type.NUMBER) {
-                return new Token(Token.Type.NUMBER, input.substring(index - length), index - length);
+                return new Token(Token.Type.NUMBER, input.substring(index - length, index), index - length);
             }
             else if (type == Token.Type.STRING) {
-                return new Token(Token.Type.STRING, input.substring(index - length), index - length);
+                return new Token(Token.Type.STRING, input.substring(index - length, index), index - length);
             }
             else {
-                return new Token(Token.Type.OPERATOR, input.substring(index - length), index - length);
+                return new Token(Token.Type.OPERATOR, input.substring(index - length, index), index - length);
             }
         }
     }
