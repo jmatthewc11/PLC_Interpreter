@@ -89,16 +89,21 @@ public final class Parser {
             if (!match(Token.Type.IDENTIFIER)) {
                 throw new ParseException("Expecting identifier", tokens.get(0).getIndex());
             }
-            String name = tokens.get(-1).getLiteral();
-            List<Ast> args = new ArrayList<>();
+            String name = tokens.get(-1).getLiteral();  //get identifier from before current term
+            List<Ast> args = new ArrayList<>();         //make list of args for term
 
-            while (!peek(")")) {       //new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()))
+            while (!peek(")")) {
                 if (peek(Token.Type.NUMBER)) {
                     args.add(parseNum());
                     tokens.advance();
                 }
             }
-            return new Ast.Term(name, args);
+
+            Ast term = new Ast.Term(name, args);        //make a term out of the name, numbers
+            List<Ast> terms = new ArrayList<>();
+            terms.add(term);
+
+            return new Ast.Term("source", terms);
         }
         else {
             throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
