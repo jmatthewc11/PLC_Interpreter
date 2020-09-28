@@ -40,11 +40,11 @@ public final class Parser {
      * {@link Ast.Term} with the identifier {@code "source"}.
      */
     private Ast parse() {       //FIXME: AST returned here is the whole thing, how to add all of them together?
-        Ast ast = new Ast();
-        while (tokens.has(0)) {
-            parseAst();
-        }
-        return ast;
+//        Ast ast = new Ast();
+//        while (tokens.has(0)) {
+//            parseAst();
+//        }
+        return parseAst();
     }
 
     /**
@@ -85,16 +85,33 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() {
-        Ast ast = new Ast();
         if (match("(") || match("[")) {
             if (!match(Token.Type.IDENTIFIER)) {
                 throw new ParseException("Expecting identifier", tokens.get(0).getIndex());
             }
+            String name = tokens.get(-1).getLiteral();
+            List<Ast> args = new ArrayList<>();
+
+            while (!peek(")")) {       //new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()))
+                if (peek(Token.Type.NUMBER)) {
+                    args.add(parseNum());
+                    tokens.advance();
+                }
+            }
+            return new Ast.Term(name, args);
         }
         else {
             throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
         }
-        return ast;
+    }
+
+    private Ast parseNum() {
+//        if (tokens.get(0).getLiteral().charAt(0) == '-' || tokens.get(0).getLiteral().charAt(0) == '+') {
+//            return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
+//        }
+//        else {
+            return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
+//        }
     }
 
     /**
@@ -151,10 +168,10 @@ public final class Parser {
                     if (patterns[i].equals(tokens.get(offset).getLiteral())) {
                         count++;
                         offset++;
-                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
-                            count++;
-                            offset++;
-                        }
+//                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+//                            count++;
+//                            offset++;
+//                        }
                     }
                     else {
                         return false;
@@ -164,10 +181,10 @@ public final class Parser {
                     if (patterns[i].equals(tokens.get(offset).getType())) {
                         count++;
                         offset++;
-                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
-                            count++;
-                            offset++;
-                        }
+//                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+//                            count++;
+//                            offset++;
+//                        }
                     }
                     else {
                         return false;
