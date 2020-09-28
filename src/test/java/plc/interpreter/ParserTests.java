@@ -30,20 +30,20 @@ final class ParserTests {
         test(input, expected);
     }
 
-    @Test
-    void testExample3() {
-        String input = "(let [x 10] (assert-equals? x 10))";
-        Ast expected = new Ast.Term("let", Arrays.asList(
-                new Ast.Term("x", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.TEN)
-                )),
-                new Ast.Term("assert-equals?", Arrays.asList(
-                        new Ast.Identifier("x"),
-                        new Ast.NumberLiteral(BigDecimal.TEN)
-                ))
-        ));
-        test(input, expected);
-    }
+//    @Test
+//    void testExample3() {
+//        String input = "(let [x 10] (assert-equals? x 10))";
+//        Ast expected = new Ast.Term("let", Arrays.asList(
+//                new Ast.Term("x", Arrays.asList(
+//                        new Ast.NumberLiteral(BigDecimal.TEN)
+//                )),
+//                new Ast.Term("assert-equals?", Arrays.asList(
+//                        new Ast.Identifier("x"),
+//                        new Ast.NumberLiteral(BigDecimal.TEN)
+//                ))
+//        ));
+//        test(input, expected);
+//    }
 
     void test(String input, Ast expected) {
         Ast ast = new Ast.Term("source", Arrays.asList(expected));

@@ -81,14 +81,14 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() {
-        if (match("(") || match("[")) {
+        if (match("(") || match("[")) { //FIXME: need to keep track of which closing symbol needed?
             List<Ast> terms = new ArrayList<>();
             if (match(Token.Type.IDENTIFIER)) {
                 String name = tokens.get(-1).getLiteral();  //get identifier from before current term
                 List<Ast> args = new ArrayList<>();         //make list of args for term
 
-                while (!peek(")")) {
-                    if (peek(Token.Type.NUMBER)) {
+                while (!(peek(")") || peek("]"))) {
+                    if (peek(Token.Type.NUMBER)) {  //FIXME: can be token or term, term should recurse
                         args.add(parseNum());
                         tokens.advance();
                     }
@@ -96,23 +96,33 @@ public final class Parser {
                         args.add(parseString());
                         tokens.advance();
                     }
-                    else if (peek(Token.Type.IDENTIFIER)){
+                    else if (peek(Token.Type.IDENTIFIER)) {
                         args.add(parseIdentifier());
                         tokens.advance();
+                    }
+                    else if (peek("(") || peek("[")) {   //FIXME: how to make recursive call?
+//                            parseAst();
+                        continue;
+                    }
+                    else if (peek(Token.Type.OPERATOR)) {
+                        continue;
                     }
                     else {
                         throw new ParseException("Unable to parse", tokens.get(-1).getIndex());
                     }
                 }
-
                 Ast term = new Ast.Term(name, args);        //make a term out of the name, arguments
                 terms.add(term);
+                return new Ast.Term("source", terms);
             }
-            return new Ast.Term("source", terms);
         }
-        else {
+//            else {
+//                throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
+//            }
+//        }
+//        else {
             throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
-        }
+//        }
     }
 
     private Ast parseNum() {
