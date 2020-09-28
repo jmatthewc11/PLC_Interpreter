@@ -273,6 +273,16 @@ final class LexerTests {
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
+    @Test
+    void testExample8() {
+        String input = "58.01.29.3";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.NUMBER, "58.01", 0),
+                new Token(Token.Type.IDENTIFIER, ".29.3", 5)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
     @ParameterizedTest
     @MethodSource("plc.interpreter.LexerTests#testPeekAndMatch")
     void testPeek(String test, String input, String[] patterns, boolean matches) {

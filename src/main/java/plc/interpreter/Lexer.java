@@ -206,19 +206,19 @@ public final class Lexer {
             else if (peek("\\\\")) {
                 chars.advance();
                 if (peek("\"") || peek("\'") || peek("r") || peek("b") ||
-                    peek("t") || peek("n") || peek("\\\\")) {
+                        peek("t") || peek("n") || peek("\\\\")) {
                     chars.advance();
                 }
                 else
                     throw new ParseException("Not a valid String literal", chars.index);
             }
             else
-                if (!match("[^\\\"\\\\]"))
-                    break;
+            if (!match("[^\\\"\\\\]"))
+                break;
         }
 
         if (match("\""))
-                return chars.emit(Token.Type.STRING);
+            return chars.emit(Token.Type.STRING);
         else
             throw new ParseException("Not a valid String literal", chars.index);
     }

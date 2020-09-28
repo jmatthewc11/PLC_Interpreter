@@ -1,8 +1,11 @@
 package plc.interpreter;
 
+import jdk.nashorn.internal.codegen.types.Type;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * The parser takes the sequence of tokens emitted by the lexer and turns that
@@ -36,8 +39,12 @@ public final class Parser {
      * Repeatedly parses a list of ASTs, returning the list as arguments of an
      * {@link Ast.Term} with the identifier {@code "source"}.
      */
-    private Ast parse() {
-        throw new UnsupportedOperationException(); //TODO
+    private Ast parse() {       //FIXME: AST returned here is the whole thing, how to add all of them together?
+        Ast ast = new Ast();
+        while (tokens.has(0)) {
+            parseAst();
+        }
+        return ast;
     }
 
     /**
@@ -78,7 +85,14 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() {
-        throw new UnsupportedOperationException(); //TODO
+        Ast ast = new Ast();
+        if (peek("(") || peek("[")) {
+
+        }
+        else {
+            throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
+        }
+        return ast;
     }
 
     /**
@@ -92,7 +106,31 @@ public final class Parser {
      * {@code peek(Token.Type.IDENTIFIER)} and {@code peek("literal")}.
      */
     private boolean peek(Object... patterns) {
-        throw new UnsupportedOperationException(); //TODO
+        int i = 0;
+        int count = 0;
+        int offset = 0;
+        for (i = 0; i < patterns.length; i++) {
+            if (patterns[i] instanceof String) {
+                if (patterns[i].equals(tokens.get(offset).getLiteral())) {
+                    count++;
+                    offset++;
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                if (patterns[i].equals(tokens.get(offset).getType())) {
+                    count++;
+                    offset++;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        return (count == 0 || i == patterns.length);
     }
 
     /**
@@ -116,23 +154,22 @@ public final class Parser {
          * Returns true if there is a token at index + offset.
          */
         public boolean has(int offset) {
-            throw new UnsupportedOperationException(); //TODO
+            return index + offset < tokens.size();
         }
 
         /**
          * Gets the token at index + offset.
          */
         public Token get(int offset) {
-            throw new UnsupportedOperationException(); //TODO
+            return tokens.get(index + offset);
         }
 
         /**
          * Advances to the next token, incrementing the index.
          */
         public void advance() {
-            throw new UnsupportedOperationException(); //TODO
+            index++;
         }
 
     }
-
 }
