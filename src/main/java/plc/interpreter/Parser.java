@@ -86,8 +86,10 @@ public final class Parser {
      */
     private Ast parseAst() {
         Ast ast = new Ast();
-        if (peek("(") || peek("[")) {
-
+        if (match("(") || match("[")) {
+            if (!match(Token.Type.IDENTIFIER)) {
+                throw new ParseException("Expecting identifier", tokens.get(0).getIndex());
+            }
         }
         else {
             throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
@@ -110,23 +112,25 @@ public final class Parser {
         int count = 0;
         int offset = 0;
         for (i = 0; i < patterns.length; i++) {
-            if (patterns[i] instanceof String) {
-                if (patterns[i].equals(tokens.get(offset).getLiteral())) {
-                    count++;
-                    offset++;
-                }
-                else {
-                    return false;
+            if (tokens.has(offset)) {
+                if (patterns[i] instanceof String) {
+                    if (patterns[i].equals(tokens.get(offset).getLiteral())) {
+                        count++;
+                        offset++;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    if (patterns[i].equals(tokens.get(offset).getType())) {
+                        count++;
+                        offset++;
+                    } else {
+                        return false;
+                    }
                 }
             }
             else {
-                if (patterns[i].equals(tokens.get(offset).getType())) {
-                    count++;
-                    offset++;
-                }
-                else {
-                    return false;
-                }
+                return false;
             }
         }
 
@@ -142,31 +146,36 @@ public final class Parser {
         int count = 0;
         int offset = 0;
         for (i = 0; i < patterns.length; i++) {
-            if (patterns[i] instanceof String) {
-                if (patterns[i].equals(tokens.get(offset).getLiteral())) {
-                    count++;
-                    offset++;
-                    while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+            if (tokens.has(offset)) {
+                if (patterns[i] instanceof String) {
+                    if (patterns[i].equals(tokens.get(offset).getLiteral())) {
                         count++;
                         offset++;
+                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+                            count++;
+                            offset++;
+                        }
+                    }
+                    else {
+                        return false;
                     }
                 }
                 else {
-                    return false;
+                    if (patterns[i].equals(tokens.get(offset).getType())) {
+                        count++;
+                        offset++;
+                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+                            count++;
+                            offset++;
+                        }
+                    }
+                    else {
+                        return false;
+                    }
                 }
             }
             else {
-                if (patterns[i].equals(tokens.get(offset).getType())) {
-                    count++;
-                    offset++;
-                    while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
-                        count++;
-                        offset++;
-                    }
-                }
-                else {
-                    return false;
-                }
+                break;
             }
         }
 
