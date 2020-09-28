@@ -39,11 +39,7 @@ public final class Parser {
      * Repeatedly parses a list of ASTs, returning the list as arguments of an
      * {@link Ast.Term} with the identifier {@code "source"}.
      */
-    private Ast parse() {       //FIXME: AST returned here is the whole thing, how to add all of them together?
-//        Ast ast = new Ast();
-//        while (tokens.has(0)) {
-//            parseAst();
-//        }
+    private Ast parse() {
         return parseAst();
     }
 
@@ -86,23 +82,32 @@ public final class Parser {
      */
     private Ast parseAst() {
         if (match("(") || match("[")) {
-            if (!match(Token.Type.IDENTIFIER)) {
-                throw new ParseException("Expecting identifier", tokens.get(0).getIndex());
-            }
-            String name = tokens.get(-1).getLiteral();  //get identifier from before current term
-            List<Ast> args = new ArrayList<>();         //make list of args for term
-
-            while (!peek(")")) {
-                if (peek(Token.Type.NUMBER)) {
-                    args.add(parseNum());
-                    tokens.advance();
-                }
-            }
-
-            Ast term = new Ast.Term(name, args);        //make a term out of the name, numbers
             List<Ast> terms = new ArrayList<>();
-            terms.add(term);
+            if (match(Token.Type.IDENTIFIER)) {
+                String name = tokens.get(-1).getLiteral();  //get identifier from before current term
+                List<Ast> args = new ArrayList<>();         //make list of args for term
 
+                while (!peek(")")) {
+                    if (peek(Token.Type.NUMBER)) {
+                        args.add(parseNum());
+                        tokens.advance();
+                    }
+                    else if (peek(Token.Type.STRING)) {
+                        args.add(parseString());
+                        tokens.advance();
+                    }
+                    else if (peek(Token.Type.IDENTIFIER)){
+                        args.add(parseIdentifier());
+                        tokens.advance();
+                    }
+                    else {
+                        throw new ParseException("Unable to parse", tokens.get(-1).getIndex());
+                    }
+                }
+
+                Ast term = new Ast.Term(name, args);        //make a term out of the name, arguments
+                terms.add(term);
+            }
             return new Ast.Term("source", terms);
         }
         else {
@@ -111,12 +116,16 @@ public final class Parser {
     }
 
     private Ast parseNum() {
-//        if (tokens.get(0).getLiteral().charAt(0) == '-' || tokens.get(0).getLiteral().charAt(0) == '+') {
-//            return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
-//        }
-//        else {
-            return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
-//        }
+        return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
+    }
+
+    private Ast parseString() {
+        String string = tokens.get(0).getLiteral(); //gets the literal, easier to read substring
+        return new Ast.StringLiteral(string.substring(1, string.length() - 1));
+    }
+
+    private Ast parseIdentifier() {
+        return new Ast.Identifier(tokens.get(0).getLiteral());
     }
 
     /**
