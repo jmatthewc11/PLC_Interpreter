@@ -138,7 +138,47 @@ public final class Parser {
      * and advances the token stream.
      */
     private boolean match(Object... patterns) {
-        throw new UnsupportedOperationException(); //TODO
+        int i = 0;
+        int count = 0;
+        int offset = 0;
+        for (i = 0; i < patterns.length; i++) {
+            if (patterns[i] instanceof String) {
+                if (patterns[i].equals(tokens.get(offset).getLiteral())) {
+                    count++;
+                    offset++;
+                    while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+                        count++;
+                        offset++;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+            else {
+                if (patterns[i].equals(tokens.get(offset).getType())) {
+                    count++;
+                    offset++;
+                    while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
+                        count++;
+                        offset++;
+                    }
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+        if (count == 0 || i != patterns.length) {
+            return false;
+        }
+
+        while (count > 0) {
+            tokens.advance();
+            count--;
+        }
+        return true;
     }
 
     private static final class TokenStream {
