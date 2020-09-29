@@ -81,8 +81,9 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() {
+        List<Ast> terms = new ArrayList<>();
         if (match("(") || match("[")) { //FIXME: need to keep track of which closing symbol needed?
-            List<Ast> terms = new ArrayList<>();         // double match too?
+                                                         //FIXME: double matches on symbol too?
             if (match(Token.Type.IDENTIFIER)) {
                 String name = tokens.get(-1).getLiteral();  //get identifier from before current term
                 List<Ast> args = new ArrayList<>();         //make list of args for term
@@ -103,17 +104,30 @@ public final class Parser {
                     else if (peek("(") || peek("[")) {
                         parseAst();     //FIXME: recursive call here right?
                     }
+                    else if (!tokens.has(0)) {
+                        break;
+                    }
                     else {
                         throw new ParseException("Illegal token after identifier in term", tokens.get(-1).getIndex());
                     }
                 }
+
                 Ast term = new Ast.Term(name, args);    //make a term out of the name, arguments
                 terms.add(term);                        //add to list of terms
-            }
+
+                while (match(")") || match("]")) {}
+
+                if (tokens.has(0))
+                    parseAst();
+                else
+//                    return new Ast.Term("source", terms); //First two tests pass with this instead
+                    return new Ast.Term(name, args);        //FIXME: not returning the right thing, everything gets
+            }                                               // overwritten at the end by the beginning term
             else {
                 throw new ParseException("Expected an identifier for term", tokens.get(0).getIndex());
             }
-            return new Ast.Term("source", terms);
+
+            return new Ast.Term("source", terms);     //FIXME: never hits this, terms is overwritten anyway
         }
         else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
             List<Ast> args = new ArrayList<>();         //make list of literals for AST
