@@ -88,7 +88,7 @@ public final class Parser {
                 List<Ast> args = new ArrayList<>();         //make list of args for term
 
                 while (!(peek(")") || peek("]"))) {
-                    if (peek(Token.Type.NUMBER)) {  //FIXME: can be token or term, term should recurse
+                    if (peek(Token.Type.NUMBER)) {      //FIXME: can be token or term, term should recurse
                         args.add(parseNum());
                         tokens.advance();
                     }
@@ -101,8 +101,7 @@ public final class Parser {
                         tokens.advance();
                     }
                     else if (peek("(") || peek("[")) {   //FIXME: how to make recursive call?
-//                            parseAst();
-                        continue;
+                            parseAst();
                     }
                     else if (peek(Token.Type.OPERATOR)) {
                         continue;
@@ -113,16 +112,41 @@ public final class Parser {
                 }
                 Ast term = new Ast.Term(name, args);        //make a term out of the name, arguments
                 terms.add(term);
-                return new Ast.Term("source", terms);
             }
+            return new Ast.Term("source", terms);
         }
-//            else {
-//                throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
-//            }
-//        }
-//        else {
+        else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
+            String name = tokens.get(0).getLiteral();   //get identifier from before current term
+            List<Ast> args = new ArrayList<>();         //make list of args for term
+
+            while (!(peek("(") || peek("["))) {
+                if (peek(Token.Type.NUMBER)) {      //FIXME: can be token or term, term should recurse
+                    args.add(parseNum());
+                    tokens.advance();
+                }
+                else if (peek(Token.Type.STRING)) {
+                    args.add(parseString());
+                    tokens.advance();
+                }
+                else if (peek(Token.Type.IDENTIFIER)) {
+                    args.add(parseIdentifier());
+                    tokens.advance();
+                }
+                else if (peek("(") || peek("[")) {   //FIXME: how to make recursive call?
+                        parseAst();
+                }
+                else {
+                    throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
+                }
+            }
+            List<Ast> terms = new ArrayList<>();
+            Ast term = new Ast.Term(name, args);        //make a term out of the name, arguments
+            terms.add(term);
+            return new Ast.Term("source", terms);
+        }
+        else {
             throw new ParseException("Expected open parenthesis or bracket", tokens.get(0).getIndex());
-//        }
+        }
     }
 
     private Ast parseNum() {
@@ -130,7 +154,7 @@ public final class Parser {
     }
 
     private Ast parseString() {
-        String string = tokens.get(0).getLiteral(); //gets the literal, easier to read substring
+        String string = tokens.get(0).getLiteral();     //gets the literal, easier to read substring
         return new Ast.StringLiteral(string.substring(1, string.length() - 1));
     }
 
