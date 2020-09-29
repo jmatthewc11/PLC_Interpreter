@@ -40,7 +40,14 @@ public final class Parser {
      * {@link Ast.Term} with the identifier {@code "source"}.
      */
     private Ast parse() {
-        return parseAst();
+        List<Ast> terms = new ArrayList<>();
+        while (tokens.has(0))
+            terms.add(parseAst());
+
+        //source thing goes here
+        //parsing a list goes here
+        //only 1 AST for parseAST
+        return new Ast.Term("source", terms);
     }
 
     /**
@@ -80,70 +87,48 @@ public final class Parser {
      * }
      * </pre>
      */
-    private Ast parseAst() {
-        List<Ast> terms = new ArrayList<>();
+    private Ast parseAst() throws ParseException {
         if (match("(") || match("[")) { //FIXME: need to keep track of which closing symbol needed?
-                                                         //FIXME: double matches on symbol too?
+            //FIXME: double matches on should recurse?  Multiple patterns for match/peek?
             if (match(Token.Type.IDENTIFIER)) {
-                String name = tokens.get(-1).getLiteral();  //get identifier from before current term
-                List<Ast> args = new ArrayList<>();         //make list of args for term
-
-                while (!(peek(")") || peek("]"))) {
-                    if (peek(Token.Type.NUMBER)) {
-                        args.add(parseNum());
-                        tokens.advance();
-                    }
-                    else if (peek(Token.Type.STRING)) {
-                        args.add(parseString());
-                        tokens.advance();
-                    }
-                    else if (peek(Token.Type.IDENTIFIER)) {
-                        args.add(parseIdentifier());
-                        tokens.advance();
-                    }
-                    else if (peek("(") || peek("[")) {
-                        parseAst();     //FIXME: recursive call here right?
-                    }
-                    else if (!tokens.has(0)) {
-                        break;
-                    }
-                    else {
-                        throw new ParseException("Illegal token after identifier in term", tokens.get(-1).getIndex());
-                    }
-                }
-
-                Ast term = new Ast.Term(name, args);    //make a term out of the name, arguments
-                terms.add(term);                        //add to list of terms
-
-                while (match(")") || match("]")) {}
-
-                if (tokens.has(0))
-                    parseAst();
-                else
-//                    return new Ast.Term("source", terms); //First two tests pass with this instead
-                    return new Ast.Term(name, args);        //FIXME: not returning the right thing, everything gets
-            }                                               // overwritten at the end by the beginning term
-            else {
-                throw new ParseException("Expected an identifier for term", tokens.get(0).getIndex());
+                return parseTerm();
             }
 
-            return new Ast.Term("source", terms);     //FIXME: never hits this, terms is overwritten anyway
-        }
-        else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
-            List<Ast> args = new ArrayList<>();         //make list of literals for AST
-
-            while (!(peek("(") || peek("["))) {
+            while (!(peek(")") || peek("]"))) {
                 if (peek(Token.Type.NUMBER)) {
-                    args.add(parseNum());
-                    tokens.advance();
+                    return parseNum();
                 }
                 else if (peek(Token.Type.STRING)) {
-                    args.add(parseString());
-                    tokens.advance();
+                    return parseString();
+                }
+                else if (peek(Token.Type.IDENTIFIER)) {
+                    return parseIdentifier();
+                }
+                else if (peek("(") || peek("[")) {
+                    return parseAst();     //FIXME: recursive call here right?
+                }
+                else {
+                    throw new ParseException("Illegal token after open parenthesis/bracket", tokens.get(-1).getIndex());
+                }
+            }
+
+            while (match(")") || match("]")) {}
+
+            if(tokens.has(0))
+                return parseAst();
+            else
+                throw new ParseException("Delete this later?", tokens.get(0).getIndex());
+        }
+        else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
+            while (!(peek("(") || peek("["))) {
+                if (peek(Token.Type.NUMBER)) {
+                    return parseNum();
+                }
+                else if (peek(Token.Type.STRING)) {
+                    return parseString();
                 }
                 else if (peek(Token.Type.IDENTIFIER)) { //FIXME: need to make sure this identifier
-                    args.add(parseIdentifier());        // doesn't precede (,[ else it's part of a term
-                    tokens.advance();
+                    return parseIdentifier();           // doesn't precede (,[ else it's part of a term
                 }
                 else {
                     throw new ParseException("Illegal token in class", tokens.get(0).getIndex());
@@ -151,26 +136,72 @@ public final class Parser {
             }
 
             if (peek("(") || peek("[")) {
-                parseAst();     //FIXME: needs to recurse here to hit first if statement for handling terms
+                return parseAst();     //FIXME: maybe?
             }
-
-            return new Ast.Term("source", args);
+            else {
+                throw new ParseException("Delete this later? 2", tokens.get(0).getIndex());
+            }
         }
         else {
             throw new ParseException("Code starts with illegal token", tokens.get(0).getIndex());
         }
     }
 
+    private Ast parseTerm() {
+        String name = tokens.get(-1).getLiteral();  //get identifier from before current term
+        List<Ast> args = new ArrayList<>();         //make list of args for term
+
+        while (!(peek(")") || peek("]"))) {
+            if (peek(Token.Type.NUMBER)) {
+                args.add(parseNum());   //advance goes in parsing functions
+            }
+            else if (peek(Token.Type.STRING)) {
+                args.add(parseString());
+            }
+            else if (peek(Token.Type.IDENTIFIER)) {
+                args.add(parseIdentifier());
+            }
+            else if (peek("(") || peek("[")) {
+                parseAst();
+            }
+            else if (!tokens.has(0)) {
+                break;
+            }
+            else {
+                throw new ParseException("Illegal token after identifier in term", tokens.get(-1).getIndex());
+            }
+        }
+        while (match(")") || match("]")) {}
+
+        return new Ast.Term(name, args);    //make a term out of the name, arguments
+    }
+
     private Ast parseNum() {
+        if (tokens.has(1)) {
+            tokens.advance();
+            return new Ast.NumberLiteral(new BigDecimal(tokens.get(-1).getLiteral()));
+        }
         return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
     }
 
     private Ast parseString() {
-        String string = tokens.get(0).getLiteral();     //gets the literal, easier to read substring
+        String string;
+        if (tokens.has(1)) {
+            string = tokens.get(-1).getLiteral();
+        }
+        else {
+            string = tokens.get(0).getLiteral();
+        }
+        tokens.advance();
         return new Ast.StringLiteral(string.substring(1, string.length() - 1));
+
     }
 
     private Ast parseIdentifier() {
+        if (tokens.has(1)) {
+            tokens.advance();
+            return new Ast.Identifier(tokens.get(-1).getLiteral());
+        }
         return new Ast.Identifier(tokens.get(0).getLiteral());
     }
 
