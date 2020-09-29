@@ -185,14 +185,9 @@ public final class Parser {
     }
 
     private Ast parseString() {
-        String string;
-        if (tokens.has(1)) {
-            string = tokens.get(-1).getLiteral();
-        }
-        else {
-            string = tokens.get(0).getLiteral();
-        }
+        String string = tokens.get(0).getLiteral();
         tokens.advance();
+
         return new Ast.StringLiteral(string.substring(1, string.length() - 1));
 
     }
