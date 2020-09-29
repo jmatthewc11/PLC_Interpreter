@@ -44,9 +44,6 @@ public final class Parser {
         while (tokens.has(0))
             terms.add(parseAst());
 
-        //source thing goes here
-        //parsing a list goes here
-        //only 1 AST for parseAST
         return new Ast.Term("source", terms);
     }
 
@@ -88,8 +85,9 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() throws ParseException {
-        if (match("(") || match("[")) { //FIXME: need to keep track of which closing symbol needed?
-            //FIXME: double matches on should recurse?  Multiple patterns for match/peek?
+        if (match("(") || match("[")) {
+            //FIXME: need to keep track of which closing symbol needed
+            //FIXME: double matches?  Multiple patterns for match/peek?
             if (match(Token.Type.IDENTIFIER)) {
                 return parseTerm();
             }
@@ -105,7 +103,7 @@ public final class Parser {
                     return parseIdentifier();
                 }
                 else if (peek("(") || peek("[")) {
-                    return parseAst();     //FIXME: recursive call here right?
+                    return parseAst();
                 }
                 else {
                     throw new ParseException("Illegal token after open parenthesis/bracket", tokens.get(-1).getIndex());
@@ -128,7 +126,7 @@ public final class Parser {
                     return parseString();
                 }
                 else if (peek(Token.Type.IDENTIFIER)) { //FIXME: need to make sure this identifier
-                    return parseIdentifier();           // doesn't precede (,[ else it's part of a term
+                    return parseIdentifier();           // doesn't precede (,[ else it's part of a term?
                 }
                 else {
                     throw new ParseException("Illegal token in class", tokens.get(0).getIndex());
@@ -136,7 +134,7 @@ public final class Parser {
             }
 
             if (peek("(") || peek("[")) {
-                return parseAst();     //FIXME: maybe?
+                return parseAst();
             }
             else {
                 throw new ParseException("Delete this later? 2", tokens.get(0).getIndex());
@@ -153,7 +151,7 @@ public final class Parser {
 
         while (!(peek(")") || peek("]"))) {
             if (peek(Token.Type.NUMBER)) {
-                args.add(parseNum());   //advance goes in parsing functions
+                args.add(parseNum());
             }
             else if (peek(Token.Type.STRING)) {
                 args.add(parseString());
@@ -171,6 +169,7 @@ public final class Parser {
                 throw new ParseException("Illegal token after identifier in term", tokens.get(-1).getIndex());
             }
         }
+
         while (match(")") || match("]")) {}
 
         return new Ast.Term(name, args);    //make a term out of the name, arguments
@@ -181,6 +180,7 @@ public final class Parser {
             tokens.advance();
             return new Ast.NumberLiteral(new BigDecimal(tokens.get(-1).getLiteral()));
         }
+
         return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
     }
 
@@ -189,7 +189,6 @@ public final class Parser {
         tokens.advance();
 
         return new Ast.StringLiteral(string.substring(1, string.length() - 1));
-
     }
 
     private Ast parseIdentifier() {
@@ -197,6 +196,7 @@ public final class Parser {
             tokens.advance();
             return new Ast.Identifier(tokens.get(-1).getLiteral());
         }
+
         return new Ast.Identifier(tokens.get(0).getLiteral());
     }
 
@@ -254,10 +254,6 @@ public final class Parser {
                     if (patterns[i].equals(tokens.get(offset).getLiteral())) {
                         count++;
                         offset++;
-//                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
-//                            count++;
-//                            offset++;
-//                        }
                     }
                     else {
                         return false;
@@ -267,10 +263,6 @@ public final class Parser {
                     if (patterns[i].equals(tokens.get(offset).getType())) {
                         count++;
                         offset++;
-//                        while (tokens.has(offset) && patterns[i].equals(tokens.get(offset).getLiteral())) {
-//                            count++;
-//                            offset++;
-//                        }
                     }
                     else {
                         return false;
