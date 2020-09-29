@@ -162,7 +162,7 @@ public final class Parser {
                 args.add(parseIdentifier());
             }
             else if (peek("(") || peek("[")) {
-                parseAst();
+                args.add(parseAst());
             }
             else if (!tokens.has(0)) {
                 break;
