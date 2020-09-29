@@ -88,6 +88,7 @@ public final class Parser {
         if (match("(") || match("[")) {
             //FIXME: need to keep track of which closing symbol needed
             //FIXME: double matches?  Multiple patterns for match/peek?
+            //FIXME: tests for things that don't start with parentheses
             if (match(Token.Type.IDENTIFIER)) {
                 return parseTerm();
             }
@@ -125,8 +126,8 @@ public final class Parser {
                 else if (peek(Token.Type.STRING)) {
                     return parseString();
                 }
-                else if (peek(Token.Type.IDENTIFIER)) { //FIXME: need to make sure this identifier
-                    return parseIdentifier();           // doesn't precede (,[ else it's part of a term?
+                else if (peek(Token.Type.IDENTIFIER)) {
+                    return parseIdentifier();
                 }
                 else {
                     throw new ParseException("Illegal token in class", tokens.get(0).getIndex());
