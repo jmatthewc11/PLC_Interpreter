@@ -1,12 +1,11 @@
 package plc.interpreter;
 
-import jdk.nashorn.internal.codegen.types.Type;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
+//FIXME: need to keep track of which closing symbol needed?
+//FIXME: double matches?  Multiple patterns for match/peek?
 /**
  * The parser takes the sequence of tokens emitted by the lexer and turns that
  * into a structured representation of the program, called the Abstract Syntax
@@ -97,72 +96,9 @@ public final class Parser {
         else if (peek(Token.Type.IDENTIFIER)) {
             return parseIdentifier();
         }
-//        else if (peek(Token.Type.OPERATOR)) {
-//
-//        }
         else {
             throw new ParseException("Illegal token encountered when trying to parse", tokens.get(0).getIndex());
         }
-
-//            //FIXME: need to keep track of which closing symbol needed
-//            //FIXME: double matches?  Multiple patterns for match/peek?
-//            //FIXME: tests for things that don't start with parentheses
-              //FIXME: need to do string replacement for special chars
-//            if (match(Token.Type.IDENTIFIER)) {
-//                return parseTerm();
-//            }
-//
-//            while (!(peek(")") || peek("]"))) {
-//                if (peek(Token.Type.NUMBER)) {
-//                    return parseNum();
-//                }
-//                else if (peek(Token.Type.STRING)) {
-//                    return parseString();
-//                }
-//                else if (peek(Token.Type.IDENTIFIER)) {
-//                    return parseIdentifier();
-//                }
-//                else if (peek("(") || peek("[")) {
-//                    return parseAst();
-//                }
-//                else {
-//                    throw new ParseException("Illegal token after open parenthesis/bracket", tokens.get(-1).getIndex());
-//                }
-//            }
-//
-//            while (match(")") || match("]")) {}
-//
-//            if(tokens.has(0))
-//                return parseAst();
-//            else
-//                throw new ParseException("Delete this later?", tokens.get(0).getIndex());
-//        }
-//        else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
-//            while (!(peek("(") || peek("["))) {
-//                if (peek(Token.Type.NUMBER)) {
-//                    return parseNum();
-//                }
-//                else if (peek(Token.Type.STRING)) {
-//                    return parseString();
-//                }
-//                else if (peek(Token.Type.IDENTIFIER)) {
-//                    return parseIdentifier();
-//                }
-//                else {
-//                    throw new ParseException("Illegal token in class", tokens.get(0).getIndex());
-//                }
-//            }
-//
-//            if (peek("(") || peek("[")) {
-//                return parseAst();
-//            }
-//            else {
-//                throw new ParseException("Delete this later? 2", tokens.get(0).getIndex());
-//            }
-//        }
-//        else {
-//            throw new ParseException("Code starts with illegal token", tokens.get(0).getIndex());
-//        }
     }
 
     private Ast parseTerm() {
@@ -215,6 +151,9 @@ public final class Parser {
 
     private Ast parseString() {
         String string = tokens.get(0).getLiteral();
+        string = string.replace("\\n", "\n");
+        string = string.replace("\\r", "\r");
+        string = string.replace("\\t", "\t");
         tokens.advance();
 
         return new Ast.StringLiteral(string.substring(1, string.length() - 1));
@@ -299,6 +238,5 @@ public final class Parser {
         public void advance() {
             index++;
         }
-
     }
 }
