@@ -85,7 +85,7 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() throws ParseException {
-        if (peek("(") || match("[")) {
+        if (peek("(") || peek("[")) {
             return parseTerm();
         }
         else if (peek(Token.Type.NUMBER)) {
@@ -167,8 +167,15 @@ public final class Parser {
 
     private Ast parseTerm() {
         tokens.advance();
-        String name = tokens.get(0).getLiteral();  //get identifier from before current term
-        tokens.advance();
+
+        String name;
+        if (peek(Token.Type.IDENTIFIER)) {
+            name = tokens.get(0).getLiteral();  //make sure first token in term is identifier
+            tokens.advance();
+        }
+        else
+            throw new ParseException("Identifier required as for term", tokens.get(0).getIndex());
+
         List<Ast> args = new ArrayList<>();         //make list of args for term
 
         while (!(peek(")") || peek("]"))) {
