@@ -128,24 +128,12 @@ public final class Lexer {
      * return true for the sequence {@code 'a', 'b', 'c'}
      */
     boolean peek(String... patterns) {
-        int i = 0;
-        int count = 0;
-        int offset = 0;
-        for (i = 0; i < patterns.length; i++) {
-            if (chars.has(offset)) {
-                if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
-                    count++;
-                    offset++;
-                }
-                else {
-                    return false;
-                }
-            }
-            else {
+        for (int i = 0; i < patterns.length; i++) {
+            if (!chars.has(i) || !String.valueOf(chars.get(i)).matches(patterns[i])) {
                 return false;
             }
         }
-        return (count == 0 || i == patterns.length);
+        return true;
     }
 
     /**
@@ -153,41 +141,20 @@ public final class Lexer {
      * if the characters matched.
      */
     boolean match(String... patterns) {
-        int i = 0;
-        int count = 0;
-        int offset = 0;
-        for (i = 0; i < patterns.length; i++) {   //only 1 char at a time, they move together
-            if (chars.has(offset)) {
-                if (Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
-                    count++;
-                    offset++;
-                    while (chars.has(offset) && Pattern.compile(patterns[i]).matcher(Character.toString(chars.get(offset))).matches()) {
-                        count++;
-                        offset++;
-                    }
-                }
-                else {
-                    return false;
-                }
+        if (peek(patterns)) {
+            while (peek(patterns)) {
+                chars.advance();
             }
-            else {
-                break;
-            }
+            return true;
         }
-        if (count == 0 || i != patterns.length) {
+        else
             return false;
-        }
-
-        while (count > 0) {
-            chars.advance();
-            count--;
-        }
-        return true;
     }
 
     Token lexNumber() throws ParseException {
+        while (match(".", "[0-9]+")) {}
         while (match("[0-9]")) {}
-        while (match("[.]", "[0-9]+")) {}
+
 
         return chars.emit(Token.Type.NUMBER);
     }
