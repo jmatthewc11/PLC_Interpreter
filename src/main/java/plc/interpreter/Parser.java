@@ -85,69 +85,90 @@ public final class Parser {
      * </pre>
      */
     private Ast parseAst() throws ParseException {
-        if (match("(") || match("[")) {
-            //FIXME: need to keep track of which closing symbol needed
-            //FIXME: double matches?  Multiple patterns for match/peek?
-            //FIXME: tests for things that don't start with parentheses
-            if (match(Token.Type.IDENTIFIER)) {
-                return parseTerm();
-            }
-
-            while (!(peek(")") || peek("]"))) {
-                if (peek(Token.Type.NUMBER)) {
-                    return parseNum();
-                }
-                else if (peek(Token.Type.STRING)) {
-                    return parseString();
-                }
-                else if (peek(Token.Type.IDENTIFIER)) {
-                    return parseIdentifier();
-                }
-                else if (peek("(") || peek("[")) {
-                    return parseAst();
-                }
-                else {
-                    throw new ParseException("Illegal token after open parenthesis/bracket", tokens.get(-1).getIndex());
-                }
-            }
-
-            while (match(")") || match("]")) {}
-
-            if(tokens.has(0))
-                return parseAst();
-            else
-                throw new ParseException("Delete this later?", tokens.get(0).getIndex());
+        if (peek("(") || match("[")) {
+            return parseTerm();
         }
-        else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
-            while (!(peek("(") || peek("["))) {
-                if (peek(Token.Type.NUMBER)) {
-                    return parseNum();
-                }
-                else if (peek(Token.Type.STRING)) {
-                    return parseString();
-                }
-                else if (peek(Token.Type.IDENTIFIER)) {
-                    return parseIdentifier();
-                }
-                else {
-                    throw new ParseException("Illegal token in class", tokens.get(0).getIndex());
-                }
-            }
-
-            if (peek("(") || peek("[")) {
-                return parseAst();
-            }
-            else {
-                throw new ParseException("Delete this later? 2", tokens.get(0).getIndex());
-            }
+        else if (peek(Token.Type.NUMBER)) {
+            return parseNum();
         }
+        else if (peek(Token.Type.STRING)) {
+            return parseString();
+        }
+        else if (peek(Token.Type.IDENTIFIER)) {
+            return parseIdentifier();
+        }
+//        else if (peek(Token.Type.OPERATOR)) {
+//
+//        }
         else {
-            throw new ParseException("Code starts with illegal token", tokens.get(0).getIndex());
+            throw new ParseException("Illegal token encountered when trying to parse", tokens.get(0).getIndex());
         }
+
+//            //FIXME: need to keep track of which closing symbol needed
+//            //FIXME: double matches?  Multiple patterns for match/peek?
+//            //FIXME: tests for things that don't start with parentheses
+              //FIXME: need to do string replacement for special chars
+//            if (match(Token.Type.IDENTIFIER)) {
+//                return parseTerm();
+//            }
+//
+//            while (!(peek(")") || peek("]"))) {
+//                if (peek(Token.Type.NUMBER)) {
+//                    return parseNum();
+//                }
+//                else if (peek(Token.Type.STRING)) {
+//                    return parseString();
+//                }
+//                else if (peek(Token.Type.IDENTIFIER)) {
+//                    return parseIdentifier();
+//                }
+//                else if (peek("(") || peek("[")) {
+//                    return parseAst();
+//                }
+//                else {
+//                    throw new ParseException("Illegal token after open parenthesis/bracket", tokens.get(-1).getIndex());
+//                }
+//            }
+//
+//            while (match(")") || match("]")) {}
+//
+//            if(tokens.has(0))
+//                return parseAst();
+//            else
+//                throw new ParseException("Delete this later?", tokens.get(0).getIndex());
+//        }
+//        else if (peek(Token.Type.NUMBER) || peek(Token.Type.STRING) || peek(Token.Type.IDENTIFIER)) {
+//            while (!(peek("(") || peek("["))) {
+//                if (peek(Token.Type.NUMBER)) {
+//                    return parseNum();
+//                }
+//                else if (peek(Token.Type.STRING)) {
+//                    return parseString();
+//                }
+//                else if (peek(Token.Type.IDENTIFIER)) {
+//                    return parseIdentifier();
+//                }
+//                else {
+//                    throw new ParseException("Illegal token in class", tokens.get(0).getIndex());
+//                }
+//            }
+//
+//            if (peek("(") || peek("[")) {
+//                return parseAst();
+//            }
+//            else {
+//                throw new ParseException("Delete this later? 2", tokens.get(0).getIndex());
+//            }
+//        }
+//        else {
+//            throw new ParseException("Code starts with illegal token", tokens.get(0).getIndex());
+//        }
     }
 
     private Ast parseTerm() {
-        String name = tokens.get(-1).getLiteral();  //get identifier from before current term
+        tokens.advance();
+        String name = tokens.get(0).getLiteral();  //get identifier from before current term
+        tokens.advance();
         List<Ast> args = new ArrayList<>();         //make list of args for term
 
         while (!(peek(")") || peek("]"))) {
@@ -167,7 +188,7 @@ public final class Parser {
                 break;
             }
             else {
-                throw new ParseException("Illegal token after identifier in term", tokens.get(-1).getIndex());
+                throw new ParseException("Illegal token after identifier in term", tokens.get(0).getIndex());
             }
         }
 
@@ -212,33 +233,19 @@ public final class Parser {
      * {@code peek(Token.Type.IDENTIFIER)} and {@code peek("literal")}.
      */
     private boolean peek(Object... patterns) {
-        int i = 0;
-        int count = 0;
-        int offset = 0;
-        for (i = 0; i < patterns.length; i++) {
-            if (tokens.has(offset)) {
-                if (patterns[i] instanceof String) {
-                    if (patterns[i].equals(tokens.get(offset).getLiteral())) {
-                        count++;
-                        offset++;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    if (patterns[i].equals(tokens.get(offset).getType())) {
-                        count++;
-                        offset++;
-                    } else {
-                        return false;
-                    }
+        for (int i = 0; i < patterns.length; i++) {
+            if (patterns[i] instanceof String) {
+                if (!tokens.has(i) || !patterns[i].equals(tokens.get(i).getLiteral())) {
+                    return false;
                 }
             }
             else {
-                return false;
+                if (!tokens.has(i) || !patterns[i].equals(tokens.get(i).getType())) {
+                    return false;
+                }
             }
         }
-
-        return (count == 0 || i == patterns.length);
+        return true;
     }
 
     /**
@@ -246,44 +253,14 @@ public final class Parser {
      * and advances the token stream.
      */
     private boolean match(Object... patterns) {
-        int i = 0;
-        int count = 0;
-        int offset = 0;
-        for (i = 0; i < patterns.length; i++) {
-            if (tokens.has(offset)) {
-                if (patterns[i] instanceof String) {
-                    if (patterns[i].equals(tokens.get(offset).getLiteral())) {
-                        count++;
-                        offset++;
-                    }
-                    else {
-                        return false;
-                    }
-                }
-                else {
-                    if (patterns[i].equals(tokens.get(offset).getType())) {
-                        count++;
-                        offset++;
-                    }
-                    else {
-                        return false;
-                    }
-                }
+        if (peek(patterns)) {
+            while (peek(patterns)) {
+                tokens.advance();
             }
-            else {
-                break;
-            }
+            return true;
         }
-
-        if (count == 0 || i != patterns.length) {
+        else
             return false;
-        }
-
-        while (count > 0) {
-            tokens.advance();
-            count--;
-        }
-        return true;
     }
 
     private static final class TokenStream {

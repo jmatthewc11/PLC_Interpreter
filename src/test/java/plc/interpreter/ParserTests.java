@@ -47,21 +47,21 @@ final class ParserTests {
         test(input, expected);
     }
 
-    @Test
-    void testExample4() {
-        String input = "(<=> [yuv 10] (print \"pls give A\"))";
-        Ast expected = new Ast.Term("<=>",
-                Arrays.asList(
-                        new Ast.Term("yuv",
-                                Arrays.asList(new Ast.NumberLiteral(BigDecimal.TEN)
-                                )),
-                        new Ast.Term("print",
-                                Arrays.asList(
-                                        new Ast.StringLiteral("pls give A")
-                                ))
-                ));
-        test(input, expected);
-    }
+//    @Test
+//    void testExample4() {
+//        String input = "(<=> [yuv 10] (print \"pls give A\"))";
+//        Ast expected = new Ast.Term("<=>",
+//                Arrays.asList(
+//                        new Ast.Term("yuv",
+//                                Arrays.asList(new Ast.NumberLiteral(BigDecimal.TEN)
+//                                )),
+//                        new Ast.Term("print",
+//                                Arrays.asList(
+//                                        new Ast.StringLiteral("pls give A")
+//                                ))
+//                ));
+//        test(input, expected);
+//    }
 
     void test(String input, Ast expected) {
         Ast ast = new Ast.Term("source", Arrays.asList(expected));
