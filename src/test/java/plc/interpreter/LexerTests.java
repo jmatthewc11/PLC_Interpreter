@@ -65,7 +65,7 @@ final class LexerTests {
 
     private static Stream<Arguments> testNumber() {
         return Stream.of(
-//                Arguments.of("1", true),
+                Arguments.of("1", true),
                 Arguments.of("-1.0", true),
                 Arguments.of("007.000", true),
                 Arguments.of("1.", false),
