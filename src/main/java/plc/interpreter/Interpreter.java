@@ -55,16 +55,13 @@ public final class Interpreter {
      * need to check that the type of the value is a {@link Function}, and cast
      * to the type {@code Function<List<Ast>, Object>}.
      */
-    private Object eval(Ast.Term ast) {     //FIXME: how to "call" the method itself?  init() just defines it
-        Object object = scope.lookup(ast.getName());   //should returns the mapped function
-//        requireType(object);
-        //cast object as list of AST's
-        //check that it's a function (not a var) and cast to type, throw exception otherwise
-        //call function and return as object
+    private Object eval(Ast.Term ast) {     //FIXME: did I use requireType correctly?
+        Object object = scope.lookup(ast.getName());    //should returns the mapped function
+        object = requireType(Function.class, object);   //check that returned function is actually a function
+        Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
+        func.apply(ast.getArgs());
 
-//        Function(ast.getArgs()) //takes ASTs as input, returns object as output
-
-        return object;
+        return func.apply(ast.getArgs());
     }
 
     /**
@@ -100,30 +97,30 @@ public final class Interpreter {
             out.println();
             return VOID;
         });
-        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: need to actually *do* the operations here
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            evaluated.forEach(out::print);
-            out.println();
-            return BigDecimal.ZERO;
-        });
-        scope.define("-", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            evaluated.forEach(out::print);
-            out.println();
-            return new EvalException("Subtraction function requires arguments");
-        });
-        scope.define("*", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            evaluated.forEach(out::print);
-            out.println();
-            return BigDecimal.ONE;
-        });
-        scope.define("/", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            evaluated.forEach(out::print);
-            out.println();
-            return new EvalException("Division function requires arguments");
-        });
+//        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: need to actually *do* the operations here
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            evaluated.forEach(out::print);
+//            out.println();
+//            return BigDecimal.ZERO;
+//        });
+//        scope.define("-", (Function<List<Ast>, Object>) args -> {
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            evaluated.forEach(out::print);
+//            out.println();
+//            return new EvalException("Subtraction function requires arguments");
+//        });
+//        scope.define("*", (Function<List<Ast>, Object>) args -> {
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            evaluated.forEach(out::print);
+//            out.println();
+//            return BigDecimal.ONE;
+//        });
+//        scope.define("/", (Function<List<Ast>, Object>) args -> {
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            evaluated.forEach(out::print);
+//            out.println();
+//            return new EvalException("Division function requires arguments");
+//        });
     }
 
     /**
