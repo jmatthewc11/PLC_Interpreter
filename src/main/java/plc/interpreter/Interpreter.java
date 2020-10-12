@@ -56,11 +56,14 @@ public final class Interpreter {
      * to the type {@code Function<List<Ast>, Object>}.
      */
     private Object eval(Ast.Term ast) {     //FIXME: how to "call" the method itself?  init() just defines it
-        Object object = scope.lookup(ast.getName());   //should return the mapped function in the lib
+        Object object = scope.lookup(ast.getName());   //should returns the mapped function
+//        requireType(object);
+        //cast object as list of AST's
+        //check that it's a function (not a var) and cast to type, throw exception otherwise
         //call function and return as object
-        if (ast.getName().equals("+") || ast.getName().equals("-") || ast.getName().equals("*") || ast.getName().equals("/")) {
-            object = requireType(BigDecimal.class, object);
-        }
+
+//        Function(ast.getArgs()) //takes ASTs as input, returns object as output
+
         return object;
     }
 
@@ -69,9 +72,8 @@ public final class Interpreter {
      * identifier's name in the current scope.
      */
     private Object eval(Ast.Identifier ast) {
-//        scope.set(ast.getName(), ast.getName());
-        return scope.lookup(ast.getName()); //FIXME: is scope correct?  Fails right now because "identifier" isn't
-    }                                       // defined in scope...why would I define it?
+        return scope.lookup(ast.getName());
+    }
 
     /**
      * Evaluates the NumberLiteral ast, which returns the stored number value.
