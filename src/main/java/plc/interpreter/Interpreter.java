@@ -55,8 +55,13 @@ public final class Interpreter {
      * need to check that the type of the value is a {@link Function}, and cast
      * to the type {@code Function<List<Ast>, Object>}.
      */
-    private Object eval(Ast.Term ast) {
-        throw new UnsupportedOperationException(); //TODO
+    private Object eval(Ast.Term ast) {     //FIXME: how to "call" the method itself?  init() just defines it
+        Object object = scope.lookup(ast.getName());   //should return the mapped function in the lib
+        //call function and return as object
+        if (ast.getName().equals("+") || ast.getName().equals("-") || ast.getName().equals("*") || ast.getName().equals("/")) {
+            object = requireType(BigDecimal.class, object);
+        }
+        return object;
     }
 
     /**
@@ -64,59 +69,59 @@ public final class Interpreter {
      * identifier's name in the current scope.
      */
     private Object eval(Ast.Identifier ast) {
-        throw new UnsupportedOperationException(); //TODO
-    }
+//        scope.set(ast.getName(), ast.getName());
+        return scope.lookup(ast.getName()); //FIXME: is scope correct?  Fails right now because "identifier" isn't
+    }                                       // defined in scope...why would I define it?
 
     /**
      * Evaluates the NumberLiteral ast, which returns the stored number value.
      */
     private BigDecimal eval(Ast.NumberLiteral ast) {
-        throw new UnsupportedOperationException(); //TODO
+        return ast.getValue();
     }
 
     /**
      * Evaluates the StringLiteral ast, which returns the stored string value.
      */
     private String eval(Ast.StringLiteral ast) {
-        throw new UnsupportedOperationException(); //TODO
+        return ast.getValue();
     }
 
     /**
      * Initializes the given scope with fields and functions in the standard
      * library.
      */
-    private void init(Scope scope) {
+    private void init(Scope scope) {            //TODO: Additional standard library functions
         scope.define("print", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
             return VOID;
         });
-        scope.define("+", (Function<List<Ast>, Object>) args -> {
+        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: need to actually *do* the operations here
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
-            return VOID;
+            return BigDecimal.ZERO;
         });
         scope.define("-", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
-            return VOID;
+            return new EvalException("Subtraction function requires arguments");
         });
         scope.define("*", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
-            return VOID;
+            return BigDecimal.ONE;
         });
         scope.define("/", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
-            return VOID;
+            return new EvalException("Division function requires arguments");
         });
-        //TODO: Additional standard library functions
     }
 
     /**

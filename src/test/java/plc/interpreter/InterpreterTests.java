@@ -22,7 +22,7 @@ final class InterpreterTests {
     @Test
     void testIdentifier() {
         test(new Ast.Identifier("identifier"), "identifier");
-    }
+    }   //FIXME: why would this test pass unless identifier is defined in init?
 
     @Test
     void testNumber() {
