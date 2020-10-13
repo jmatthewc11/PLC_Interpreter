@@ -1,5 +1,7 @@
 package plc.interpreter;
 
+import com.sun.org.apache.xpath.internal.operations.Operation;
+
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
@@ -59,7 +61,6 @@ public final class Interpreter {
         Object object = scope.lookup(ast.getName());    //should returns the mapped function
         object = requireType(Function.class, object);   //check that returned function is actually a function
         Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
-        func.apply(ast.getArgs());
 
         return func.apply(ast.getArgs());
     }
@@ -90,19 +91,21 @@ public final class Interpreter {
      * Initializes the given scope with fields and functions in the standard
      * library.
      */
-    private void init(Scope scope) {            //TODO: Additional standard library functions
+    private void init(Scope scope) {            //TODO: Add standard library functions from specs
         scope.define("print", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
             return VOID;
         });
-//        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: need to actually *do* the operations here
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            evaluated.forEach(out::print);
-//            out.println();
-//            return BigDecimal.ZERO;
-//        });
+        scope.define("+", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            BigDecimal result = BigDecimal.ZERO;
+            for (int i = 0; i < evaluated.size(); i++) {
+                result = result.add((BigDecimal)evaluated.get(i));
+            }
+            return result;
+        });
 //        scope.define("-", (Function<List<Ast>, Object>) args -> {
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
 //            evaluated.forEach(out::print);
