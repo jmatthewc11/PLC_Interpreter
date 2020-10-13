@@ -72,6 +72,23 @@ final class InterpreterTests {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testMulti(String test, Ast ast, BigDecimal expected) {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    private static Stream<Arguments> testMulti() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("*", Arrays.asList()), BigDecimal.valueOf(1)),
+                Arguments.of("Multiple Arguments", new Ast.Term("*", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(-1)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(7))
+                )), BigDecimal.valueOf(-70))
+        );
+    }
+
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
         map.forEach(scope::define);

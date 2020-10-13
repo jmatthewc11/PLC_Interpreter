@@ -111,8 +111,8 @@ public final class Interpreter {
             if (evaluated.size() == 0) {    //no args, throw error
                 throw new EvalException("Subtraction must have at least one argument");
             }
-            BigDecimal result = (BigDecimal)evaluated.get(0);
 
+            BigDecimal result = (BigDecimal)evaluated.get(0);
             if (evaluated.size() == 1) {    //add result to zero and negate it
                 return result.negate();
             }
@@ -122,12 +122,14 @@ public final class Interpreter {
             }
             return result;
         });
-//        scope.define("*", (Function<List<Ast>, Object>) args -> {
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            evaluated.forEach(out::print);
-//            out.println();
-//            return BigDecimal.ONE;
-//        });
+        scope.define("*", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            BigDecimal result = BigDecimal.ONE;
+            for (int i = 0; i < evaluated.size(); i++) {
+                result = result.multiply((BigDecimal)evaluated.get(i));
+            }
+            return result;
+        });
 //        scope.define("/", (Function<List<Ast>, Object>) args -> {
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
 //            evaluated.forEach(out::print);
