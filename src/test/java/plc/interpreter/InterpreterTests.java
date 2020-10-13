@@ -9,35 +9,36 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.Map;
 import java.util.stream.Stream;
 
 final class InterpreterTests {
 
     @Test
     void testTerm() {
-        test(new Ast.Term("print", Arrays.asList()), Interpreter.VOID);
+        test(new Ast.Term("print", Arrays.asList()), Interpreter.VOID, Collections.emptyMap());
     }
 
     @Test
     void testIdentifier() {
-        test(new Ast.Identifier("identifier"), "identifier");
+        test(new Ast.Identifier("num"), 10, Collections.singletonMap("num", 10));
     }
 
     @Test
     void testNumber() {
-        test(new Ast.NumberLiteral(BigDecimal.ONE), BigDecimal.ONE);
+        test(new Ast.NumberLiteral(BigDecimal.ONE), BigDecimal.ONE, Collections.emptyMap());
     }
 
     @Test
     void testString() {
-        test(new Ast.StringLiteral("string"), "string");
+        test(new Ast.StringLiteral("string"), "string", Collections.emptyMap());
     }
 
     @ParameterizedTest
     @MethodSource
-    void testAddition(Ast ast, BigDecimal expected) {
-        test(ast, expected);
+    void testAddition(String test, Ast ast, BigDecimal expected) {
+        test(ast, expected, Collections.emptyMap());
     }
 
     private static Stream<Arguments> testAddition() {
@@ -53,8 +54,8 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testSubtraction(Ast ast, BigDecimal expected) {
-        test(ast, expected);
+    void testSubtraction(String test, Ast ast, BigDecimal expected) {
+        test(ast, expected, Collections.emptyMap());
     }
 
     private static Stream<Arguments> testSubtraction() {
@@ -71,12 +72,14 @@ final class InterpreterTests {
         );
     }
 
-    private static void test(Ast ast, Object expected) {
-        Interpreter interpreter = new Interpreter(new PrintWriter(System.out), new Scope(null));
+    private static void test(Ast ast, Object expected, Map<String, Object> map) {
+        Scope scope = new Scope(null);
+        map.forEach(scope::define);
+        Interpreter interpreter = new Interpreter(new PrintWriter(System.out), scope);
         if (expected != null) {
             Assertions.assertEquals(expected, interpreter.eval(ast));
         } else {
-            Assertions.assertThrows(ParseException.class, () -> interpreter.eval(ast));
+            Assertions.assertThrows(EvalException.class, () -> interpreter.eval(ast));
         }
     }
 
