@@ -175,6 +175,17 @@ public final class Interpreter {
             }
             return false;
         });
+        scope.define("not", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() != 1)
+                throw new EvalException(("not only takes a single argument"));
+            if (!(evaluated.get(0) instanceof Boolean))
+                throw new EvalException(("not requires a boolean argument"));
+            if (evaluated.get(0) == Boolean.FALSE) {
+                return true;
+            }
+            return false;
+        });
     }
 
     /**
