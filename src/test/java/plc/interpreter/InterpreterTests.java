@@ -109,6 +109,39 @@ final class InterpreterTests {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testEqual(String test, Ast ast, boolean expected) throws EvalException {
+        test(ast, expected, Collections.emptyMap());
+    }
+    //FIXME: compare bools, identifiers, etc.
+    //FIXME: how to throw exceptions?  Everything does what it's supposed to do but test can't pass
+    private static Stream<Arguments> testEqual() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), null),
+                Arguments.of("Single Argument", new Ast.Term("equals?", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false),
+                Arguments.of("Two Nums True", new Ast.Term("equals?", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), true),
+                Arguments.of("Two Nums False", new Ast.Term("equals?", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
+                )), false),
+                Arguments.of("One Num and One String", new Ast.Term("equals?", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10)),
+                        new Ast.Identifier("10")
+                )), false),
+                Arguments.of("Multiple Arguments", new Ast.Term("equals?", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.ONE),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(1))
+                )), false)
+        );
+    }
+
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
         map.forEach(scope::define);

@@ -5,7 +5,9 @@ import com.sun.org.apache.xpath.internal.operations.Operation;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,7 +105,7 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                result = result.add((BigDecimal)evaluated.get(i));
+                result = result.add((BigDecimal) evaluated.get(i));
             }
             return result;
         });
@@ -113,13 +115,13 @@ public final class Interpreter {
                 throw new EvalException("Subtraction must have at least one argument");
             }
 
-            BigDecimal result = (BigDecimal)evaluated.get(0);
+            BigDecimal result = (BigDecimal) evaluated.get(0);
             if (evaluated.size() == 1) {    //add result to zero and negate it
                 return result.negate();
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                result = result.subtract((BigDecimal)evaluated.get(i));
+                result = result.subtract((BigDecimal) evaluated.get(i));
             }
             return result;
         });
@@ -127,7 +129,7 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ONE;         //returns 1 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                result = result.multiply((BigDecimal)evaluated.get(i));
+                result = result.multiply((BigDecimal) evaluated.get(i));
             }
             return result;
         });
@@ -137,15 +139,41 @@ public final class Interpreter {
                 throw new EvalException("Division must have at least one argument");
             }
 
-            BigDecimal result = (BigDecimal)evaluated.get(0);
+            BigDecimal result = (BigDecimal) evaluated.get(0);
             if (evaluated.size() == 1) {    //raise to power of -1 to get inverse
                 return result.pow(-1, MathContext.DECIMAL128);
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                result = result.divide((BigDecimal)evaluated.get(i));
+                result = result.divide((BigDecimal) evaluated.get(i));
             }
             return result;
+        });
+        scope.define("true", (Function<List<Ast>, Object>) args -> {        //FIXME: booleans?
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return false;
+            if (evaluated.get(0) == Boolean.TRUE) {
+                return true;
+            }
+            return false;
+        });
+        scope.define("false", (Function<List<Ast>, Object>) args -> {       //FIXME: booleans part 2?
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return true;
+            if (evaluated.get(0) == Boolean.FALSE) {
+                return false;
+            }
+            return true;
+        });
+        scope.define("equals?", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() != 2)
+                throw new EvalException("equals? requires two arguments for comparison");
+
+            if (Objects.deepEquals(evaluated.get(0), evaluated.get(1))) {
+                return true;
+            }
+            return false;
         });
     }
 
