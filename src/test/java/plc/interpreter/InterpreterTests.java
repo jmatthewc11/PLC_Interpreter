@@ -52,25 +52,25 @@ final class InterpreterTests {
         );
     }
 
-//    @ParameterizedTest
-//    @MethodSource
-//    void testSubtraction(String test, Ast ast, BigDecimal expected) {
-//        test(ast, expected, Collections.emptyMap());
-//    }
-//
-//    private static Stream<Arguments> testSubtraction() {
-//        return Stream.of(
-//                Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList()), null),
-//                Arguments.of("Single Argument", new Ast.Term("-", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.ONE)
-//                )), BigDecimal.valueOf(-1)),
-//                Arguments.of("Multiple Arguments", new Ast.Term("-", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.ONE),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
-//                )), BigDecimal.valueOf(-4))
-//        );
-//    }
+    @ParameterizedTest
+    @MethodSource
+    void testSubtraction(String test, Ast ast, BigDecimal expected) {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    private static Stream<Arguments> testSubtraction() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList()), null),
+                Arguments.of("Single Argument", new Ast.Term("-", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.ONE)
+                )), BigDecimal.valueOf(-1)),
+                Arguments.of("Multiple Arguments", new Ast.Term("-", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.ONE),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
+                )), BigDecimal.valueOf(-4))
+        );
+    }
 
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);

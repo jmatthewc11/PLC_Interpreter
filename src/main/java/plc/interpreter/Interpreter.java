@@ -106,12 +106,22 @@ public final class Interpreter {
             }
             return result;
         });
-//        scope.define("-", (Function<List<Ast>, Object>) args -> {
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            evaluated.forEach(out::print);
-//            out.println();
-//            return new EvalException("Subtraction function requires arguments");
-//        });
+        scope.define("-", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) {    //no args, throw error
+                throw new EvalException("Subtraction must have at least one argument");
+            }
+            BigDecimal result = (BigDecimal)evaluated.get(0);
+
+            if (evaluated.size() == 1) {    //add result to zero and negate it
+                return result.negate();
+            }
+
+            for (int i = 1; i < evaluated.size(); i++) {
+                result = result.subtract((BigDecimal)evaluated.get(i));
+            }
+            return result;
+        });
 //        scope.define("*", (Function<List<Ast>, Object>) args -> {
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
 //            evaluated.forEach(out::print);
