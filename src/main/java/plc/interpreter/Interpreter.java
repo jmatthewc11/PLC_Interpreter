@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Operation;
 
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -100,7 +101,7 @@ public final class Interpreter {
         });
         scope.define("+", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            BigDecimal result = BigDecimal.ZERO;
+            BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
                 result = result.add((BigDecimal)evaluated.get(i));
             }
@@ -124,18 +125,28 @@ public final class Interpreter {
         });
         scope.define("*", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            BigDecimal result = BigDecimal.ONE;
+            BigDecimal result = BigDecimal.ONE;         //returns 1 if no args
             for (int i = 0; i < evaluated.size(); i++) {
                 result = result.multiply((BigDecimal)evaluated.get(i));
             }
             return result;
         });
-//        scope.define("/", (Function<List<Ast>, Object>) args -> {
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            evaluated.forEach(out::print);
-//            out.println();
-//            return new EvalException("Division function requires arguments");
-//        });
+        scope.define("/", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) {    //no args, throw error
+                throw new EvalException("Division must have at least one argument");
+            }
+
+            BigDecimal result = (BigDecimal)evaluated.get(0);
+            if (evaluated.size() == 1) {    //raise to power of -1 to get inverse
+                return result.pow(-1, MathContext.DECIMAL128);
+            }
+
+            for (int i = 1; i < evaluated.size(); i++) {
+                result = result.divide((BigDecimal)evaluated.get(i));
+            }
+            return result;
+        });
     }
 
     /**

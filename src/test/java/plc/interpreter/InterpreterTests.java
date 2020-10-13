@@ -89,6 +89,26 @@ final class InterpreterTests {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testDivide(String test, Ast ast, BigDecimal expected) {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    private static Stream<Arguments> testDivide() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("/", Arrays.asList()), null),
+                Arguments.of("Single Argument", new Ast.Term("/", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), BigDecimal.valueOf(.5)),
+                Arguments.of("Multiple Arguments", new Ast.Term("/", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.ONE),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(1))
+                )), BigDecimal.valueOf(.5))
+        );
+    }
+
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
         map.forEach(scope::define);
