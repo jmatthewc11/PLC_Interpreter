@@ -114,7 +114,7 @@ final class InterpreterTests {
     void testEqual(String test, Ast ast, boolean expected) throws EvalException {
         test(ast, expected, Collections.emptyMap());
     }
-    //FIXME: compare bools, identifiers, etc.
+    //FIXME: compare bools, identifiers, terms, etc.
     //FIXME: how to throw exceptions?  Everything does what it's supposed to do but test can't pass
     private static Stream<Arguments> testEqual() {
         return Stream.of(
@@ -148,7 +148,7 @@ final class InterpreterTests {
         test(ast, expected, Collections.emptyMap());
     }
 
-    //FIXME: don't know how pass in identifiers to test this
+    //FIXME: How to pass in identifiers with true/false values to test this?
     private static Stream<Arguments> testNot() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
@@ -158,29 +158,6 @@ final class InterpreterTests {
                 Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
                         new Ast.StringLiteral("string")
                 )), false)
-//                Arguments.of("Term Not Bool", new Ast.Term("not", Arrays.asList(
-//                        new Ast.StringLiteral("string")
-//                )), false)
-//                Arguments.of("False Argument", new Ast.Term("not", Arrays.asList(
-//                        new Ast.Identifier("not_false"), false, Collections.singletonMap("not_false", false)
-//                )), true)
-//                Arguments.of("Two Nums True", new Ast.Term("not", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-//                )), true),
-//                Arguments.of("Two Nums False", new Ast.Term("not", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
-//                )), false),
-//                Arguments.of("One Num and One String", new Ast.Term("not", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(10)),
-//                        new Ast.Identifier("10")
-//                )), false),
-//                Arguments.of("Multiple Arguments", new Ast.Term("not", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.ONE),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(1))
-//                )), false)
         );
     }
 
@@ -194,5 +171,4 @@ final class InterpreterTests {
             Assertions.assertThrows(EvalException.class, () -> interpreter.eval(ast));
         }
     }
-
 }

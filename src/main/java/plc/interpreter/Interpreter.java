@@ -60,9 +60,9 @@ public final class Interpreter {
      * need to check that the type of the value is a {@link Function}, and cast
      * to the type {@code Function<List<Ast>, Object>}.
      */
-    private Object eval(Ast.Term ast) {     //FIXME: did I use requireType correctly?
+    private Object eval(Ast.Term ast) {     //FIXME: did I use requireType correctly?  What is it for?
         Object object = scope.lookup(ast.getName());    //should returns the mapped function
-        object = requireType(Function.class, object);   //check that returned function is actually a function
+        object = requireType(Function.class, object);   //check that returned function is actually a function?
         Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
 
         return func.apply(ast.getArgs());
@@ -149,18 +149,18 @@ public final class Interpreter {
             }
             return result;
         });
-        scope.define("true", (Function<List<Ast>, Object>) args -> {        //FIXME: booleans?
+        scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: booleans checked correctly?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return false;
-            if (evaluated.get(0) == Boolean.TRUE) {
+            if (evaluated.get(0).equals(Boolean.TRUE)) {
                 return true;
             }
             return false;
         });
-        scope.define("false", (Function<List<Ast>, Object>) args -> {       //FIXME: booleans part 2?
+        scope.define("false", (Function<List<Ast>, Object>) args -> {   //FIXME: booleans part 2?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return true;
-            if (evaluated.get(0) == Boolean.FALSE) {
+            if (evaluated.get(0).equals(Boolean.FALSE)) {
                 return false;
             }
             return true;
@@ -181,10 +181,87 @@ public final class Interpreter {
                 throw new EvalException(("not only takes a single argument"));
             if (!(evaluated.get(0) instanceof Boolean))
                 throw new EvalException(("not requires a boolean argument"));
-            if (evaluated.get(0) == Boolean.FALSE) {
+            if (evaluated.get(0).equals(Boolean.FALSE)) {
                 return true;
             }
             return false;
+        });
+        scope.define("and", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 1) return true;
+            for (int i = 0; i < evaluated.size(); i++) {
+                if (evaluated.get(i).equals(false))
+                    return false;
+            }
+            return true;
+        });
+        scope.define("or", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 1) return false;
+            for (int i = 0; i < evaluated.size(); i++) {
+                if (evaluated.get(i).equals(true))
+                    return true;
+            }
+            return false;
+        });
+        scope.define("<", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return true;
+            // Returns true if each pair of arguments passes the given comparison according to Comparable#compareTo
+            // (you will need to type check this). For example, (< 0 x 10) is the same as 0 < x && x < 10),
+            // however x is only evaluated once. Short circuiting is not supported - you can evaluate
+            // all arguments at the start.
+
+            //You can think of < as strictly increasing, as each subsequent argument must be strictly greater
+            //than the previous. Likewise, >= is non-strictly decreasing.
+            return false;
+        });
+        scope.define("<=", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return true;
+
+            return false;
+        });
+        scope.define(">", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return true;
+
+            return false;
+        });
+        scope.define(">=", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return true;
+
+            return false;
+        });
+        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return VOID;
+            //Evaluates all arguments sequentially, returning the value of the last argument.
+            //Arguments should be evaluated inside of a new scope, meaning that you should change the scope of
+            //the interpreter to be new Scope(scope) (aka, the parent is the current scope). After arguments
+            // are evaluated, the scope should be reset to the previous scope.
+            return false;
+        });
+        scope.define("while", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            boolean cond = (boolean)evaluated.get(0);
+            while (cond) {
+                //do things in ast as arg 2
+            }
+            return false;
+        });
+        scope.define("for", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            // An enhanced for loop, meaning it iterates over a sequence (list) instead of the C-style index for loop,
+            // which returns VOID.
+            // Has the form:
+            // (for [identifier list] ast)
+
+            // Unlike while, you will need to define a new variable for use in the loop - this needs
+            // to be in a new scope so it is not accessible from future statements.
+            // Like while, using Java's enhanced for loop is the way to go to implement this easily.
+            return VOID;
         });
     }
 
