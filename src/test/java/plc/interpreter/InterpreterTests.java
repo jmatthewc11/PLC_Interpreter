@@ -109,34 +109,33 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testEqual(String test, Ast ast, boolean expected) throws EvalException {
-        test(ast, expected, Collections.emptyMap());
+    void testEqual(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
     }
     //FIXME: compare bools, identifiers, terms, etc.
-    //FIXME: how to throw exceptions?  Everything does what it's supposed to do but test can't pass
-    private static Stream<Arguments> testEqual() {
+    private static Stream<Arguments> testEqual() {  //NOTE: errors return correctly (1, 2, 6)
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), false),
+                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), false, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false),
+                )), false, Collections.emptyMap()),
                 Arguments.of("Two Nums True", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), true),
+                )), true, Collections.emptyMap()),
                 Arguments.of("Two Nums False", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(3))
-                )), false),
+                )), false, Collections.emptyMap()),
                 Arguments.of("One Num and One String", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(10)),
                         new Ast.Identifier("10")
-                )), false),
+                )), false, Collections.singletonMap("10", "10")),
                 Arguments.of("Multiple Arguments", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.ONE),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(1))
-                )), false)
+                )), false, Collections.emptyMap())
         );
     }
 
@@ -146,7 +145,7 @@ final class InterpreterTests {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testNot() {    //NOTE: errors return correctly (3)
+    private static Stream<Arguments> testNot() {    //NOTE: errors return correctly (1, 2, 3)
         return Stream.of(
                     Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
                     Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
@@ -170,7 +169,7 @@ final class InterpreterTests {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testAnd() {    //NOTE: errors return correctly (1)
+    private static Stream<Arguments> testAnd() {    //NOTE: errors return correctly (5)
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("and", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
