@@ -250,16 +250,32 @@ public final class Interpreter {
             }
             return list;
         });
-//        scope.define("range", (Function<List<Ast>, Object>) args -> {     //TODO: function code
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            LinkedList<Object> list = new LinkedList<Object>();
-//            if (evaluated.size() == 0) return list;
-//
-//            for (int i = 0; i < evaluated.size(); i++) {
-//                list.add(evaluated.get(i));
-//            }
-//            return list;
-//        });
+        scope.define("range", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            LinkedList<Object> list = new LinkedList<Object>();
+            if (evaluated.size() < 2) throw new EvalException("Range requires 2 arguments");
+
+            if (!(evaluated.get(0) instanceof BigDecimal) || !(evaluated.get(1) instanceof BigDecimal))
+                throw new EvalException("Both arguments must be BigDecimals");
+
+            int res = ((BigDecimal) evaluated.get(1)).compareTo((BigDecimal) evaluated.get(0));
+            if (res < 0)
+                throw new EvalException("Range requires second argument to be greater than the first");
+            else if (res == 0)
+                return list;
+
+            if (Math.round(((BigDecimal) evaluated.get(0)).doubleValue()) != ((BigDecimal) evaluated.get(0)).doubleValue() ||
+                Math.round(((BigDecimal) evaluated.get(1)).doubleValue()) != ((BigDecimal) evaluated.get(1)).doubleValue())
+                    throw new EvalException("Range requires integers");
+
+            int arg1 = ((BigDecimal) evaluated.get(0)).intValue();
+            int arg2 = ((BigDecimal) evaluated.get(1)).intValue();
+
+            for (int i = arg1; i < arg2; i++) {
+                list.add(BigDecimal.valueOf(i));
+            }
+            return list;
+        });
 //        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
 //            if (evaluated.size() == 0) return VOID;
