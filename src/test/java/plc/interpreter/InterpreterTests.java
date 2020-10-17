@@ -112,7 +112,7 @@ final class InterpreterTests {
     void testEqual(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
-    //FIXME: compare bools, identifiers, terms, etc.
+    //TODO: compare bools, identifiers, terms, etc.
     private static Stream<Arguments> testEqual() {  //NOTE: errors return correctly (1, 2, 6)
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), false, Collections.emptyMap()),
@@ -191,28 +191,58 @@ final class InterpreterTests {
                         }})),
                 Arguments.of("String Not Bool", new Ast.Term("and", Arrays.asList(
                         new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap())
+                )), false, Collections.emptyMap()),
+                Arguments.of("First Arg False", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("falsey"),
+                        new Ast.Identifier("truth")
+                )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                    put("falsey", false);
+                    put("truth", true);
+                }}))
         );
     }
 
-//    @ParameterizedTest
-//    @MethodSource
-//    void testOr(String test, Ast ast, boolean expected) throws EvalException {
-//        test(ast, expected, Collections.emptyMap());
-//    }
-//
-//    //FIXME: How to pass in identifiers with true/false values to test this?
-//    private static Stream<Arguments> testOr() {
-//        return Stream.of(
-//                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
-//                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-//                )), false),
-//                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
-//                        new Ast.StringLiteral("string")
-//                )), false)
-//        );
-//    }
+    @ParameterizedTest
+    @MethodSource
+    void testOr(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testOr() {     //NOTE: errors return correctly (1, 2, 3)
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
+                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false, Collections.emptyMap()),
+                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
+                        new Ast.StringLiteral("string")
+                )), false, Collections.emptyMap()),
+                Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("truth")
+                )), true, Collections.singletonMap("truth", true)),
+                Arguments.of("One Arg False", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("truth"),
+                        new Ast.Identifier("falsey")
+                )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                    put("truth", true);
+                    put("falsey", false);
+                }})),
+                Arguments.of("Two Args True", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("truth"),
+                        new Ast.Identifier("truth2")
+                )), true, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                    put("truth", true);
+                    put("truth2", true);
+                }})),
+                Arguments.of("First Arg False", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("falsey"),
+                        new Ast.Identifier("truth")
+                )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                    put("falsey", false);
+                    put("truth", true);
+                }}))
+        );
+    }
 
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
