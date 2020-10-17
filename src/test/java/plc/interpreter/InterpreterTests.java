@@ -100,12 +100,12 @@ final class InterpreterTests {
                 Arguments.of("Zero Arguments", new Ast.Term("/", Arrays.asList()), null),
                 Arguments.of("Single Argument", new Ast.Term("/", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), BigDecimal.valueOf(.5)),
+                )), BigDecimal.valueOf(0)),
                 Arguments.of("Multiple Arguments", new Ast.Term("/", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.ONE),
+                        new Ast.NumberLiteral(new BigDecimal("1.000")),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(1))
-                )), BigDecimal.valueOf(.5))
+                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
+                )), BigDecimal.valueOf(.167))
         );
     }
 

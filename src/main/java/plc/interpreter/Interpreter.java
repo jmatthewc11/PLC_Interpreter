@@ -5,6 +5,7 @@ import com.sun.org.apache.xpath.internal.operations.Operation;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -129,7 +130,7 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ONE;         //returns 1 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                result = result.multiply((BigDecimal) evaluated.get(i));
+                result = result.multiply((BigDecimal)evaluated.get(i));
             }
             return result;
         });
@@ -141,12 +142,13 @@ public final class Interpreter {
 
             BigDecimal result = (BigDecimal) evaluated.get(0);
             if (evaluated.size() == 1) {    //raise to power of -1 to get inverse
-                return result.pow(-1, MathContext.DECIMAL128);
+                result = BigDecimal.ONE.divide(result, RoundingMode.HALF_EVEN);
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                result = result.divide((BigDecimal) evaluated.get(i));
+                result = result.divide((BigDecimal) evaluated.get(i), RoundingMode.HALF_EVEN);
             }
+
             return result;
         });
         scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: booleans checked correctly?
