@@ -142,21 +142,26 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testNot(String test, Ast ast, boolean expected) throws EvalException {
-        test(ast, expected, Collections.emptyMap());
+    void testNot(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
     }
 
-    //FIXME: How to pass in identifiers with true/false values to test this?
-    private static Stream<Arguments> testNot() {
+    private static Stream<Arguments> testNot() {    //NOTE: errors return correctly (3)
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
-                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false),
-                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
-                        new Ast.StringLiteral("string")
-                )), false)
-        );
+                    Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
+                    Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
+                            new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                    )), false, Collections.emptyMap()),
+                    Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
+                            new Ast.StringLiteral("string")
+                    )), false, Collections.emptyMap()),
+                    Arguments.of("Switch to True", new Ast.Term("not", Arrays.asList(
+                            new Ast.Identifier("truth")
+                    )), false, Collections.singletonMap("truth", true)),
+                    Arguments.of("Switch to False", new Ast.Term("not", Arrays.asList(
+                            new Ast.Identifier("falsey")
+                    )), true, Collections.singletonMap("falsey", false))
+                );
     }
 
     @ParameterizedTest
@@ -165,7 +170,7 @@ final class InterpreterTests {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testAnd() {
+    private static Stream<Arguments> testAnd() {    //NOTE: errors return correctly (1)
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("and", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
@@ -187,28 +192,28 @@ final class InterpreterTests {
                         }})),
                 Arguments.of("String Not Bool", new Ast.Term("and", Arrays.asList(
                         new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap())  //errors out correctly
+                )), false, Collections.emptyMap())
         );
     }
 
-    @ParameterizedTest
-    @MethodSource
-    void testOr(String test, Ast ast, boolean expected) throws EvalException {
-        test(ast, expected, Collections.emptyMap());
-    }
-
-    //FIXME: How to pass in identifiers with true/false values to test this?
-    private static Stream<Arguments> testOr() {
-        return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
-                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false),
-                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
-                        new Ast.StringLiteral("string")
-                )), false)
-        );
-    }
+//    @ParameterizedTest
+//    @MethodSource
+//    void testOr(String test, Ast ast, boolean expected) throws EvalException {
+//        test(ast, expected, Collections.emptyMap());
+//    }
+//
+//    //FIXME: How to pass in identifiers with true/false values to test this?
+//    private static Stream<Arguments> testOr() {
+//        return Stream.of(
+//                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
+//                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
+//                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+//                )), false),
+//                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
+//                        new Ast.StringLiteral("string")
+//                )), false)
+//        );
+//    }
 
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
