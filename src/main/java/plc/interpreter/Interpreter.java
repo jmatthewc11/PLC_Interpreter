@@ -190,7 +190,6 @@ public final class Interpreter {
         });
         scope.define("and", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 1) return true;
             for (int i = 0; i < evaluated.size(); i++) {
                 if (!(evaluated.get(i) instanceof Boolean))
                     throw new EvalException("Cannot compare using \"and\" with non-boolean values");

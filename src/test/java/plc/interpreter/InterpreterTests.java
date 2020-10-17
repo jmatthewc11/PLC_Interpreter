@@ -8,9 +8,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 final class InterpreterTests {
@@ -173,9 +171,23 @@ final class InterpreterTests {
                 Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
                         new Ast.Identifier("truth")
                 )), true, Collections.singletonMap("truth", true)),
+                Arguments.of("One Arg False", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("truth"),
+                        new Ast.Identifier("falsey")
+                        )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                            put("truth", true);
+                            put("falsey", false);
+                        }})),
+                Arguments.of("Two Args True", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("truth"),
+                        new Ast.Identifier("truth2")
+                        )), true, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                            put("truth", true);
+                            put("truth2", true);
+                        }})),
                 Arguments.of("String Not Bool", new Ast.Term("and", Arrays.asList(
                         new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap())  //FIXME: returns wrong value
+                )), false, Collections.emptyMap())  //errors out correctly
         );
     }
 
