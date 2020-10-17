@@ -244,6 +244,31 @@ final class InterpreterTests {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testLL(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testLL() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("list", Arrays.asList()), new LinkedList<>(), Collections.emptyMap()),
+                Arguments.of("Single Argument", new Ast.Term("list", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2))), Collections.emptyMap()),
+                Arguments.of("Multiple Arguments", new Ast.Term("list", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2), BigDecimal.valueOf(8), BigDecimal.valueOf(2))), Collections.emptyMap()),
+                Arguments.of("Multiple Data Types", new Ast.Term("list", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.StringLiteral("string"),
+                        new Ast.Identifier("truth")
+                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2), "string", true)), Collections.singletonMap("truth", true))
+        );
+    }
+
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
         map.forEach(scope::define);

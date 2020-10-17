@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
@@ -239,35 +240,55 @@ public final class Interpreter {
 
             return false;
         });
-        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+        scope.define("list", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return VOID;
-            //Evaluates all arguments sequentially, returning the value of the last argument.
-            //Arguments should be evaluated inside of a new scope, meaning that you should change the scope of
-            //the interpreter to be new Scope(scope) (aka, the parent is the current scope). After arguments
-            // are evaluated, the scope should be reset to the previous scope.
-            return false;
-        });
-        scope.define("while", (Function<List<Ast>, Object>) args -> {     //TODO: function code
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            boolean cond = (boolean)evaluated.get(0);
-            while (cond) {
-                //do things in ast as arg 2
-            }
-            return false;
-        });
-        scope.define("for", (Function<List<Ast>, Object>) args -> {     //TODO: function code
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            // An enhanced for loop, meaning it iterates over a sequence (list) instead of the C-style index for loop,
-            // which returns VOID.
-            // Has the form:
-            // (for [identifier list] ast)
+            LinkedList<Object> list = new LinkedList<Object>();
+            if (evaluated.size() == 0) return list;
 
-            // Unlike while, you will need to define a new variable for use in the loop - this needs
-            // to be in a new scope so it is not accessible from future statements.
-            // Like while, using Java's enhanced for loop is the way to go to implement this easily.
-            return VOID;
+            for (int i = 0; i < evaluated.size(); i++) {
+                list.add(evaluated.get(i));
+            }
+            return list;
         });
+//        scope.define("range", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            LinkedList<Object> list = new LinkedList<Object>();
+//            if (evaluated.size() == 0) return list;
+//
+//            for (int i = 0; i < evaluated.size(); i++) {
+//                list.add(evaluated.get(i));
+//            }
+//            return list;
+//        });
+//        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            if (evaluated.size() == 0) return VOID;
+//            //Evaluates all arguments sequentially, returning the value of the last argument.
+//            //Arguments should be evaluated inside of a new scope, meaning that you should change the scope of
+//            //the interpreter to be new Scope(scope) (aka, the parent is the current scope). After arguments
+//            // are evaluated, the scope should be reset to the previous scope.
+//            return false;
+//        });
+//        scope.define("while", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            boolean cond = (boolean)evaluated.get(0);
+//            while (cond) {
+//                //do things in ast as arg 2
+//            }
+//            return false;
+//        });
+//        scope.define("for", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            // An enhanced for loop, meaning it iterates over a sequence (list) instead of the C-style index for loop,
+//            // which returns VOID.
+//            // Has the form:
+//            // (for [identifier list] ast)
+//
+//            // Unlike while, you will need to define a new variable for use in the loop - this needs
+//            // to be in a new scope so it is not accessible from future statements.
+//            // Like while, using Java's enhanced for loop is the way to go to implement this easily.
+//            return VOID;
+//        });
     }
 
     /**
