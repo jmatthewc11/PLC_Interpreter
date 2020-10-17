@@ -118,7 +118,7 @@ final class InterpreterTests {
     //FIXME: how to throw exceptions?  Everything does what it's supposed to do but test can't pass
     private static Stream<Arguments> testEqual() {
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), null),
+                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), false),
                 Arguments.of("Single Argument", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
                 )), false),
@@ -150,6 +150,43 @@ final class InterpreterTests {
 
     //FIXME: How to pass in identifiers with true/false values to test this?
     private static Stream<Arguments> testNot() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
+                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false),
+                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
+                        new Ast.StringLiteral("string")
+                )), false)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testAnd(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testAnd() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("and", Arrays.asList()), true, Collections.emptyMap()),
+                Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
+                        new Ast.Identifier("truth")
+                )), true, Collections.singletonMap("truth", true)),
+                Arguments.of("String Not Bool", new Ast.Term("and", Arrays.asList(
+                        new Ast.StringLiteral("string")
+                )), false, Collections.emptyMap())  //FIXME: returns wrong value
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testOr(String test, Ast ast, boolean expected) throws EvalException {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    //FIXME: How to pass in identifiers with true/false values to test this?
+    private static Stream<Arguments> testOr() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false),
                 Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
