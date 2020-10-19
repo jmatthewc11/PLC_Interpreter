@@ -281,13 +281,18 @@ final class InterpreterTests {
         test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testRange() {  //NOTE: errors return correctly (1, 2, 4)
+    private static Stream<Arguments> testRange() {  //NOTE: errors return correctly (1, 2, 3, 5)
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("range", Arrays.asList()), new LinkedList<>()),
                 Arguments.of("Single Argument", new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
                 )), new LinkedList<>()),
                 Arguments.of("Multiple Arguments", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(7))
+                )), new LinkedList<Object>()),
+                Arguments.of("Correct Case", new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(8))
                 )), new LinkedList<Object>(Arrays.asList(

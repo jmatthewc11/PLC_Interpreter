@@ -255,7 +255,7 @@ public final class Interpreter {
         scope.define("range", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             LinkedList<Object> list = new LinkedList<Object>();
-            if (evaluated.size() < 2) throw new EvalException("Range requires 2 arguments");
+            if (evaluated.size() != 2) throw new EvalException("Range requires 2 arguments");
 
             if (!(evaluated.get(0) instanceof BigDecimal) || !(evaluated.get(1) instanceof BigDecimal))
                 throw new EvalException("Both arguments must be BigDecimals");
