@@ -226,10 +226,10 @@ final class InterpreterTests {
                 Arguments.of("One Arg True", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("truth")
                 )), true, Collections.singletonMap("truth", true)),
-                Arguments.of("One Arg False", new Ast.Term("or", Arrays.asList(
+                Arguments.of("First Arg True", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("truth"),
                         new Ast.Identifier("falsey")
-                )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                )), true, Collections.unmodifiableMap(new HashMap<String, Object>() {{
                     put("truth", true);
                     put("falsey", false);
                 }})),
@@ -243,7 +243,7 @@ final class InterpreterTests {
                 Arguments.of("First Arg False", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("falsey"),
                         new Ast.Identifier("truth")
-                )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                )), true, Collections.unmodifiableMap(new HashMap<String, Object>() {{
                     put("falsey", false);
                     put("truth", true);
                 }}))

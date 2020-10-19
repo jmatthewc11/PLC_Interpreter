@@ -156,9 +156,9 @@ public final class Interpreter {
 
             return result;
         });
-        scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: booleans checked correctly?
+        scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: How many args?  What is this for?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return false;
+            if (evaluated.size() == 0) throw new EvalException("True requires arguments");
             if (evaluated.get(0).equals(Boolean.TRUE)) {
                 return true;
             }
@@ -166,7 +166,7 @@ public final class Interpreter {
         });
         scope.define("false", (Function<List<Ast>, Object>) args -> {   //FIXME: booleans part 2?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return true;
+            if (evaluated.size() == 0) throw new EvalException("False requires arguments");
             if (evaluated.get(0).equals(Boolean.FALSE)) {
                 return false;
             }
@@ -186,19 +186,18 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() != 1)
                 throw new EvalException(("not only takes a single argument"));
-            if (!(evaluated.get(0) instanceof Boolean))
-                throw new EvalException(("not requires a boolean argument"));
-            if (evaluated.get(0).equals(Boolean.FALSE)) {
-                return true;
-            }
-            return false;
+            boolean condition = requireType(Boolean.class, evaluated.get(0));
+            if (condition)
+                return false;
+
+            return true;
         });
         scope.define("and", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() == 0) return true;
             for (int i = 0; i < evaluated.size(); i++) {
-                if (!(evaluated.get(i) instanceof Boolean))
-                    throw new EvalException("Cannot compare using \"and\" with non-boolean values");
-                if (evaluated.get(i).equals(false))
+                boolean condition = requireType(Boolean.class, evaluated.get(i));
+                if (!condition)
                     return false;
             }
             return true;
@@ -207,12 +206,11 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return false;
             for (int i = 0; i < evaluated.size(); i++) {
-                if (!(evaluated.get(i) instanceof Boolean))
-                    throw new EvalException("Cannot compare using \"or\" with non-boolean values");
-                if (evaluated.get(i).equals(false))
-                    return false;
+                boolean condition = requireType(Boolean.class, evaluated.get(i));
+                if (condition)
+                    return true;
             }
-            return true;
+            return false;
         });
         scope.define("<", (Function<List<Ast>, Object>) args -> {     //TODO: function code
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
