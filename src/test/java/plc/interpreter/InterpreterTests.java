@@ -122,23 +122,16 @@ final class InterpreterTests {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testTrue() {    //NOTE: errors return correctly (1, 2, 3)
+    private static Stream<Arguments> testTrue() {
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("true", Arrays.asList()), false, Collections.emptyMap()),
-                Arguments.of("Num Not Bool", new Ast.Term("true", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
-                Arguments.of("String Not Bool", new Ast.Term("true", Arrays.asList(
-                        new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap()),
-                Arguments.of("True", new Ast.Term("true", Arrays.asList(
-                        new Ast.Identifier("truth")
-                )), true, Collections.singletonMap("truth", true)),
-                Arguments.of("False", new Ast.Term("true", Arrays.asList(
+                Arguments.of("Zero Arguments", new Ast.Term("false", Arrays.asList()), true, Collections.emptyMap()),
+                Arguments.of("Identifier", new Ast.Term("false", Arrays.asList(
                         new Ast.Identifier("falsey")
-                )), false, Collections.singletonMap("falsey", false))
+                )), true, Collections.singletonMap("falsey", false))
         );
     }
+
+    //FIXME: How to test these?
 
     @ParameterizedTest
     @MethodSource
@@ -146,21 +139,12 @@ final class InterpreterTests {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testFalse() {    //NOTE: errors return correctly (1, 2, 3)
+    private static Stream<Arguments> testFalse() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("false", Arrays.asList()), false, Collections.emptyMap()),
-                Arguments.of("Num Not Bool", new Ast.Term("false", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
-                Arguments.of("String Not Bool", new Ast.Term("false", Arrays.asList(
-                        new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap()),
-                Arguments.of("True", new Ast.Term("false", Arrays.asList(
-                        new Ast.Identifier("truth")
-                )), false, Collections.singletonMap("truth", true)),
-                Arguments.of("False", new Ast.Term("false", Arrays.asList(
+                Arguments.of("Identifier", new Ast.Term("false", Arrays.asList(
                         new Ast.Identifier("falsey")
-                )), true, Collections.singletonMap("falsey", false))
+                )), false, Collections.singletonMap("falsey", true))
         );
     }
 

@@ -2,6 +2,7 @@ package plc.interpreter;
 
 import com.sun.org.apache.xpath.internal.operations.Operation;
 
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -65,9 +66,9 @@ public final class Interpreter {
      */
     private Object eval(Ast.Term ast) {
         Object object = scope.lookup(ast.getName());    //should returns the mapped function
+
         object = requireType(Function.class, object);   //check that returned function is actually a function
         Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
-
         return func.apply(ast.getArgs());
     }
 
@@ -104,7 +105,7 @@ public final class Interpreter {
             out.println();
             return VOID;
         });
-        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: Arguments must be numbers, but that is after they are evaluated?
+        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: Arguments must be numbers, but that is after they are evaluated ?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
@@ -157,59 +158,41 @@ public final class Interpreter {
 
             return result;
         });
-        scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: How many args?  What is this for?  What should it return?
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) throw new EvalException("True requires arguments");
-            boolean condition = requireType(Boolean.class, evaluated.get(0));
-            if (condition) {
-                return true;
-            }
-            return false;
-        });
-        scope.define("false", (Function<List<Ast>, Object>) args -> {   //FIXME: booleans part 2?
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) throw new EvalException("False requires arguments");
-            boolean condition = requireType(Boolean.class, evaluated.get(0));
-            if (!condition) {
-                return true;
-            }
-            return false;
-        });
+        scope.define("true", true);     //FIXME: how to test?
+        scope.define("false", false);
         scope.define("equals?", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() != 2)
                 throw new EvalException("equals? requires two arguments for comparison");
 
-            if (Objects.deepEquals(evaluated.get(0), evaluated.get(1))) {
-                return true;
-            }
-            return false;
+            return Objects.deepEquals(evaluated.get(0), evaluated.get(1));
         });
         scope.define("not", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() != 1)
                 throw new EvalException(("not only takes a single argument"));
             boolean condition = requireType(Boolean.class, evaluated.get(0));
-            if (condition)
-                return false;
-
-            return true;
+            return !condition;
         });
         scope.define("and", (Function<List<Ast>, Object>) args -> {
+            //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
+            // can't do this for and/or, must evaluate args one at a time
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return true;
-            for (int i = 0; i < evaluated.size(); i++) {
-                boolean condition = requireType(Boolean.class, evaluated.get(i));
+            for (Object o : evaluated) {
+                boolean condition = requireType(Boolean.class, o);
                 if (!condition)
                     return false;
             }
             return true;
         });
         scope.define("or", (Function<List<Ast>, Object>) args -> {
+            //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
+            // can't do this for and/or, must evaluate args one at a time
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return false;
-            for (int i = 0; i < evaluated.size(); i++) {
-                boolean condition = requireType(Boolean.class, evaluated.get(i));
+            for (Object o : evaluated) {
+                boolean condition = requireType(Boolean.class, o);
                 if (condition)
                     return true;
             }
@@ -232,7 +215,7 @@ public final class Interpreter {
 
             return true;
         });
-        scope.define("<=", (Function<List<Ast>, Object>) args -> {     //FIXME: 3, 4, 5, 4 vs. 3, 5, 4, 4?  True or false?
+        scope.define("<=", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than or equal to");
@@ -241,7 +224,7 @@ public final class Interpreter {
             for(int i = 1; i < evaluated.size(); i++) {
                 Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
 
-                if (compare_1.compareTo(compare_2) != -1 && compare_1.compareTo(compare_2) != 0)
+                if (compare_1.compareTo(compare_2) == 1)
                     return false;
 
                 compare_1 = compare_2;
@@ -275,7 +258,7 @@ public final class Interpreter {
             for(int i = 1; i < evaluated.size(); i++) {
                 Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
 
-                if (compare_1.compareTo(compare_2) != 1 && compare_1.compareTo(compare_2) != 0)
+                if (compare_1.compareTo(compare_2) == -1)
                     return false;
 
                 compare_1 = compare_2;
@@ -288,19 +271,17 @@ public final class Interpreter {
             LinkedList<Object> list = new LinkedList<Object>();
             if (evaluated.size() == 0) return list;
 
-            for (int i = 0; i < evaluated.size(); i++) {
-                list.add(evaluated.get(i));
-            }
+            list.addAll(evaluated);
             return list;
         });
         scope.define("range", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            LinkedList<Object> list = new LinkedList<Object>();
             if (evaluated.size() != 2) throw new EvalException("Range requires 2 arguments");
 
             BigDecimal first_arg = requireType(BigDecimal.class, evaluated.get(0));
             BigDecimal second_arg = requireType(BigDecimal.class, evaluated.get(1));
 
+            LinkedList<Object> list = new LinkedList<Object>();
             int res = second_arg.compareTo(first_arg);
             if (res < 0)
                 throw new EvalException("Range requires second argument to be greater than the first");
