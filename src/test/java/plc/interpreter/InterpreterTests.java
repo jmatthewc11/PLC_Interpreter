@@ -208,33 +208,33 @@ final class InterpreterTests {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testOr() {     //NOTE: errors return correctly (1, 2, 3)
+    private static Stream<Arguments> testOr() {     //NOTE: errors return correctly (2, 3)
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
-                Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
+                Arguments.of("Zero Arguments", new Ast.Term("or", Arrays.asList()), false, Collections.emptyMap()),
+                Arguments.of("Num Not Bool", new Ast.Term("or", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
                 )), false, Collections.emptyMap()),
-                Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
+                Arguments.of("String Not Bool", new Ast.Term("or", Arrays.asList(
                         new Ast.StringLiteral("string")
                 )), false, Collections.emptyMap()),
-                Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
+                Arguments.of("One Arg True", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("truth")
                 )), true, Collections.singletonMap("truth", true)),
-                Arguments.of("One Arg False", new Ast.Term("and", Arrays.asList(
+                Arguments.of("One Arg False", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("truth"),
                         new Ast.Identifier("falsey")
                 )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
                     put("truth", true);
                     put("falsey", false);
                 }})),
-                Arguments.of("Two Args True", new Ast.Term("and", Arrays.asList(
+                Arguments.of("Two Args True", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("truth"),
                         new Ast.Identifier("truth2")
                 )), true, Collections.unmodifiableMap(new HashMap<String, Object>() {{
                     put("truth", true);
                     put("truth2", true);
                 }})),
-                Arguments.of("First Arg False", new Ast.Term("and", Arrays.asList(
+                Arguments.of("First Arg False", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("falsey"),
                         new Ast.Identifier("truth")
                 )), false, Collections.unmodifiableMap(new HashMap<String, Object>() {{
@@ -282,6 +282,31 @@ final class InterpreterTests {
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
                 )), new LinkedList<>()),
                 Arguments.of("Multiple Arguments", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
+                )), new LinkedList<Object>(Arrays.asList(
+                        BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
+                        BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7)))),
+                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
+                )), new LinkedList<Object>())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testSet(String test, Ast ast, Map<String, Object> expected) throws EvalException {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    private static Stream<Arguments> testSet() {  //NOTE: errors
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), new EvalException("")),
+                Arguments.of("Single Argument", new Ast.Term("set!", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), new LinkedList<>()),
+                Arguments.of("Multiple Arguments", new Ast.Term("set!", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(8))
                 )), new LinkedList<Object>(Arrays.asList(

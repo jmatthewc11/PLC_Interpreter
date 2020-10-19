@@ -201,14 +201,14 @@ public final class Interpreter {
         });
         scope.define("or", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 1) return false;
+            if (evaluated.size() == 0) return false;
             for (int i = 0; i < evaluated.size(); i++) {
                 if (!(evaluated.get(i) instanceof Boolean))
                     throw new EvalException("Cannot compare using \"or\" with non-boolean values");
-                if (evaluated.get(i).equals(true))
-                    return true;
+                if (evaluated.get(i).equals(false))
+                    return false;
             }
-            return false;
+            return true;
         });
         scope.define("<", (Function<List<Ast>, Object>) args -> {     //TODO: function code
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
@@ -275,6 +275,18 @@ public final class Interpreter {
                 list.add(BigDecimal.valueOf(i));
             }
             return list;
+        });
+        scope.define("set!", (Function<List<Ast>, Object>) args -> {
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            if (evaluated.size() != 2) throw new EvalException("set! requires two arguments");
+            Object var_name = requireType(Ast.Identifier.class, evaluated.get(0));
+            Object var_value = requireType(Ast.class, evaluated.get(1));
+
+            scope.set(var_name.toString(), var_value);
+
+            //Sets an identifier to a value using the current scope and returns VOID. Has the form:
+            //(set! identifier ast)
+            return VOID;
         });
 //        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
