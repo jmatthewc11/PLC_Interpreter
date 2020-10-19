@@ -213,7 +213,7 @@ public final class Interpreter {
             }
             return false;
         });
-        scope.define("<", (Function<List<Ast>, Object>) args -> {     //TODO: function code
+        scope.define("<", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than");
