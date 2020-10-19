@@ -115,6 +115,54 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
+    void testTrue(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testTrue() {    //NOTE: errors return correctly (1, 2, 3)
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("true", Arrays.asList()), false, Collections.emptyMap()),
+                Arguments.of("Num Not Bool", new Ast.Term("true", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false, Collections.emptyMap()),
+                Arguments.of("String Not Bool", new Ast.Term("true", Arrays.asList(
+                        new Ast.StringLiteral("string")
+                )), false, Collections.emptyMap()),
+                Arguments.of("True", new Ast.Term("true", Arrays.asList(
+                        new Ast.Identifier("truth")
+                )), true, Collections.singletonMap("truth", true)),
+                Arguments.of("False", new Ast.Term("true", Arrays.asList(
+                        new Ast.Identifier("falsey")
+                )), false, Collections.singletonMap("falsey", false))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testFalse(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testFalse() {    //NOTE: errors return correctly (1, 2, 3)
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("false", Arrays.asList()), false, Collections.emptyMap()),
+                Arguments.of("Num Not Bool", new Ast.Term("false", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false, Collections.emptyMap()),
+                Arguments.of("String Not Bool", new Ast.Term("false", Arrays.asList(
+                        new Ast.StringLiteral("string")
+                )), false, Collections.emptyMap()),
+                Arguments.of("True", new Ast.Term("false", Arrays.asList(
+                        new Ast.Identifier("truth")
+                )), false, Collections.singletonMap("truth", true)),
+                Arguments.of("False", new Ast.Term("false", Arrays.asList(
+                        new Ast.Identifier("falsey")
+                )), true, Collections.singletonMap("falsey", false))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
     void testEqual(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
@@ -153,20 +201,20 @@ final class InterpreterTests {
 
     private static Stream<Arguments> testNot() {    //NOTE: errors return correctly (1, 2, 3)
         return Stream.of(
-                    Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
-                    Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
-                            new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                    )), false, Collections.emptyMap()),
-                    Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
-                            new Ast.StringLiteral("string")
-                    )), false, Collections.emptyMap()),
-                    Arguments.of("Switch to True", new Ast.Term("not", Arrays.asList(
-                            new Ast.Identifier("truth")
-                    )), false, Collections.singletonMap("truth", true)),
-                    Arguments.of("Switch to False", new Ast.Term("not", Arrays.asList(
-                            new Ast.Identifier("falsey")
-                    )), true, Collections.singletonMap("falsey", false))
-                );
+            Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
+            Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
+                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+            )), false, Collections.emptyMap()),
+            Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
+                    new Ast.StringLiteral("string")
+            )), false, Collections.emptyMap()),
+            Arguments.of("Switch to True", new Ast.Term("not", Arrays.asList(
+                    new Ast.Identifier("truth")
+            )), false, Collections.singletonMap("truth", true)),
+            Arguments.of("Switch to False", new Ast.Term("not", Arrays.asList(
+                    new Ast.Identifier("falsey")
+            )), true, Collections.singletonMap("falsey", false))
+        );
     }
 
     @ParameterizedTest

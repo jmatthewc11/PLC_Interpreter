@@ -160,7 +160,8 @@ public final class Interpreter {
         scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: How many args?  What is this for?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) throw new EvalException("True requires arguments");
-            if (evaluated.get(0).equals(Boolean.TRUE)) {
+            boolean condition = requireType(Boolean.class, evaluated.get(0));
+            if (condition) {
                 return true;
             }
             return false;
@@ -168,10 +169,11 @@ public final class Interpreter {
         scope.define("false", (Function<List<Ast>, Object>) args -> {   //FIXME: booleans part 2?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) throw new EvalException("False requires arguments");
-            if (evaluated.get(0).equals(Boolean.FALSE)) {
-                return false;
+            boolean condition = requireType(Boolean.class, evaluated.get(0));
+            if (!condition) {
+                return true;
             }
-            return true;
+            return false;
         });
         scope.define("equals?", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
