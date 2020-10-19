@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.lang.Comparable;
 
 public final class Interpreter {
 
@@ -215,14 +216,19 @@ public final class Interpreter {
         scope.define("<", (Function<List<Ast>, Object>) args -> {     //TODO: function code
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return true;
-            // Returns true if each pair of arguments passes the given comparison according to Comparable#compareTo
-            // (you will need to type check this). For example, (< 0 x 10) is the same as 0 < x && x < 10),
-            // however x is only evaluated once. Short circuiting is not supported - you can evaluate
-            // all arguments at the start.
+            if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than");
 
-            //You can think of < as strictly increasing, as each subsequent argument must be strictly greater
-            //than the previous. Likewise, >= is non-strictly decreasing.
-            return false;
+            Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
+            for(int i = 1; i < evaluated.size(); i++) {
+                Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
+
+                if (compare_1.compareTo(compare_2) != -1)
+                    return false;
+
+                compare_1 = compare_2;
+            }
+
+            return true;
         });
         scope.define("<=", (Function<List<Ast>, Object>) args -> {     //TODO: function code
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());

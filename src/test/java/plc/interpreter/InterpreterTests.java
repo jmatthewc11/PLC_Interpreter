@@ -329,6 +329,34 @@ final class InterpreterTests {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testGreater(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+        test(ast, expected, map);
+    }
+    //TODO: compare bools, identifiers, terms, etc.
+    private static Stream<Arguments> testGreater() {  //NOTE: errors return correctly (2)
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("<", Arrays.asList()), true, Collections.emptyMap()),
+                Arguments.of("Single Argument", new Ast.Term("<", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false, Collections.emptyMap()),
+                Arguments.of("Two Nums Equal", new Ast.Term("<", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), false, Collections.emptyMap()),
+                Arguments.of("Two Nums True", new Ast.Term("<", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
+                )), true, Collections.emptyMap()),
+                Arguments.of("Multiple Arguments, false", new Ast.Term("<", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.ONE),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(1))
+                )), false, Collections.emptyMap())
+        );
+    }
+
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
         map.forEach(scope::define);
