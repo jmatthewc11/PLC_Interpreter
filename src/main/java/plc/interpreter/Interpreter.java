@@ -97,14 +97,14 @@ public final class Interpreter {
      * Initializes the given scope with fields and functions in the standard
      * library.
      */
-    private void init(Scope scope) {            //TODO: Add standard library functions from specs
+    private void init(Scope scope) {
         scope.define("print", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
             out.println();
             return VOID;
         });
-        scope.define("+", (Function<List<Ast>, Object>) args -> {
+        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: Arguments must be numbers, but that is after they are evaluated?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
@@ -157,7 +157,7 @@ public final class Interpreter {
 
             return result;
         });
-        scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: How many args?  What is this for?
+        scope.define("true", (Function<List<Ast>, Object>) args -> {    //FIXME: How many args?  What is this for?  What should it return?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) throw new EvalException("True requires arguments");
             boolean condition = requireType(Boolean.class, evaluated.get(0));
@@ -232,7 +232,7 @@ public final class Interpreter {
 
             return true;
         });
-        scope.define("<=", (Function<List<Ast>, Object>) args -> {     //FIXME: 3, 4, 5, 4?  True or false?
+        scope.define("<=", (Function<List<Ast>, Object>) args -> {     //FIXME: 3, 4, 5, 4 vs. 3, 5, 4, 4?  True or false?
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() == 0) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than or equal to");
@@ -298,22 +298,21 @@ public final class Interpreter {
             LinkedList<Object> list = new LinkedList<Object>();
             if (evaluated.size() != 2) throw new EvalException("Range requires 2 arguments");
 
-            if (!(evaluated.get(0) instanceof BigDecimal) || !(evaluated.get(1) instanceof BigDecimal))
-                throw new EvalException("Both arguments must be BigDecimals");
+            BigDecimal first_arg = requireType(BigDecimal.class, evaluated.get(0));
+            BigDecimal second_arg = requireType(BigDecimal.class, evaluated.get(1));
 
-            int res = ((BigDecimal) evaluated.get(1)).compareTo((BigDecimal) evaluated.get(0));
+            int res = second_arg.compareTo(first_arg);
             if (res < 0)
                 throw new EvalException("Range requires second argument to be greater than the first");
             else if (res == 0)
                 return list;
 
-            if (Math.round(((BigDecimal) evaluated.get(0)).doubleValue()) != ((BigDecimal) evaluated.get(0)).doubleValue() ||
-                Math.round(((BigDecimal) evaluated.get(1)).doubleValue()) != ((BigDecimal) evaluated.get(1)).doubleValue())
+            if (Math.round(first_arg.doubleValue()) != first_arg.doubleValue() ||
+                Math.round(second_arg.doubleValue()) != second_arg.doubleValue())
                     throw new EvalException("Range requires integers");
 
-            int arg1 = ((BigDecimal) evaluated.get(0)).intValue();
-            int arg2 = ((BigDecimal) evaluated.get(1)).intValue();
-
+            int arg1 = first_arg.intValue();
+            int arg2 = second_arg.intValue();
             for (int i = arg1; i < arg2; i++) {
                 list.add(BigDecimal.valueOf(i));
             }

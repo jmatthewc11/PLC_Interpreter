@@ -85,6 +85,9 @@ final class InterpreterTests {
     private static Stream<Arguments> testMulti() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("*", Arrays.asList()), BigDecimal.valueOf(1)),
+                Arguments.of("One Argument", new Ast.Term("*", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
+                )), BigDecimal.valueOf(8)),
                 Arguments.of("Multiple Arguments", new Ast.Term("*", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(10)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(-1)),
