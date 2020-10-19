@@ -62,9 +62,9 @@ public final class Interpreter {
      * need to check that the type of the value is a {@link Function}, and cast
      * to the type {@code Function<List<Ast>, Object>}.
      */
-    private Object eval(Ast.Term ast) {     //FIXME: did I use requireType correctly?  What is it for?
+    private Object eval(Ast.Term ast) {
         Object object = scope.lookup(ast.getName());    //should returns the mapped function
-        object = requireType(Function.class, object);   //check that returned function is actually a function?
+        object = requireType(Function.class, object);   //check that returned function is actually a function
         Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
 
         return func.apply(ast.getArgs());
@@ -74,9 +74,9 @@ public final class Interpreter {
      * Evaluates the Identifier ast, which returns the value stored under the
      * identifier's name in the current scope.
      */
-    private Object eval(Ast.Identifier ast) {
-        return scope.lookup(ast.getName());
-    }
+    private Object eval(Ast.Identifier ast) {   //evaluate whatever is in the AST
+        return scope.lookup(ast.getName());     //separate terms evaluated with scope vs without
+    }                                           //TODO: watch lecture on scopes
 
     /**
      * Evaluates the NumberLiteral ast, which returns the stored number value.
@@ -276,34 +276,41 @@ public final class Interpreter {
             }
             return list;
         });
-        scope.define("set!", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() != 2) throw new EvalException("set! requires two arguments");
-            Object var_name = requireType(Ast.Identifier.class, evaluated.get(0));
-            Object var_value = requireType(Ast.class, evaluated.get(1));
-
-            scope.set(var_name.toString(), var_value);
-
-            //Sets an identifier to a value using the current scope and returns VOID. Has the form:
-            //(set! identifier ast)
-            return VOID;
-        });
+//        scope.define("set!", (Function<List<Ast>, Object>) args -> {    //TODO: READ RESOURCE
+//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+//            if (evaluated.size() != 2) throw new EvalException("set! requires two arguments");
+//            Object var_name = requireType(Ast.Identifier.class, evaluated.get(0));
+//            Object var_value = requireType(Ast.class, evaluated.get(1));
+//
+//            scope.set(var_name.toString(), var_value);
+//
+//            //Sets an identifier to a value using the current scope and returns VOID. Has the form:
+//            //(set! identifier ast)
+//            return VOID;
+//        });
 //        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
 //            if (evaluated.size() == 0) return VOID;
+//            Scope scope2 = new Scope(scope);
 //            //Evaluates all arguments sequentially, returning the value of the last argument.
 //            //Arguments should be evaluated inside of a new scope, meaning that you should change the scope of
 //            //the interpreter to be new Scope(scope) (aka, the parent is the current scope). After arguments
 //            // are evaluated, the scope should be reset to the previous scope.
-//            return false;
+//            //FIXME: reset scope??  Store scopes in the sequence they've been created in within a data structure
+//            return scope2.lookup(evaluated.get(evaluated.size() - 1).toString());
 //        });
 //        scope.define("while", (Function<List<Ast>, Object>) args -> {     //TODO: function code
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            boolean cond = (boolean)evaluated.get(0);
-//            while (cond) {
-//                //do things in ast as arg 2
+//            if (evaluated.size() != 2) throw new EvalException("while requires two arguments");
+////            Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
+//
+//            Ast cond = requireType(Ast.class, evaluated.get(0));
+//            boolean condition = requireType(Boolean.class, evaluated.get(0));
+//            Ast body = requireType(Ast.class, evaluated.get(1));
+//            while (condition) {
+////                func.apply(body);     //needs args?
 //            }
-//            return false;
+//            return VOID;
 //        });
 //        scope.define("for", (Function<List<Ast>, Object>) args -> {     //TODO: function code
 //            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());

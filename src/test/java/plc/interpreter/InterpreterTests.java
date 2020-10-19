@@ -296,26 +296,25 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testSet(String test, Ast ast, Map<String, Object> expected) throws EvalException {
-        test(ast, expected, Collections.emptyMap());
+    void testSet(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
+        test(ast, expected, setup);     //FIXME: how do I test this?
     }
 
-    private static Stream<Arguments> testSet() {  //NOTE: errors
+    private static Stream<Arguments> testSet() {  //NOTE: errors return correctly (1, 2)
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), new EvalException("")),
-                Arguments.of("Single Argument", new Ast.Term("set!", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), new LinkedList<>()),
-                Arguments.of("Multiple Arguments", new Ast.Term("set!", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+//                Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), Collections.emptyMap()),
+//                Arguments.of("No Identifier", new Ast.Term("set!", Arrays.asList(
+//                        new Ast.StringLiteral("no"),
+//                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+//                )), Collections.emptyMap()),
+                Arguments.of("Identifier and AST", new Ast.Term("set!", Arrays.asList(
+                        new Ast.Identifier("id"),
                         new Ast.NumberLiteral(BigDecimal.valueOf(8))
-                )), new LinkedList<Object>(Arrays.asList(
-                        BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
-                        BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7)))),
-                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
-                )), new LinkedList<Object>())
+                )), Collections.singletonMap("id", 8), Collections.emptyMap())
+//                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
+//                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+//                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
+//                )), new LinkedList<Object>())
         );
     }
 
