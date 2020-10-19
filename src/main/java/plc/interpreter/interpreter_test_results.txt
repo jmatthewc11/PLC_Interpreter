@@ -1,0 +1,32 @@
+InterpreterTests: (21/34)
+  Math: (7/9)
+    *: (4/5)
+      Invalid Number (Single): Failed (Unexpected java.lang.ClassCastException:java.lang.ClassCastException: java.lang.String cannot be cast to java.math.BigDecimal)
+    *: (3/4)
+      Invalid Number (Single): Failed (Unexpected java.lang.ClassCastException:java.lang.ClassCastException: java.lang.String cannot be cast to java.math.BigDecimal)
+  Comparison: (7/17)
+    true: (0/2)
+      Identifier: Failed (expected true, received magnetar.plc.interpreter.Interpreter$$Lambda$6/1496220903@531d72ca)
+      Term (Zero Args): Failed (Expected an EvalException to be thrown)
+    or: (4/6)
+      Single Argument (true): Failed (expected true, received false)
+      Short Circuit: Failed (Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.))
+    <=: (3/9)
+      Single Argument: Failed (expected true, received false)
+      Multiple Arguments (true): Failed (expected true, received false)
+      Term Argument: Failed (expected true, received false)
+      String Arguments: Failed (expected true, received false)
+      Equal Arguments: Failed (expected true, received false)
+      Invalid Argument: Failed (Expected an EvalException to be thrown)
+  Sequence: (7/8)
+    range: (7/8)
+      Too Many Arguments: Failed (Expected an EvalException to be thrown)
+
+Compilation Warnings: 
+
+Interpreter.java:6: warning: Operation is internal proprietary API and may be removed in a future release
+import com.sun.org.apache.xpath.internal.operations.Operation;
+                                                   ^
+Note: Interpreter.java uses unchecked or unsafe operations.
+Note: Recompile with -Xlint:unchecked for details.
+1 warning

@@ -107,7 +107,8 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                result = result.add((BigDecimal) evaluated.get(i));
+                BigDecimal add_it = requireType(BigDecimal.class, evaluated.get(i));
+                result = result.add(add_it);
             }
             return result;
         });
@@ -117,13 +118,14 @@ public final class Interpreter {
                 throw new EvalException("Subtraction must have at least one argument");
             }
 
-            BigDecimal result = (BigDecimal) evaluated.get(0);
+            BigDecimal result = requireType(BigDecimal.class, evaluated.get(0));
             if (evaluated.size() == 1) {    //add result to zero and negate it
                 return result.negate();
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                result = result.subtract((BigDecimal) evaluated.get(i));
+                BigDecimal subtract_it = requireType(BigDecimal.class, evaluated.get(i));
+                result = result.subtract(subtract_it);
             }
             return result;
         });
@@ -131,7 +133,8 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ONE;         //returns 1 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                result = result.multiply((BigDecimal)evaluated.get(i));
+                BigDecimal multiply_it = requireType(BigDecimal.class, evaluated.get(i));
+                result = result.multiply(multiply_it);
             }
             return result;
         });
@@ -141,13 +144,14 @@ public final class Interpreter {
                 throw new EvalException("Division must have at least one argument");
             }
 
-            BigDecimal result = (BigDecimal) evaluated.get(0);
+            BigDecimal result = requireType(BigDecimal.class, evaluated.get(0));
             if (evaluated.size() == 1) {    //raise to power of -1 to get inverse
                 result = BigDecimal.ONE.divide(result, RoundingMode.HALF_EVEN);
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                result = result.divide((BigDecimal) evaluated.get(i), RoundingMode.HALF_EVEN);
+                BigDecimal divide_it = requireType(BigDecimal.class, evaluated.get(i));
+                result = result.divide(divide_it, RoundingMode.HALF_EVEN);
             }
 
             return result;

@@ -39,9 +39,15 @@ final class InterpreterTests {
         test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testAddition() {
+    private static Stream<Arguments> testAddition() {   //NOTE: throws error at (2)
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("+", Arrays.asList()), BigDecimal.valueOf(0)),
+                Arguments.of("Multiple Arguments", new Ast.Term("+", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.ONE),
+                        new Ast.StringLiteral("10"),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
+                )), BigDecimal.valueOf(6)),
                 Arguments.of("Multiple Arguments", new Ast.Term("+", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.ONE),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
