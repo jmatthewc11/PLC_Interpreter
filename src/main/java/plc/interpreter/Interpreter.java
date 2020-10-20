@@ -333,9 +333,8 @@ public final class Interpreter {
                 interpreter2.eval(ast);
             }
 
-            interpreter2 = null;
             scope2 = null;
-
+            interpreter2 = null;
             return VOID;
         });
     }

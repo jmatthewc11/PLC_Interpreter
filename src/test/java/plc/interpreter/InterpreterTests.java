@@ -522,14 +522,23 @@ final class InterpreterTests {
 //                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
 //            )), null, Collections.emptyMap()),
             Arguments.of("Correct Case", new Ast.Term("for", Arrays.asList(
-                    new Ast.Identifier("i"),
-                    new Ast.Term("range", Arrays.asList(
-                            new Ast.NumberLiteral(BigDecimal.valueOf(0)),
-                            new Ast.NumberLiteral(BigDecimal.valueOf(3))
-                    )),
-                    new Ast.Term("print", Arrays.asList(
-                            new Ast.Identifier("i")
-            )))), null, Collections.singletonMap("i", -8))
+                new Ast.Identifier("i"),
+                new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(0)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
+                )),
+                new Ast.Term("print", Arrays.asList(
+                        new Ast.Identifier("i")
+                )))), null, Collections.singletonMap("i", -8)),
+            Arguments.of("Multiple Data Types", new Ast.Term("for", Arrays.asList(
+                new Ast.Identifier("i"),
+                new Ast.Term("list", Arrays.asList(
+                        new Ast.StringLiteral("cry"),
+                        new Ast.Identifier("true")
+                )),
+                new Ast.Term("print", Arrays.asList(
+                        new Ast.Identifier("i")
+                )))), null, Collections.singletonMap("i", "something"))
 //            Arguments.of("Correct Case", new Ast.Term("for", Arrays.asList(
 //                    new Ast.NumberLiteral(BigDecimal.valueOf(2)),
 //                    new Ast.NumberLiteral(BigDecimal.valueOf(8))
