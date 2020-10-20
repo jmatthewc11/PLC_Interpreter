@@ -171,25 +171,15 @@ public final class Interpreter {
             return !evaluated.get(0);
         });
         scope.define("and", (Function<List<Ast>, Object>) args -> {
-            //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
-            // can't do this for and/or, must evaluate args one at a time
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.isEmpty()) return true;
-            for (Object o : evaluated) {
-                Boolean condition = requireType(Boolean.class, o);
-                if (!condition)
+            for (Ast arg : args) {
+                if (!requireType(Boolean.class, eval(arg)))
                     return false;
             }
             return true;
         });
         scope.define("or", (Function<List<Ast>, Object>) args -> {
-            //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
-            // can't do this for and/or, must evaluate args one at a time
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.isEmpty()) return false;
-            for (Object o : evaluated) {
-                Boolean condition = requireType(Boolean.class, o);
-                if (condition)
+            for (Ast arg : args) {
+                if (requireType(Boolean.class, eval(arg)))
                     return true;
             }
             return false;
@@ -322,8 +312,7 @@ public final class Interpreter {
             // Then in JUnit you could compare the output value to what you would expect.
             if (args.size() != 2) throw new EvalException("while requires two arguments");
 
-            Boolean condition = requireType(Boolean.class, eval(args.get(0)));
-            while (condition)
+            while (requireType(Boolean.class, eval(args.get(0))))
                 eval(args.get(1));
 
             return VOID;
@@ -338,9 +327,14 @@ public final class Interpreter {
             Scope scope2 = new Scope(scope);
             scope2.define(identifier.getName(), list.get(0));           //FIXME: identifier = value in list, value needs to increment
 
-//            for (scope2.lookup(identifier.getName()) : list) {    //FIXME: print things in list
+//            for (int i = 0; i < list.size(); i++) {
 //                eval(ast);
-//                scope2.set(identifier.getName(), scope2.lookup(identifier.getName()) + 1);
+//                scope2.set(identifier.getName(), list.get(i));
+//            }
+
+//            for (scope2.lookup(identifier.getName()) : list) {      //FIXME: print things in list, how to make this work?
+//                eval(ast);
+//                scope2.set(identifier.getName(), list.get());       //how to set this without iterator?
 //            }
 
             return VOID;

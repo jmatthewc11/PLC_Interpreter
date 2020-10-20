@@ -73,7 +73,7 @@ final class InterpreterTests {
                     new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                     new Ast.NumberLiteral(BigDecimal.valueOf(3))
             )), BigDecimal.valueOf(-4)),
-            Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList(
+            Arguments.of("Given Test Case", new Ast.Term("-", Arrays.asList(
                     new Ast.Term("-", Arrays.asList(
                             new Ast.NumberLiteral(BigDecimal.ONE),
                             new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -485,7 +485,7 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testWhile(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
+    void testWhile(String test, Ast ast, Object expected, Map<String, Object> map) {
         test(ast, expected, map);
     }
 
@@ -495,17 +495,23 @@ final class InterpreterTests {
             Arguments.of("Single Argument", new Ast.Term("while", Arrays.asList(
                     new Ast.NumberLiteral(BigDecimal.valueOf(2))
             )), null, Collections.emptyMap()),
-                Arguments.of("Correct Case", new Ast.Term("while", Arrays.asList(
-                        new Ast.Identifier("truthy"),
-                        new Ast.Term("print", Arrays.asList(
-                                new Ast.NumberLiteral(BigDecimal.valueOf(10))
-                        )))), null, Collections.singletonMap("truthy", true))
+            Arguments.of("Correct Case", new Ast.Term("while", Arrays.asList(
+                    new Ast.Term(">", Arrays.asList(
+                            new Ast.Identifier("x"),
+                            new Ast.NumberLiteral(BigDecimal.ZERO)
+                    )),
+                    new Ast.Term("set!", Arrays.asList(
+                            new Ast.Identifier("x"),
+                            new Ast.Term("-", Arrays.asList(
+                                            new Ast.Identifier("x"),
+                                            new Ast.NumberLiteral(BigDecimal.ONE)
+                                    )))))), null, Collections.singletonMap("x", BigDecimal.valueOf(4)))
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void testFor(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
+    void testFor(String test, Ast ast, Object expected, Map<String, Object> map) {
         test(ast, expected, map);
     }
 
