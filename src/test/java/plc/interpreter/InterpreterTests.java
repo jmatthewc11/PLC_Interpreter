@@ -525,7 +525,7 @@ final class InterpreterTests {
                     new Ast.Identifier("i"),
                     new Ast.Term("range", Arrays.asList(
                             new Ast.NumberLiteral(BigDecimal.valueOf(0)),
-                            new Ast.NumberLiteral(BigDecimal.valueOf(10))
+                            new Ast.NumberLiteral(BigDecimal.valueOf(3))
                     )),
                     new Ast.Term("print", Arrays.asList(
                             new Ast.Identifier("i")

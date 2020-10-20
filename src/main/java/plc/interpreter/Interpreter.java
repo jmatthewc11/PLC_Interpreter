@@ -295,7 +295,7 @@ public final class Interpreter {
 
             return VOID;
         });
-        scope.define("do", (Function<List<Ast>, Object>) args -> {     //FIXME: evaluate inside a new scope?
+        scope.define("do", (Function<List<Ast>, Object>) args -> {     //FIXME: evaluate each inside a new scope?
             if (args.isEmpty()) return VOID;
             Scope scope2 = new Scope(scope);
 
@@ -325,17 +325,16 @@ public final class Interpreter {
 
             Ast.Identifier identifier = requireType(Ast.Identifier.class, args.get(0));
             Scope scope2 = new Scope(scope);
-            scope2.define(identifier.getName(), list.get(0));           //FIXME: identifier = value in list, value needs to increment
+            scope2.define(identifier.getName(), list.get(0));
+            Interpreter interpreter2 = new Interpreter(new PrintWriter(System.out), scope2);
 
-//            for (int i = 0; i < list.size(); i++) {
-//                eval(ast);
-//                scope2.set(identifier.getName(), list.get(i));
-//            }
+            for (Object o : list) {                     //How to "evaluate inside a new scope"?
+                scope2.set(identifier.getName(), o);
+                interpreter2.eval(ast);
+            }
 
-//            for (scope2.lookup(identifier.getName()) : list) {      //FIXME: print things in list, how to make this work?
-//                eval(ast);
-//                scope2.set(identifier.getName(), list.get());       //how to set this without iterator?
-//            }
+            interpreter2 = null;
+            scope2 = null;
 
             return VOID;
         });
