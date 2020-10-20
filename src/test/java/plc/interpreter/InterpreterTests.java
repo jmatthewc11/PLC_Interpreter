@@ -39,7 +39,7 @@ final class InterpreterTests {
         test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testAddition() {   //NOTE: throws error at (2)
+    private static Stream<Arguments> testAddition() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("+", Arrays.asList()), BigDecimal.valueOf(0)),
                 Arguments.of("Multiple Arguments", new Ast.Term("+", Arrays.asList(
@@ -47,7 +47,7 @@ final class InterpreterTests {
                         new Ast.StringLiteral("10"),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(3))
-                )), BigDecimal.valueOf(6)),
+                )), null),
                 Arguments.of("Multiple Arguments", new Ast.Term("+", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.ONE),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
@@ -72,7 +72,13 @@ final class InterpreterTests {
                         new Ast.NumberLiteral(BigDecimal.ONE),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(3))
-                )), BigDecimal.valueOf(-4))
+                )), BigDecimal.valueOf(-4)),
+                Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList( //FIXME: FAILS
+                        new Ast.Term("-", Arrays.asList(
+                                new Ast.NumberLiteral(BigDecimal.valueOf(-1)),
+                                new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                        ))
+                )), BigDecimal.valueOf(1))
         );
     }
 
@@ -118,42 +124,42 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testTrue(String test, Ast ast, boolean expected) throws EvalException {
+    void testTrue(String test, Ast ast, Boolean expected) throws EvalException {
         test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testTrue() {   //NOTE: errors return correctly (1)
+    private static Stream<Arguments> testTrue() {
         return Stream.of(
-                Arguments.of("Term", new Ast.Term("true", Arrays.asList()), true),
+                Arguments.of("Term", new Ast.Term("true", Arrays.asList()), null),
                 Arguments.of("Identifier", new Ast.Identifier("true"), true)
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void testFalse(String test, Ast ast, boolean expected) throws EvalException {
+    void testFalse(String test, Ast ast, Boolean expected) throws EvalException {
         test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testFalse() {  //NOTE: errors return correctly (1)
+    private static Stream<Arguments> testFalse() {
         return Stream.of(
-                Arguments.of("Term", new Ast.Term("false", Arrays.asList()), false),
+                Arguments.of("Term", new Ast.Term("false", Arrays.asList()), null),
                 Arguments.of("Identifier", new Ast.Identifier("false"), false)
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void testEqual(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testEqual(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
     //TODO: compare bools, identifiers, terms, etc.
-    private static Stream<Arguments> testEqual() {  //NOTE: errors return correctly (1, 2, 6)
+    private static Stream<Arguments> testEqual() {
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), false, Collections.emptyMap()),
+                Arguments.of("Zero Arguments", new Ast.Term("equals?", Arrays.asList()), null, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("Two Nums True", new Ast.Term("equals?", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -170,25 +176,25 @@ final class InterpreterTests {
                         new Ast.NumberLiteral(BigDecimal.ONE),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(1))
-                )), false, Collections.emptyMap())
+                )), null, Collections.emptyMap())
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void testNot(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testNot(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testNot() {    //NOTE: errors return correctly (1, 2, 3)
+    private static Stream<Arguments> testNot() {
         return Stream.of(
-            Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), false, Collections.emptyMap()),
+            Arguments.of("Zero Arguments", new Ast.Term("not", Arrays.asList()), null, Collections.emptyMap()),
             Arguments.of("Num Not Bool", new Ast.Term("not", Arrays.asList(
                     new Ast.NumberLiteral(BigDecimal.valueOf(2))
-            )), false, Collections.emptyMap()),
+            )), null, Collections.emptyMap()),
             Arguments.of("String Not Bool", new Ast.Term("not", Arrays.asList(
                     new Ast.StringLiteral("string")
-            )), false, Collections.emptyMap()),
+            )), null, Collections.emptyMap()),
             Arguments.of("Switch to True", new Ast.Term("not", Arrays.asList(
                     new Ast.Identifier("truth")
             )), false, Collections.singletonMap("truth", true)),
@@ -200,11 +206,11 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testAnd(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testAnd(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testAnd() {    //NOTE: errors return correctly (5)
+    private static Stream<Arguments> testAnd() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("and", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("One Arg True", new Ast.Term("and", Arrays.asList(
@@ -226,7 +232,7 @@ final class InterpreterTests {
                         }})),
                 Arguments.of("String Not Bool", new Ast.Term("and", Arrays.asList(
                         new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("First Arg False", new Ast.Term("and", Arrays.asList(
                         new Ast.Identifier("falsey"),
                         new Ast.Identifier("truth")
@@ -239,19 +245,19 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testOr(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testOr(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
 
-    private static Stream<Arguments> testOr() {     //NOTE: errors return correctly (2, 3)
+    private static Stream<Arguments> testOr() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("or", Arrays.asList()), false, Collections.emptyMap()),
                 Arguments.of("Num Not Bool", new Ast.Term("or", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("String Not Bool", new Ast.Term("or", Arrays.asList(
                         new Ast.StringLiteral("string")
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("One Arg True", new Ast.Term("or", Arrays.asList(
                         new Ast.Identifier("truth")
                 )), true, Collections.singletonMap("truth", true)),
@@ -310,17 +316,17 @@ final class InterpreterTests {
         test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testRange() {  //NOTE: errors return correctly (1, 2, 3, 5)
+    private static Stream<Arguments> testRange() {
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("range", Arrays.asList()), new LinkedList<>()),
+                Arguments.of("Zero Arguments", new Ast.Term("range", Arrays.asList()), null),
                 Arguments.of("Single Argument", new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), new LinkedList<>()),
+                )), null),
                 Arguments.of("Multiple Arguments", new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(8)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(7))
-                )), new LinkedList<Object>()),
+                )), null),
                 Arguments.of("Correct Case", new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(8))
@@ -330,46 +336,46 @@ final class InterpreterTests {
                 Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
-                )), new LinkedList<Object>())
+                )), null)
         );
     }
 
+//    @ParameterizedTest
+//    @MethodSource
+//    void testSet(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
+//        test(ast, expected, setup);     //FIXME: how do I test this?
+//    }
+//
+//    private static Stream<Arguments> testSet() {  //NOTE: errors return correctly (1, 2)
+//        return Stream.of(
+////                Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), Collections.emptyMap()),
+////                Arguments.of("No Identifier", new Ast.Term("set!", Arrays.asList(
+////                        new Ast.StringLiteral("no"),
+////                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+////                )), Collections.emptyMap()),
+//                Arguments.of("Identifier and AST", new Ast.Term("set!", Arrays.asList(
+//                        new Ast.Identifier("id"),
+//                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
+//                )), Collections.singletonMap("id", 8), Collections.emptyMap())
+////                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
+////                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+////                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
+////                )), new LinkedList<Object>())
+//        );
+//    }
+
     @ParameterizedTest
     @MethodSource
-    void testSet(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
-        test(ast, expected, setup);     //FIXME: how do I test this?
-    }
-
-    private static Stream<Arguments> testSet() {  //NOTE: errors return correctly (1, 2)
-        return Stream.of(
-//                Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), Collections.emptyMap()),
-//                Arguments.of("No Identifier", new Ast.Term("set!", Arrays.asList(
-//                        new Ast.StringLiteral("no"),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-//                )), Collections.emptyMap()),
-                Arguments.of("Identifier and AST", new Ast.Term("set!", Arrays.asList(
-                        new Ast.Identifier("id"),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
-                )), Collections.singletonMap("id", 8), Collections.emptyMap())
-//                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
-//                )), new LinkedList<Object>())
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource
-    void testGreater(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testGreater(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
     //TODO: compare bools, identifiers, terms, etc.
-    private static Stream<Arguments> testGreater() {  //NOTE: errors return correctly (2)
+    private static Stream<Arguments> testGreater() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term("<", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term("<", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term("<", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -388,7 +394,7 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testGreaterEqual(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testGreaterEqual(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
     //TODO: compare bools, identifiers, terms, etc.
@@ -397,7 +403,7 @@ final class InterpreterTests {
                 Arguments.of("Zero Arguments", new Ast.Term("<=", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term("<=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term("<=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -417,16 +423,16 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testLess(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testLess(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
     //TODO: compare bools, identifiers, terms, etc.
-    private static Stream<Arguments> testLess() {  //NOTE: errors return correctly (2)
+    private static Stream<Arguments> testLess() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term(">", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term(">", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term(">", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -454,16 +460,16 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testLessEqual(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
+    void testLessEqual(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
     //TODO: compare bools, identifiers, terms, etc.
-    private static Stream<Arguments> testLessEqual() {  //NOTE: errors return correctly (2)
+    private static Stream<Arguments> testLessEqual() {
         return Stream.of(
                 Arguments.of("Zero Arguments", new Ast.Term(">=", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term(">=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), false, Collections.emptyMap()),
+                )), null, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term(">=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
