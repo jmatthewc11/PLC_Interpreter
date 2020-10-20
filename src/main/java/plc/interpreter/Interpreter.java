@@ -295,30 +295,31 @@ public final class Interpreter {
             }
             return list;
         });
-//        scope.define("set!", (Function<List<Ast>, Object>) args -> {    //TODO: READ RESOURCE
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            if (evaluated.size() != 2) throw new EvalException("set! requires two arguments");
-//            Object var_name = requireType(Ast.Identifier.class, evaluated.get(0));
-//            Object var_value = requireType(Ast.class, evaluated.get(1));
-//
-//            scope.set(var_name.toString(), var_value);
-//
-//            //Sets an identifier to a value using the current scope and returns VOID. Has the form:
-//            //(set! identifier ast)
-//            return VOID;
-//        });
-//        scope.define("do", (Function<List<Ast>, Object>) args -> {     //TODO: function code
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            if (evaluated.size() == 0) return VOID;
-//            Scope scope2 = new Scope(scope);
-//            //Evaluates all arguments sequentially, returning the value of the last argument.
-//            //Arguments should be evaluated inside of a new scope, meaning that you should change the scope of
-//            //the interpreter to be new Scope(scope) (aka, the parent is the current scope). After arguments
-//            // are evaluated, the scope should be reset to the previous scope.
-//            //FIXME: reset scope??  Store scopes in the sequence they've been created in within a data structure
-//            return scope2.lookup(evaluated.get(evaluated.size() - 1).toString());
-//        });
-        scope.define("while", (Function<List<Ast>, Object>) args -> {   //FIXME: set evaluated thing to variable and compare
+        scope.define("set!", (Function<List<Ast>, Object>) args -> {
+            if (args.size() != 2) throw new EvalException("set! requires two arguments");
+
+            Ast.Identifier var_name = requireType(Ast.Identifier.class, args.get(0));
+            Ast var_value = requireType(Ast.class, args.get(1));
+
+            scope.set(var_name.getName(), eval(var_value));
+
+            return VOID;
+        });
+        scope.define("do", (Function<List<Ast>, Object>) args -> {     //FIXME: evaluate inside a new scope?
+            if (args.isEmpty()) return VOID;
+            Scope scope2 = new Scope(scope);
+
+            for(int i = 0; i < args.size(); i++) {
+
+            }
+
+
+            //FIXME: Store scopes in the sequence they've been created in within a data structure
+            return scope2.lookup(args.get(args.size() - 1).toString());
+        });
+        scope.define("while", (Function<List<Ast>, Object>) args -> {
+            //start a do then define a variable, make changes to that variable using a loop, and finally access that variable.
+            // Then in JUnit you could compare the output value to what you would expect.
             if (args.size() != 2) throw new EvalException("while requires two arguments");
 
             Boolean condition = requireType(Boolean.class, eval(args.get(0)));
@@ -330,17 +331,16 @@ public final class Interpreter {
         scope.define("for", (Function<List<Ast>, Object>) args -> {
             if (args.size() != 3) throw new EvalException("for requires three arguments");
 
-            List list = requireType(List.class, eval(args.get(1)));
-            Ast ast = requireType(Ast.class, eval(args.get(2)));
+            List list = requireType(List.class, eval(args.get(1)));     //FIXME: try passing in literal list too, not just range/LL functions
+            Ast ast = requireType(Ast.class, args.get(2));
 
-            Ast.Identifier identifier = requireType(Ast.Identifier.class, eval(args.get(0)));
+            Ast.Identifier identifier = requireType(Ast.Identifier.class, args.get(0));
             Scope scope2 = new Scope(scope);
-            scope2.define(identifier.getName(), list.get(0));   //FIXME: identifier = value in list, value needs to increment
+            scope2.define(identifier.getName(), list.get(0));           //FIXME: identifier = value in list, value needs to increment
 
-//            for (identifier : list) {    //FIXME: print things in list
+//            for (scope2.lookup(identifier.getName()) : list) {    //FIXME: print things in list
 //                eval(ast);
-//                i++;
-//                scope2.set(identifier.getName(), list.get(i));
+//                scope2.set(identifier.getName(), scope2.lookup(identifier.getName()) + 1);
 //            }
 
             return VOID;

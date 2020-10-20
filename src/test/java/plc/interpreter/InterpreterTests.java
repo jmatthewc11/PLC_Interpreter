@@ -287,85 +287,6 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testLL(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
-        test(ast, expected, map);
-    }
-
-    private static Stream<Arguments> testLL() {
-        return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("list", Arrays.asList()), new LinkedList<>(), Collections.emptyMap()),
-                Arguments.of("Single Argument", new Ast.Term("list", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2))), Collections.emptyMap()),
-                Arguments.of("Multiple Arguments", new Ast.Term("list", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(8)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2), BigDecimal.valueOf(8), BigDecimal.valueOf(2))), Collections.emptyMap()),
-                Arguments.of("Multiple Data Types", new Ast.Term("list", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.StringLiteral("string"),
-                        new Ast.Identifier("truth")
-                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2), "string", true)), Collections.singletonMap("truth", true))
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource
-    void testRange(String test, Ast ast, LinkedList<Object> expected) {
-        test(ast, expected, Collections.emptyMap());
-    }
-
-    private static Stream<Arguments> testRange() {
-        return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("range", Arrays.asList()), null),
-                Arguments.of("Single Argument", new Ast.Term("range", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), null),
-                Arguments.of("Multiple Arguments", new Ast.Term("range", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(8)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(7))
-                )), null),
-                Arguments.of("Correct Case", new Ast.Term("range", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
-                )), new LinkedList<Object>(Arrays.asList(
-                        BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
-                        BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7)))),
-                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
-                )), null)
-        );
-    }
-
-//    @ParameterizedTest
-//    @MethodSource
-//    void testSet(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
-//        test(ast, expected, setup);     //FIXME: how do I test this?
-//    }
-//
-//    private static Stream<Arguments> testSet() {  //NOTE: errors return correctly (1, 2)
-//        return Stream.of(
-////                Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), Collections.emptyMap()),
-////                Arguments.of("No Identifier", new Ast.Term("set!", Arrays.asList(
-////                        new Ast.StringLiteral("no"),
-////                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
-////                )), Collections.emptyMap()),
-//                Arguments.of("Identifier and AST", new Ast.Term("set!", Arrays.asList(
-//                        new Ast.Identifier("id"),
-//                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
-//                )), Collections.singletonMap("id", 8), Collections.emptyMap())
-////                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
-////                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-////                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
-////                )), new LinkedList<Object>())
-//        );
-//    }
-
-    @ParameterizedTest
-    @MethodSource
     void testGreater(String test, Ast ast, Boolean expected, Map<String, Object> map) throws EvalException {
         test(ast, expected, map);
     }
@@ -486,6 +407,113 @@ final class InterpreterTests {
                 )), false, Collections.emptyMap())
         );
     }
+
+    @ParameterizedTest
+    @MethodSource
+    void testLL(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testLL() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("list", Arrays.asList()), new LinkedList<>(), Collections.emptyMap()),
+                Arguments.of("Single Argument", new Ast.Term("list", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2))), Collections.emptyMap()),
+                Arguments.of("Multiple Arguments", new Ast.Term("list", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2), BigDecimal.valueOf(8), BigDecimal.valueOf(2))), Collections.emptyMap()),
+                Arguments.of("Multiple Data Types", new Ast.Term("list", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.StringLiteral("string"),
+                        new Ast.Identifier("truth")
+                )), new LinkedList<Object>(Arrays.asList(BigDecimal.valueOf(2), "string", true)), Collections.singletonMap("truth", true))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testRange(String test, Ast ast, LinkedList<Object> expected) {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    private static Stream<Arguments> testRange() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("range", Arrays.asList()), null),
+                Arguments.of("Single Argument", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), null),
+                Arguments.of("Multiple Arguments", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(7))
+                )), null),
+                Arguments.of("Correct Case", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(8))
+                )), new LinkedList<Object>(Arrays.asList(
+                        BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
+                        BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7)))),
+                Arguments.of("Non Int", new Ast.Term("range", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10.5))
+                )), null)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testSet(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
+        test(ast, expected, setup);     //FIXME: have to return scope.lookup(var_name.getName()) for testing
+    }
+
+    private static Stream<Arguments> testSet() {  //NOTE: errors return correctly (1, 2)
+        return Stream.of(
+            Arguments.of("Zero Arguments", new Ast.Term("set!", Arrays.asList()), null, Collections.emptyMap()),
+            Arguments.of("No Identifier", new Ast.Term("set!", Arrays.asList(
+                    new Ast.StringLiteral("no"),
+                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+            )), null, Collections.emptyMap()),
+            Arguments.of("Identifier and AST", new Ast.Term("set!", Arrays.asList(
+                    new Ast.Identifier("x"),
+                    new Ast.NumberLiteral(BigDecimal.valueOf(10))
+            )), BigDecimal.valueOf(10), Collections.singletonMap("x", 4))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testFor(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testFor() {
+        return Stream.of(
+//            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
+//            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
+//                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+//            )), null, Collections.emptyMap()),
+            Arguments.of("Correct Case", new Ast.Term("for", Arrays.asList(
+                    new Ast.Identifier("i"),
+                    new Ast.Term("range", Arrays.asList(
+                            new Ast.NumberLiteral(BigDecimal.valueOf(0)),
+                            new Ast.NumberLiteral(BigDecimal.valueOf(10))
+                    )),
+                    new Ast.Term("print", Arrays.asList(
+                            new Ast.Identifier("i")
+            )))), null, Collections.singletonMap("i", -8))
+//            Arguments.of("Correct Case", new Ast.Term("for", Arrays.asList(
+//                    new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+//                    new Ast.NumberLiteral(BigDecimal.valueOf(8))
+//            )), new LinkedList<Object>(Arrays.asList(
+//                    BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
+//                    BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7))))
+        );
+    }
+
+
 
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
