@@ -105,7 +105,9 @@ public final class Interpreter {
             out.println();
             return VOID;
         });
-        scope.define("+", (Function<List<Ast>, Object>) args -> {   //FIXME: Arguments must be numbers, but that is after they are evaluated ?
+        scope.define("+", (Function<List<Ast>, Object>) args -> {
+            //FIXME: Arguments must be numbers, but that is after they are evaluated ?
+            // if it's an identifier, it needs to evaluate to a number
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
@@ -158,7 +160,7 @@ public final class Interpreter {
 
             return result;
         });
-        scope.define("true", true);     //FIXME: how to test?
+        scope.define("true", true);
         scope.define("false", false);
         scope.define("equals?", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());

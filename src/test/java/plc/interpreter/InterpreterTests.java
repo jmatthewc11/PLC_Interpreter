@@ -118,33 +118,27 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
-    void testTrue(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
-        test(ast, expected, map);
+    void testTrue(String test, Ast ast, boolean expected) throws EvalException {
+        test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testTrue() {
+    private static Stream<Arguments> testTrue() {   //NOTE: errors return correctly (1)
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("false", Arrays.asList()), true, Collections.emptyMap()),
-                Arguments.of("Identifier", new Ast.Term("false", Arrays.asList(
-                        new Ast.Identifier("falsey")
-                )), true, Collections.singletonMap("falsey", false))
+                Arguments.of("Term", new Ast.Term("true", Arrays.asList()), true),
+                Arguments.of("Identifier", new Ast.Identifier("true"), true)
         );
     }
 
-    //FIXME: How to test these?
-
     @ParameterizedTest
     @MethodSource
-    void testFalse(String test, Ast ast, boolean expected, Map<String, Object> map) throws EvalException {
-        test(ast, expected, map);
+    void testFalse(String test, Ast ast, boolean expected) throws EvalException {
+        test(ast, expected, Collections.emptyMap());
     }
 
-    private static Stream<Arguments> testFalse() {
+    private static Stream<Arguments> testFalse() {  //NOTE: errors return correctly (1)
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("false", Arrays.asList()), false, Collections.emptyMap()),
-                Arguments.of("Identifier", new Ast.Term("false", Arrays.asList(
-                        new Ast.Identifier("falsey")
-                )), false, Collections.singletonMap("falsey", true))
+                Arguments.of("Term", new Ast.Term("false", Arrays.asList()), false),
+                Arguments.of("Identifier", new Ast.Identifier("false"), false)
         );
     }
 
