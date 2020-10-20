@@ -176,7 +176,7 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.isEmpty()) return true;
             for (Object o : evaluated) {
-                boolean condition = requireType(Boolean.class, o);
+                Boolean condition = requireType(Boolean.class, o);
                 if (!condition)
                     return false;
             }
@@ -188,7 +188,7 @@ public final class Interpreter {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.isEmpty()) return false;
             for (Object o : evaluated) {
-                boolean condition = requireType(Boolean.class, o);
+                Boolean condition = requireType(Boolean.class, o);
                 if (condition)
                     return true;
             }
@@ -318,31 +318,33 @@ public final class Interpreter {
 //            //FIXME: reset scope??  Store scopes in the sequence they've been created in within a data structure
 //            return scope2.lookup(evaluated.get(evaluated.size() - 1).toString());
 //        });
-//        scope.define("while", (Function<List<Ast>, Object>) args -> {     //TODO: function code
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            if (evaluated.size() != 2) throw new EvalException("while requires two arguments");
-////            Function<List<Ast>, Object> func = (Function<List<Ast>, Object>) object;
-//
-//            Ast cond = requireType(Ast.class, evaluated.get(0));
-//            boolean condition = requireType(Boolean.class, evaluated.get(0));
-//            Ast body = requireType(Ast.class, evaluated.get(1));
-//            while (condition) {
-////                func.apply(body);     //needs args?
+        scope.define("while", (Function<List<Ast>, Object>) args -> {   //FIXME: set evaluated thing to variable and compare
+            if (args.size() != 2) throw new EvalException("while requires two arguments");
+
+            Boolean condition = requireType(Boolean.class, eval(args.get(0)));
+            while (condition)
+                eval(args.get(1));
+
+            return VOID;
+        });
+        scope.define("for", (Function<List<Ast>, Object>) args -> {
+            if (args.size() != 3) throw new EvalException("for requires three arguments");
+
+            List list = requireType(List.class, eval(args.get(1)));
+            Ast ast = requireType(Ast.class, eval(args.get(2)));
+
+            Ast.Identifier identifier = requireType(Ast.Identifier.class, eval(args.get(0)));
+            Scope scope2 = new Scope(scope);
+            scope2.define(identifier.getName(), list.get(0));   //FIXME: identifier = value in list, value needs to increment
+
+//            for (identifier : list) {    //FIXME: print things in list
+//                eval(ast);
+//                i++;
+//                scope2.set(identifier.getName(), list.get(i));
 //            }
-//            return VOID;
-//        });
-//        scope.define("for", (Function<List<Ast>, Object>) args -> {     //TODO: function code
-//            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-//            // An enhanced for loop, meaning it iterates over a sequence (list) instead of the C-style index for loop,
-//            // which returns VOID.
-//            // Has the form:
-//            // (for [identifier list] ast)
-//
-//            // Unlike while, you will need to define a new variable for use in the loop - this needs
-//            // to be in a new scope so it is not accessible from future statements.
-//            // Like while, using Java's enhanced for loop is the way to go to implement this easily.
-//            return VOID;
-//        });
+
+            return VOID;
+        });
     }
 
     /**
