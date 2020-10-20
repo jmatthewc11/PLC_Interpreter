@@ -106,56 +106,50 @@ public final class Interpreter {
             return VOID;
         });
         scope.define("+", (Function<List<Ast>, Object>) args -> {
-            //FIXME: Arguments must be numbers, but that is after they are evaluated ?
-            // if it's an identifier, it needs to evaluate to a number
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<BigDecimal> evaluated = args.stream().map(a -> requireType(BigDecimal.class, eval(a))).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                BigDecimal add_it = requireType(BigDecimal.class, evaluated.get(i));
-                result = result.add(add_it);
+                result = result.add(evaluated.get(1));
             }
             return result;
         });
         scope.define("-", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) {    //no args, throw error
+            List<BigDecimal> evaluated = args.stream().map(a -> requireType(BigDecimal.class, eval(a))).collect(Collectors.toList());
+            if (evaluated.isEmpty()) {
                 throw new EvalException("Subtraction must have at least one argument");
             }
 
-            BigDecimal result = requireType(BigDecimal.class, evaluated.get(0));
+            BigDecimal result = evaluated.get(0);
             if (evaluated.size() == 1) {    //add result to zero and negate it
                 return result.negate();
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                BigDecimal subtract_it = requireType(BigDecimal.class, evaluated.get(i));
-                result = result.subtract(subtract_it);
+                result = result.subtract(evaluated.get(i));
             }
             return result;
         });
         scope.define("*", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<BigDecimal> evaluated = args.stream().map(a -> requireType(BigDecimal.class, eval(a))).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ONE;         //returns 1 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                BigDecimal multiply_it = requireType(BigDecimal.class, evaluated.get(i));
-                result = result.multiply(multiply_it);
+                result = result.multiply(evaluated.get(i));
             }
             return result;
         });
         scope.define("/", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) {    //no args, throw error
+            List<BigDecimal> evaluated = args.stream().map(a -> requireType(BigDecimal.class, eval(a))).collect(Collectors.toList());
+            if (evaluated.isEmpty()) {
                 throw new EvalException("Division must have at least one argument");
             }
 
-            BigDecimal result = requireType(BigDecimal.class, evaluated.get(0));
+            BigDecimal result = evaluated.get(0);
             if (evaluated.size() == 1) {    //raise to power of -1 to get inverse
                 result = BigDecimal.ONE.divide(result, RoundingMode.HALF_EVEN);
             }
 
             for (int i = 1; i < evaluated.size(); i++) {
-                BigDecimal divide_it = requireType(BigDecimal.class, evaluated.get(i));
-                result = result.divide(divide_it, RoundingMode.HALF_EVEN);
+                result = result.divide(evaluated.get(i), RoundingMode.HALF_EVEN);
             }
 
             return result;
@@ -180,7 +174,7 @@ public final class Interpreter {
             //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
             // can't do this for and/or, must evaluate args one at a time
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return true;
+            if (evaluated.isEmpty()) return true;
             for (Object o : evaluated) {
                 boolean condition = requireType(Boolean.class, o);
                 if (!condition)
@@ -192,7 +186,7 @@ public final class Interpreter {
             //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
             // can't do this for and/or, must evaluate args one at a time
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return false;
+            if (evaluated.isEmpty()) return false;
             for (Object o : evaluated) {
                 boolean condition = requireType(Boolean.class, o);
                 if (condition)
@@ -202,7 +196,7 @@ public final class Interpreter {
         });
         scope.define("<", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return true;
+            if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than");
 
             Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
@@ -219,7 +213,7 @@ public final class Interpreter {
         });
         scope.define("<=", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return true;
+            if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than or equal to");
 
             Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
@@ -236,7 +230,7 @@ public final class Interpreter {
         });
         scope.define(">", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return true;
+            if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare less than");
 
             Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
@@ -253,7 +247,7 @@ public final class Interpreter {
         });
         scope.define(">=", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            if (evaluated.size() == 0) return true;
+            if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare less than or equal to");
 
             Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
@@ -271,7 +265,7 @@ public final class Interpreter {
         scope.define("list", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             LinkedList<Object> list = new LinkedList<Object>();
-            if (evaluated.size() == 0) return list;
+            if (evaluated.isEmpty()) return list;
 
             list.addAll(evaluated);
             return list;

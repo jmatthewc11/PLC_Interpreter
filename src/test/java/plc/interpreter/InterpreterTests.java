@@ -64,21 +64,21 @@ final class InterpreterTests {
 
     private static Stream<Arguments> testSubtraction() {
         return Stream.of(
-                Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList()), null),
-                Arguments.of("Single Argument", new Ast.Term("-", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.ONE)
-                )), BigDecimal.valueOf(-1)),
-                Arguments.of("Multiple Arguments", new Ast.Term("-", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.ONE),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
-                )), BigDecimal.valueOf(-4)),
-                Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList( //FIXME: FAILS
-                        new Ast.Term("-", Arrays.asList(
-                                new Ast.NumberLiteral(BigDecimal.valueOf(-1)),
-                                new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                        ))
-                )), BigDecimal.valueOf(1))
+            Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList()), null),
+            Arguments.of("Single Argument", new Ast.Term("-", Arrays.asList(
+                    new Ast.NumberLiteral(BigDecimal.ONE)
+            )), BigDecimal.valueOf(-1)),
+            Arguments.of("Multiple Arguments", new Ast.Term("-", Arrays.asList(
+                    new Ast.NumberLiteral(BigDecimal.ONE),
+                    new Ast.NumberLiteral(BigDecimal.valueOf(2)),
+                    new Ast.NumberLiteral(BigDecimal.valueOf(3))
+            )), BigDecimal.valueOf(-4)),
+            Arguments.of("Zero Arguments", new Ast.Term("-", Arrays.asList(
+                    new Ast.Term("-", Arrays.asList(
+                            new Ast.NumberLiteral(BigDecimal.ONE),
+                            new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                    ))
+            )), BigDecimal.ONE)
         );
     }
 
