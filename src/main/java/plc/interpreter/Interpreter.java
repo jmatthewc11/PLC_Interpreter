@@ -164,11 +164,11 @@ public final class Interpreter {
             return Objects.deepEquals(evaluated.get(0), evaluated.get(1));
         });
         scope.define("not", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<Boolean> evaluated = args.stream().map(a -> requireType(Boolean.class, eval(a))).collect(Collectors.toList());
             if (evaluated.size() != 1)
                 throw new EvalException(("not only takes a single argument"));
-            boolean condition = requireType(Boolean.class, evaluated.get(0));
-            return !condition;
+
+            return !evaluated.get(0);
         });
         scope.define("and", (Function<List<Ast>, Object>) args -> {
             //FIXME: Short Circuit: Unexpected EvalException (plc.interpreter.EvalException: The identifier INVALID is not defined.)) ?
@@ -195,13 +195,13 @@ public final class Interpreter {
             return false;
         });
         scope.define("<", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
             if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than");
 
-            Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
+            Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
-                Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
+                Comparable compare_2 = evaluated.get(i);
 
                 if (compare_1.compareTo(compare_2) != -1)
                     return false;
@@ -212,13 +212,13 @@ public final class Interpreter {
             return true;
         });
         scope.define("<=", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
             if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than or equal to");
 
-            Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
+            Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
-                Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
+                Comparable compare_2 = evaluated.get(i);
 
                 if (compare_1.compareTo(compare_2) == 1)
                     return false;
@@ -229,13 +229,13 @@ public final class Interpreter {
             return true;
         });
         scope.define(">", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
             if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare less than");
 
-            Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
+            Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
-                Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
+                Comparable compare_2 = evaluated.get(i);
 
                 if (compare_1.compareTo(compare_2) != 1)
                     return false;
@@ -246,13 +246,13 @@ public final class Interpreter {
             return true;
         });
         scope.define(">=", (Function<List<Ast>, Object>) args -> {
-            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
+            List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
             if (evaluated.isEmpty()) return true;
             if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare less than or equal to");
 
-            Comparable compare_1 = requireType(Comparable.class, evaluated.get(0));
+            Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
-                Comparable compare_2 = requireType(Comparable.class, evaluated.get(i));
+                Comparable compare_2 = evaluated.get(i);
 
                 if (compare_1.compareTo(compare_2) == -1)
                     return false;
@@ -270,7 +270,7 @@ public final class Interpreter {
             list.addAll(evaluated);
             return list;
         });
-        scope.define("range", (Function<List<Ast>, Object>) args -> {
+        scope.define("range", (Function<List<Ast>, Object>) args -> {   //FIXME: clean this up
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() != 2) throw new EvalException("Range requires 2 arguments");
 
