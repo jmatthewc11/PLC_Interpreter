@@ -485,6 +485,26 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
+    void testWhile(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
+        test(ast, expected, map);
+    }
+
+    private static Stream<Arguments> testWhile() {
+        return Stream.of(
+            Arguments.of("Zero Arguments", new Ast.Term("while", Arrays.asList()), null, Collections.emptyMap()),
+            Arguments.of("Single Argument", new Ast.Term("while", Arrays.asList(
+                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+            )), null, Collections.emptyMap()),
+                Arguments.of("Correct Case", new Ast.Term("while", Arrays.asList(
+                        new Ast.Identifier("truthy"),
+                        new Ast.Term("print", Arrays.asList(
+                                new Ast.NumberLiteral(BigDecimal.valueOf(10))
+                        )))), null, Collections.singletonMap("truthy", true))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
     void testFor(String test, Ast ast, LinkedList<Object> expected, Map<String, Object> map) {
         test(ast, expected, map);
     }
