@@ -517,11 +517,11 @@ final class InterpreterTests {
 
     private static Stream<Arguments> testFor() {
         return Stream.of(
-//            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
-//            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
-//                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
-//            )), null, Collections.emptyMap()),
-            Arguments.of("Correct Case", new Ast.Term("for", Arrays.asList(
+            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
+            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
+                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+            )), null, Collections.emptyMap()),
+            Arguments.of("Correct: Basic", new Ast.Term("for", Arrays.asList(
                 new Ast.Identifier("i"),
                 new Ast.Term("range", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(0)),
@@ -530,7 +530,7 @@ final class InterpreterTests {
                 new Ast.Term("print", Arrays.asList(
                         new Ast.Identifier("i")
                 )))), null, Collections.singletonMap("i", -8)),
-            Arguments.of("Multiple Data Types", new Ast.Term("for", Arrays.asList(
+            Arguments.of("Correct: Multiple Data Types", new Ast.Term("for", Arrays.asList(
                 new Ast.Identifier("i"),
                 new Ast.Term("list", Arrays.asList(
                         new Ast.StringLiteral("cry"),
@@ -539,12 +539,6 @@ final class InterpreterTests {
                 new Ast.Term("print", Arrays.asList(
                         new Ast.Identifier("i")
                 )))), null, Collections.singletonMap("i", "something"))
-//            Arguments.of("Correct Case", new Ast.Term("for", Arrays.asList(
-//                    new Ast.NumberLiteral(BigDecimal.valueOf(2)),
-//                    new Ast.NumberLiteral(BigDecimal.valueOf(8))
-//            )), new LinkedList<Object>(Arrays.asList(
-//                    BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
-//                    BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7))))
         );
     }
 
