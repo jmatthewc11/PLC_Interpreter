@@ -37,7 +37,7 @@ public final class Interpreter {
     public Interpreter(PrintWriter out, Scope scope) {
         this.out = out;
         this.scope = scope;
-        init(scope);
+        init();
     }
 
     /**
@@ -98,7 +98,7 @@ public final class Interpreter {
      * Initializes the given scope with fields and functions in the standard
      * library.
      */
-    private void init(Scope scope) {
+    private void init() {
         scope.define("print", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             evaluated.forEach(out::print);
@@ -297,15 +297,15 @@ public final class Interpreter {
         });
         scope.define("do", (Function<List<Ast>, Object>) args -> {     //FIXME: evaluate each inside a new scope?
             if (args.isEmpty()) return VOID;
-            Scope scope2 = new Scope(scope);
+            scope = new Scope(scope);
 
             for(int i = 0; i < args.size(); i++) {
 
             }
 
-
+            scope = scope.getParent();
             //FIXME: Store scopes in the sequence they've been created in within a data structure
-            return scope2.lookup(args.get(args.size() - 1).toString());
+            return scope.lookup(args.get(args.size() - 1).toString());
         });
         scope.define("while", (Function<List<Ast>, Object>) args -> {
             //start a do then define a variable, make changes to that variable using a loop, and finally access that variable.
@@ -324,17 +324,16 @@ public final class Interpreter {
             Ast ast = requireType(Ast.class, args.get(2));
 
             Ast.Identifier identifier = requireType(Ast.Identifier.class, args.get(0));
-            Scope scope2 = new Scope(scope);
-            scope2.define(identifier.getName(), list.get(0));
-            Interpreter interpreter2 = new Interpreter(new PrintWriter(System.out), scope2);
+            scope = new Scope(scope);
+            scope.define(identifier.getName(), list.get(0));
 
-            for (Object o : list) {                     //How to "evaluate inside a new scope"?
-                scope2.set(identifier.getName(), o);
-                interpreter2.eval(ast);
+            for (Object o : list) {
+                scope.set(identifier.getName(), o);
+                eval(ast);
             }
 
-            scope2 = null;
-            interpreter2 = null;
+            scope = scope.getParent();
+
             return VOID;
         });
     }
