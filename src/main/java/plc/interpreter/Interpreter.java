@@ -78,7 +78,7 @@ public final class Interpreter {
      */
     private Object eval(Ast.Identifier ast) {   //evaluate whatever is in the AST
         return scope.lookup(ast.getName());     //separate terms evaluated with scope vs without
-    }                                           //TODO: watch lecture on scopes
+    }
 
     /**
      * Evaluates the NumberLiteral ast, which returns the stored number value.
@@ -254,20 +254,19 @@ public final class Interpreter {
         });
         scope.define("list", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            LinkedList<Object> list = new LinkedList<Object>();
+            LinkedList<Object> list = new LinkedList<>();
             if (evaluated.isEmpty()) return list;
 
-            list.addAll(evaluated);
-            return list;
+            return list.addAll(evaluated);
         });
-        scope.define("range", (Function<List<Ast>, Object>) args -> {   //FIXME: clean this up
+        scope.define("range", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
             if (evaluated.size() != 2) throw new EvalException("Range requires 2 arguments");
 
             BigDecimal first_arg = requireType(BigDecimal.class, evaluated.get(0));
             BigDecimal second_arg = requireType(BigDecimal.class, evaluated.get(1));
 
-            LinkedList<Object> list = new LinkedList<Object>();
+            LinkedList<BigDecimal> list = new LinkedList<BigDecimal>();
             int res = second_arg.compareTo(first_arg);
             if (res < 0)
                 throw new EvalException("Range requires second argument to be greater than the first");
@@ -290,22 +289,22 @@ public final class Interpreter {
 
             Ast.Identifier var_name = requireType(Ast.Identifier.class, args.get(0));
             Ast var_value = requireType(Ast.class, args.get(1));
-
             scope.set(var_name.getName(), eval(var_value));
 
             return VOID;
         });
-        scope.define("do", (Function<List<Ast>, Object>) args -> {     //FIXME: evaluate each inside a new scope?
+        scope.define("do", (Function<List<Ast>, Object>) args -> {
             if (args.isEmpty()) return VOID;
             scope = new Scope(scope);
 
-            for(int i = 0; i < args.size(); i++) {
-
+            for (int i = 0; i < args.size(); i++) {
+                eval(args.get(i));
             }
+            Object last_value = scope.lookup(args.get(args.size() - 1).toString());
 
             scope = scope.getParent();
-            //FIXME: Store scopes in the sequence they've been created in within a data structure
-            return scope.lookup(args.get(args.size() - 1).toString());
+
+            return last_value;
         });
         scope.define("while", (Function<List<Ast>, Object>) args -> {
             //start a do then define a variable, make changes to that variable using a loop, and finally access that variable.

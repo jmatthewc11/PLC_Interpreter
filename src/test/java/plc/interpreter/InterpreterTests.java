@@ -485,6 +485,24 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
+    void testDo(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
+        test(ast, expected, setup);
+    }
+
+    private static Stream<Arguments> testDo() {
+        return Stream.of(
+//                Arguments.of("Zero Arguments", new Ast.Term("do", Arrays.asList()), null, Collections.emptyMap()),
+                Arguments.of("Do set!", new Ast.Term("do", Arrays.asList(
+                        new Ast.Term("set!", Arrays.asList(
+                                new Ast.Identifier("x"),
+                                new Ast.NumberLiteral(BigDecimal.valueOf(10)))),
+                        new Ast.Identifier("x")
+                )), BigDecimal.valueOf(10), Collections.singletonMap("x", 4))
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
     void testWhile(String test, Ast ast, Object expected, Map<String, Object> map) {
         test(ast, expected, map);
     }
