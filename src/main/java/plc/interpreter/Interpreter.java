@@ -186,8 +186,7 @@ public final class Interpreter {
         });
         scope.define("<", (Function<List<Ast>, Object>) args -> {
             List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
-            if (evaluated.isEmpty()) return true;
-            if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than");
+            if (evaluated.isEmpty() || evaluated.size() == 1) return true;
 
             Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
@@ -203,8 +202,7 @@ public final class Interpreter {
         });
         scope.define("<=", (Function<List<Ast>, Object>) args -> {
             List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
-            if (evaluated.isEmpty()) return true;
-            if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare greater than or equal to");
+            if (evaluated.isEmpty() || evaluated.size() == 1) return true;
 
             Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
@@ -220,8 +218,7 @@ public final class Interpreter {
         });
         scope.define(">", (Function<List<Ast>, Object>) args -> {
             List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
-            if (evaluated.isEmpty()) return true;
-            if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare less than");
+            if (evaluated.isEmpty() || evaluated.size() == 1) return true;
 
             Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
@@ -237,8 +234,7 @@ public final class Interpreter {
         });
         scope.define(">=", (Function<List<Ast>, Object>) args -> {
             List<Comparable> evaluated = args.stream().map(a -> requireType(Comparable.class, eval(a))).collect(Collectors.toList());
-            if (evaluated.isEmpty()) return true;
-            if (evaluated.size() == 1) throw new EvalException("Needs two arguments to compare less than or equal to");
+            if (evaluated.isEmpty() || evaluated.size() == 1) return true;
 
             Comparable compare_1 = evaluated.get(0);
             for(int i = 1; i < evaluated.size(); i++) {
@@ -317,22 +313,30 @@ public final class Interpreter {
             return VOID;
         });
         scope.define("for", (Function<List<Ast>, Object>) args -> {
-            if (args.size() != 3) throw new EvalException("for requires three arguments");
+            if (args.size() != 2) throw new EvalException("for requires three arguments");
 
-            List list = requireType(List.class, eval(args.get(1)));     //FIXME: try passing in literal list too, not just range/LL functions
-            Ast ast = requireType(Ast.class, args.get(2));
+            //for has the form (for [identifier list] ast), where list is an ast that evaluates
+            // to a LinkedList of any type, not just numbers. In total, there are not three
+            // arguments - it's two, as the [identifier list] part is an Ast.Term
 
-            Ast.Identifier identifier = requireType(Ast.Identifier.class, args.get(0));
-            scope = new Scope(scope);
-            scope.define(identifier.getName(), list.get(0));
+            Ast.Term term = requireType(Ast.Term.class, args.get(0));
+            Object identifer_list = eval(term);
 
-            for (Object o : list) {
-                scope.set(identifier.getName(), o);
-                eval(ast);
-            }
+            Ast ast = requireType(Ast.class, args.get(1));
 
-            scope = scope.getParent();
-
+//            List list = requireType(List.class, eval(args.get(1)));     //FIXME: try passing in literal list too, not just range/LL functions
+//
+//            Ast.Identifier identifier = requireType(Ast.Identifier.class, args.get(0));
+//            scope = new Scope(scope);
+//            scope.define(identifier.getName(), list.get(0));
+//
+//            for (Object o : list) {
+//                scope.set(identifier.getName(), o);
+//                eval(ast);
+//            }
+//
+//            scope = scope.getParent();
+//
             return VOID;
         });
     }

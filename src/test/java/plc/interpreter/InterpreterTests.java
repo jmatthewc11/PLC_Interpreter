@@ -296,7 +296,7 @@ final class InterpreterTests {
                 Arguments.of("Zero Arguments", new Ast.Term("<", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term("<", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), null, Collections.emptyMap()),
+                )), true, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term("<", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -324,7 +324,7 @@ final class InterpreterTests {
                 Arguments.of("Zero Arguments", new Ast.Term("<=", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term("<=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), null, Collections.emptyMap()),
+                )), true, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term("<=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -353,7 +353,7 @@ final class InterpreterTests {
                 Arguments.of("Zero Arguments", new Ast.Term(">", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term(">", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), null, Collections.emptyMap()),
+                )), true, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term(">", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -390,7 +390,7 @@ final class InterpreterTests {
                 Arguments.of("Zero Arguments", new Ast.Term(">=", Arrays.asList()), true, Collections.emptyMap()),
                 Arguments.of("Single Argument", new Ast.Term(">=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
-                )), null, Collections.emptyMap()),
+                )), true, Collections.emptyMap()),
                 Arguments.of("Two Nums Equal", new Ast.Term(">=", Arrays.asList(
                         new Ast.NumberLiteral(BigDecimal.valueOf(2)),
                         new Ast.NumberLiteral(BigDecimal.valueOf(2))
@@ -535,28 +535,40 @@ final class InterpreterTests {
 
     private static Stream<Arguments> testFor() {
         return Stream.of(
-            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
-            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
-                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
-            )), null, Collections.emptyMap()),
-            Arguments.of("Correct: Basic", new Ast.Term("for", Arrays.asList(
-                new Ast.Identifier("i"),
-                new Ast.Term("range", Arrays.asList(
-                        new Ast.NumberLiteral(BigDecimal.valueOf(0)),
-                        new Ast.NumberLiteral(BigDecimal.valueOf(3))
-                )),
-                new Ast.Term("print", Arrays.asList(
-                        new Ast.Identifier("i")
-                )))), null, Collections.singletonMap("i", -8)),
-            Arguments.of("Correct: Multiple Data Types", new Ast.Term("for", Arrays.asList(
-                new Ast.Identifier("i"),
-                new Ast.Term("list", Arrays.asList(
-                        new Ast.StringLiteral("cry"),
-                        new Ast.Identifier("true")
-                )),
-                new Ast.Term("print", Arrays.asList(
-                        new Ast.Identifier("i")
-                )))), null, Collections.singletonMap("i", "something"))
+//            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
+//            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
+//                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+//            )), null, Collections.emptyMap()),
+
+            Arguments.of("Correct: Basic with Numbers", new Ast.Term("for", Arrays.asList(
+                new Ast.Term("", Arrays.asList( //FIXME: how does this get passed in as a term of 2 identifiers without a name?
+                        new Ast.Identifier("i"),
+                        new Ast.Identifier("numbers"))),
+                new Ast.Term("set!", Arrays.asList(
+                        new Ast.Identifier("count"),
+                        new Ast.Term("+", Arrays.asList(
+                                new Ast.Identifier("count"),
+                                new Ast.NumberLiteral(BigDecimal.ONE)
+                        ))
+                )))), null, Collections.unmodifiableMap(new HashMap<String, Object>() {{
+                            put("i", 9);
+                            put("numbers", new LinkedList<Object>(Arrays.asList(
+                                    BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
+                                    BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7))));
+                }}))   //pass in numbers/strings here
+
+//                new Ast.Term("print", Arrays.asList(
+//                        new Ast.Identifier("i")
+//                )))), null, Collections.singletonMap("i", -8)),
+//            Arguments.of("Correct: Multiple Data Types", new Ast.Term("for", Arrays.asList(
+//                new Ast.Identifier("i"),
+//                new Ast.Term("list", Arrays.asList(
+//                        new Ast.StringLiteral("cry"),
+//                        new Ast.Identifier("true")
+//                )),
+//                new Ast.Term("print", Arrays.asList(
+//                        new Ast.Identifier("i")
+//                )))), null, Collections.singletonMap("i", "something"))
         );
     }
 
