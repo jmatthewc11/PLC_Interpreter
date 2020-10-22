@@ -465,6 +465,26 @@ final class InterpreterTests {
 
     @ParameterizedTest
     @MethodSource
+    void testDefine(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
+        test(ast, expected, setup);
+    }
+
+    private static Stream<Arguments> testDefine() {
+        return Stream.of(
+                Arguments.of("Zero Arguments", new Ast.Term("define", Arrays.asList()), null, Collections.emptyMap()),
+                Arguments.of("Wrong First Arg", new Ast.Term("define", Arrays.asList(
+                        new Ast.StringLiteral("no"),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(2))
+                )), null, Collections.emptyMap()),
+                Arguments.of("Identifier and AST", new Ast.Term("define", Arrays.asList(
+                        new Ast.Identifier("x"),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10))
+                )), null, Collections.emptyMap())
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
     void testSet(String test, Ast ast, Object expected, Map<String, Object> setup) throws EvalException {
         test(ast, expected, setup);     //FIXME: have to return scope.lookup(var_name.getName()) for testing
     }

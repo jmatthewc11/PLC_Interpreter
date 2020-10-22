@@ -300,13 +300,8 @@ public final class Interpreter {
 
             }
             else {              //variable definition
-                scope.set(identifier.getName(), eval(ast));
+                scope.define(identifier.getName(), eval(ast));
             }
-
-//
-//            Ast.Identifier var_name = requireType(Ast.Identifier.class, args.get(0));
-//            Ast var_value = requireType(Ast.class, args.get(1));
-//            scope.set(var_name.getName(), eval(var_value));
 
             return VOID;
         });
