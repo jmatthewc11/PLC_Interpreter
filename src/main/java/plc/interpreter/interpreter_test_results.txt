@@ -46,7 +46,7 @@ InterpreterTests: (45/57)
       Multiple Arguments `(do 10 (double 10) \"return\")`: Failed (Unexpected EvalException (The identifier \"return\" is not defined.))
       Do Scope (Define Shadowing) `(do (define x 10))`: Failed (Unexpected EvalException (The identifier define is not defined.))
       Do Scope (Set Parent) `(do (set! y 10))`: Failed (Unexpected EvalException (The identifier (set! y 10) is not defined.))
-    for: (3/7)          //FIXME: how to make the term 'i strings' ?
+    for: (3/7)          //FIXME: how to make the term 'i strings' ?  (i numbers) is a term without a name
       For Iteration (Requires set! & +) `(for (i strings) (set! count (+ count 1)))`: Failed (Unexpected EvalException (for requires three arguments))
       For Variable (Requires set! & +) `(for (i numbers) (set! count (+ count i)))`: Failed (Unexpected EvalException (for requires three arguments))
       For Return `(for (i numbers) (print ))`: Failed (Unexpected EvalException (for requires three arguments))

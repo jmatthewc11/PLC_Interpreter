@@ -109,7 +109,7 @@ public final class Interpreter {
             List<BigDecimal> evaluated = args.stream().map(a -> requireType(BigDecimal.class, eval(a))).collect(Collectors.toList());
             BigDecimal result = BigDecimal.ZERO;            //return 0 if no args
             for (int i = 0; i < evaluated.size(); i++) {
-                result = result.add(evaluated.get(1));
+                result = result.add(evaluated.get(i));
             }
             return result;
         });
@@ -250,10 +250,11 @@ public final class Interpreter {
         });
         scope.define("list", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
-            LinkedList<Object> list = new LinkedList<>();
+            LinkedList<Object> list = new LinkedList<Object>();
             if (evaluated.isEmpty()) return list;
 
-            return list.addAll(evaluated);
+            list.addAll(evaluated);
+            return list;
         });
         scope.define("range", (Function<List<Ast>, Object>) args -> {
             List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
@@ -292,14 +293,13 @@ public final class Interpreter {
         scope.define("do", (Function<List<Ast>, Object>) args -> {
             if (args.isEmpty()) return VOID;
             scope = new Scope(scope);
+            Object last_value = null;
 
             for (int i = 0; i < args.size(); i++) {
-                eval(args.get(i));
+                last_value = eval(args.get(i));
             }
-            Object last_value = scope.lookup(args.get(args.size() - 1).toString());
 
             scope = scope.getParent();
-
             return last_value;
         });
         scope.define("while", (Function<List<Ast>, Object>) args -> {
@@ -313,31 +313,30 @@ public final class Interpreter {
             return VOID;
         });
         scope.define("for", (Function<List<Ast>, Object>) args -> {
-            if (args.size() != 2) throw new EvalException("for requires three arguments");
-
-            //for has the form (for [identifier list] ast), where list is an ast that evaluates
-            // to a LinkedList of any type, not just numbers. In total, there are not three
-            // arguments - it's two, as the [identifier list] part is an Ast.Term
+            if (args.size() != 2) throw new EvalException("for requires two arguments");
 
             Ast.Term term = requireType(Ast.Term.class, args.get(0));
-            Object identifer_list = eval(term);
+            String identifier_name = term.getName();
+            List<Ast> term_args = term.getArgs();
+
+            if (term_args.size() != 1)
+                throw new EvalException("Only one argument allowed to for loop");
+
+            Ast.Identifier list_ast = requireType(Ast.Identifier.class, term_args.get(0));
+            LinkedList list = requireType(LinkedList.class, eval(list_ast));
+
+            scope = new Scope(scope);
+            scope.define(identifier_name, list.get(0));
 
             Ast ast = requireType(Ast.class, args.get(1));
 
-//            List list = requireType(List.class, eval(args.get(1)));     //FIXME: try passing in literal list too, not just range/LL functions
-//
-//            Ast.Identifier identifier = requireType(Ast.Identifier.class, args.get(0));
-//            scope = new Scope(scope);
-//            scope.define(identifier.getName(), list.get(0));
-//
-//            for (Object o : list) {
-//                scope.set(identifier.getName(), o);
-//                eval(ast);
-//            }
-//
-//            scope = scope.getParent();
-//
-            return VOID;
+            for (Object o : list) {
+                scope.set(identifier_name, o);
+                eval(ast);
+            }
+
+            scope = scope.getParent();
+            return VOID;   //scope.lookup("count")
         });
     }
 

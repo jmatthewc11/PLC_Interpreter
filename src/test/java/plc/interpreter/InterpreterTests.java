@@ -492,12 +492,20 @@ final class InterpreterTests {
     private static Stream<Arguments> testDo() {
         return Stream.of(
 //                Arguments.of("Zero Arguments", new Ast.Term("do", Arrays.asList()), null, Collections.emptyMap()),
-                Arguments.of("Do set!", new Ast.Term("do", Arrays.asList(
-                        new Ast.Term("set!", Arrays.asList(
-                                new Ast.Identifier("x"),
-                                new Ast.NumberLiteral(BigDecimal.valueOf(10)))),
-                        new Ast.Identifier("x")
-                )), BigDecimal.valueOf(10), Collections.singletonMap("x", 4))
+//                Arguments.of("Do set!", new Ast.Term("do", Arrays.asList(
+//                        new Ast.Term("set!", Arrays.asList(
+//                                new Ast.Identifier("x"),
+//                                new Ast.NumberLiteral(BigDecimal.valueOf(10)))),
+//                        new Ast.Identifier("x")
+//                )), BigDecimal.valueOf(10), Collections.singletonMap("x", 4)),
+//                Arguments.of("Do num", new Ast.Term("do", Arrays.asList(
+//                        new Ast.NumberLiteral(BigDecimal.valueOf(10))
+//                )), BigDecimal.valueOf(10), Collections.emptyMap()),
+                Arguments.of("Do term", new Ast.Term("do", Arrays.asList(
+                        new Ast.Term("print", Arrays.asList(
+                                new Ast.NumberLiteral(BigDecimal.valueOf(10))
+                        ))
+                )), null, Collections.emptyMap())
         );
     }
 
@@ -535,14 +543,12 @@ final class InterpreterTests {
 
     private static Stream<Arguments> testFor() {
         return Stream.of(
-//            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
-//            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
-//                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
-//            )), null, Collections.emptyMap()),
-
+            Arguments.of("Zero Arguments", new Ast.Term("for", Arrays.asList()), null, Collections.emptyMap()),
+            Arguments.of("Single Argument", new Ast.Term("for", Arrays.asList(
+                    new Ast.NumberLiteral(BigDecimal.valueOf(2))
+            )), null, Collections.emptyMap()),
             Arguments.of("Correct: Basic with Numbers", new Ast.Term("for", Arrays.asList(
-                new Ast.Term("", Arrays.asList( //FIXME: how does this get passed in as a term of 2 identifiers without a name?
-                        new Ast.Identifier("i"),
+                new Ast.Term("i", Arrays.asList(
                         new Ast.Identifier("numbers"))),
                 new Ast.Term("set!", Arrays.asList(
                         new Ast.Identifier("count"),
@@ -551,24 +557,12 @@ final class InterpreterTests {
                                 new Ast.NumberLiteral(BigDecimal.ONE)
                         ))
                 )))), null, Collections.unmodifiableMap(new HashMap<String, Object>() {{
-                            put("i", 9);
-                            put("numbers", new LinkedList<Object>(Arrays.asList(
-                                    BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
-                                    BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7))));
-                }}))   //pass in numbers/strings here
-
-//                new Ast.Term("print", Arrays.asList(
-//                        new Ast.Identifier("i")
-//                )))), null, Collections.singletonMap("i", -8)),
-//            Arguments.of("Correct: Multiple Data Types", new Ast.Term("for", Arrays.asList(
-//                new Ast.Identifier("i"),
-//                new Ast.Term("list", Arrays.asList(
-//                        new Ast.StringLiteral("cry"),
-//                        new Ast.Identifier("true")
-//                )),
-//                new Ast.Term("print", Arrays.asList(
-//                        new Ast.Identifier("i")
-//                )))), null, Collections.singletonMap("i", "something"))
+                put("count", BigDecimal.valueOf(5));
+                put("numbers", new LinkedList<Object>(Arrays.asList(
+                        BigDecimal.valueOf(2), BigDecimal.valueOf(3), BigDecimal.valueOf(4),
+                        BigDecimal.valueOf(5), BigDecimal.valueOf(6), BigDecimal.valueOf(7))));
+                }})
+            )
         );
     }
 
