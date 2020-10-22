@@ -1,6 +1,7 @@
 package plc.interpreter;
 
 import com.sun.org.apache.xpath.internal.operations.Operation;
+import org.w3c.dom.events.EventException;
 
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
@@ -281,30 +282,62 @@ public final class Interpreter {
             }
             return list;
         });
+        scope.define("define", (Function<List<Ast>, Object>) args -> {
+            if (args.size() != 2) throw new EvalException("define requires two arguments");
+
+            Ast.Term term = null;
+            Ast.Identifier identifier = null;
+            Ast ast = requireType(Ast.class, args.get(1));
+
+            try {
+                term = requireType(Ast.Term.class, args.get(0));
+            }
+            catch (EvalException e) {
+                identifier = requireType(Ast.Identifier.class, args.get(0));
+            }
+
+            if (term != null) { //function definition
+
+            }
+            else {              //variable definition
+                scope.set(identifier.getName(), eval(ast));
+            }
+
+//
+//            Ast.Identifier var_name = requireType(Ast.Identifier.class, args.get(0));
+//            Ast var_value = requireType(Ast.class, args.get(1));
+//            scope.set(var_name.getName(), eval(var_value));
+
+            return VOID;
+        });
         scope.define("set!", (Function<List<Ast>, Object>) args -> {
             if (args.size() != 2) throw new EvalException("set! requires two arguments");
 
             Ast.Identifier var_name = requireType(Ast.Identifier.class, args.get(0));
             Ast var_value = requireType(Ast.class, args.get(1));
-            scope.set(var_name.getName(), eval(var_value));
+
+            try {
+                scope.define(var_name.getName(), eval(var_value));
+            }
+            catch (EvalException e) {
+                scope.set(var_name.getName(), eval(var_value));
+            }
 
             return VOID;
         });
         scope.define("do", (Function<List<Ast>, Object>) args -> {
             if (args.isEmpty()) return VOID;
             scope = new Scope(scope);
-            Object last_value = null;
+            Object last_val = null;
 
             for (int i = 0; i < args.size(); i++) {
-                last_value = eval(args.get(i));
+                last_val = eval(args.get(i));
             }
 
             scope = scope.getParent();
-            return last_value;
+            return last_val;
         });
         scope.define("while", (Function<List<Ast>, Object>) args -> {
-            //start a do then define a variable, make changes to that variable using a loop, and finally access that variable.
-            // Then in JUnit you could compare the output value to what you would expect.
             if (args.size() != 2) throw new EvalException("while requires two arguments");
 
             while (requireType(Boolean.class, eval(args.get(0))))
@@ -335,8 +368,10 @@ public final class Interpreter {
                 eval(ast);
             }
 
+//            return scope.lookup("count"); //for testing purposes
+
             scope = scope.getParent();
-            return VOID;   //scope.lookup("count")
+            return VOID;
         });
     }
 
