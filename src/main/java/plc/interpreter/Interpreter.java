@@ -311,26 +311,18 @@ public final class Interpreter {
             Ast.Identifier var_name = requireType(Ast.Identifier.class, args.get(0));
             Ast var_value = requireType(Ast.class, args.get(1));
 
-            try {
-                scope.define(var_name.getName(), eval(var_value));
-            }
-            catch (EvalException e) {
-                scope.set(var_name.getName(), eval(var_value));
-            }
+            scope.set(var_name.getName(), eval(var_value));
 
             return VOID;
         });
         scope.define("do", (Function<List<Ast>, Object>) args -> {
             if (args.isEmpty()) return VOID;
-            scope = new Scope(scope);
-            Object last_val = null;
 
-            for (int i = 0; i < args.size(); i++) {
-                last_val = eval(args.get(i));
-            }
+            scope = new Scope(scope);
+            List<Object> evaluated = args.stream().map(this::eval).collect(Collectors.toList());
 
             scope = scope.getParent();
-            return last_val;
+            return evaluated.get(evaluated.size() - 1);
         });
         scope.define("while", (Function<List<Ast>, Object>) args -> {
             if (args.size() != 2) throw new EvalException("while requires two arguments");
