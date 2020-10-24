@@ -156,6 +156,43 @@ final class InterpreterBaselineTests {
         );
     }
 
+    @Test
+    void testFor() {
+        /*
+        Uses do, define (variables), set!, range, + (get these working first)
+        (do
+          (define sum 0)
+          (define numbers (range 1 10))
+          (for [i numbers]
+            (set! sum (+ sum i)))
+          sum)
+         */
+        test(new Ast.Term("do", Arrays.asList(
+                new Ast.Term("define", Arrays.asList(
+                        new Ast.Identifier("sum"),
+                        new Ast.NumberLiteral(BigDecimal.ZERO)
+                )),
+                new Ast.Term("define", Arrays.asList(
+                        new Ast.Identifier("numbers"),
+                        new Ast.Term("range", Arrays.asList(
+                                new Ast.NumberLiteral(BigDecimal.ONE),
+                                new Ast.NumberLiteral(BigDecimal.TEN)
+                        ))
+                )),
+                new Ast.Term("for", Arrays.asList(
+                        new Ast.Term("i", Arrays.asList(new Ast.Identifier("numbers"))),
+                        new Ast.Term("set!", Arrays.asList(
+                                new Ast.Identifier("sum"),
+                                new Ast.Term("+", Arrays.asList(
+                                        new Ast.Identifier("sum"),
+                                        new Ast.Identifier("i")
+                                ))
+                        ))
+                )),
+                new Ast.Identifier("sum")
+        )), BigDecimal.valueOf(45), Collections.emptyMap());
+    }
+
     private static void test(Ast ast, Object expected, Map<String, Object> map) {
         Scope scope = new Scope(null);
         map.forEach(scope::define);
