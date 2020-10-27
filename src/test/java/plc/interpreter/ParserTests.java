@@ -31,7 +31,7 @@ final class ParserTests {
                 Arguments.of("Print", "(print)", Arrays.asList(
                         new Ast.Term("print", Arrays.asList()
                 ))),
-                Arguments.of("Multiple", "(print x)\n(print y)\n(print z)", Arrays.asList(
+                Arguments.of("Multiple", "(print x)\n(print y)\n(print z)", Arrays.asList(      //FIXME: fails, illegal token encountered
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("x"))),
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("y"))),
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("z")))
@@ -82,6 +82,9 @@ final class ParserTests {
                 )),
                 Arguments.of("Symbols", "(print <=>)", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("<=>")))
+                )),
+                Arguments.of("Literal", "x", Arrays.asList(
+                        new Ast.Identifier("x")
                 ))
         );
     }
@@ -104,6 +107,9 @@ final class ParserTests {
                         new Ast.Term("print", Arrays.asList(
                                 new Ast.NumberLiteral(new BigDecimal("123456789123456789.123456789123456789"))
                         ))
+                )),
+                Arguments.of("Number Literal", "10", Arrays.asList(
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10))
                 ))
         );
     }

@@ -40,8 +40,10 @@ public final class Parser {
      */
     private Ast parse() {
         List<Ast> terms = new ArrayList<>();
-        while (tokens.has(0))
+        while (tokens.has(0)) {
             terms.add(parseAst());
+            tokens.advance();
+        }
 
         return new Ast.Term("source", terms);
     }
