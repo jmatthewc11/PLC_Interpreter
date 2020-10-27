@@ -153,7 +153,7 @@ public final class Lexer {
 
     Token lexNumber() throws ParseException {
         while (match("[0-9]")) {}
-        while (match(".", "[0-9]")) {}
+        while (match("[.]", "[0-9]")) {}
         while (match("[0-9]")) {}
 
 

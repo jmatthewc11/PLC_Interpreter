@@ -88,16 +88,18 @@ final class LexerTests {
                 Arguments.of("-+1", false),
                 Arguments.of("++1", false),
                 Arguments.of("--1", false),
-                Arguments.of("1+1", false),
-                Arguments.of("1-1", false),         //25
                 Arguments.of("+.", false),
-                Arguments.of("-.", false),
+                Arguments.of("-.", false),          //25
                 Arguments.of("", false),
                 Arguments.of("1+", false),
-                Arguments.of("1-", false),          //30
+                Arguments.of("1-", false),
                 Arguments.of("+", false),
-                Arguments.of(".", false),
-                Arguments.of("-", false)
+                Arguments.of(".", false),           //30
+                Arguments.of("-", false),
+                Arguments.of("1.0.0", false),
+                Arguments.of("1..0", false),
+                Arguments.of("1+1", false),
+                Arguments.of("1-1", false)            //35
         );
     }
 
@@ -279,6 +281,16 @@ final class LexerTests {
         List<Token> expected = Arrays.asList(
                 new Token(Token.Type.NUMBER, "58.01", 0),
                 new Token(Token.Type.IDENTIFIER, ".29.3", 5)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @Test
+    void testExample9() {
+        String input = "1.2.3";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.NUMBER, "1.2", 0),
+                new Token(Token.Type.IDENTIFIER, ".3", 3)
         );
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
