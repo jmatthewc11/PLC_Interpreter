@@ -110,10 +110,10 @@ public final class Lexer {
         else if (peek("[a-zA-Z]")) {
             return lexIdentifier();
         }
-        else if (peek("[.]", "[A-Za-z0-9_+*./:!?<>=-]")) {
+        else if (peek("[.]", "[A-Za-z0-9:_+*./!?<>=-]")) {
             return lexIdentifier();
         }
-        else if (peek("[+*/:!?<>=-]")) {
+        else if (peek("[+*/:_!?<>=-]")) {
             return lexIdentifier();
         }
         else {

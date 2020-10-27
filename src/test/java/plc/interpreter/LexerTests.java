@@ -264,13 +264,14 @@ final class LexerTests {
 
     @Test
     void testExample7() {
-        String input = "\"(print \\\"\tHello, W\norld!\\\" \"let ++ 'b";
+        String input = "\"(print \\\"\tHello, W\norld!\\\" \"let ++ 'b _";
         List<Token> expected = Arrays.asList(
                 new Token(Token.Type.STRING, "\"(print \\\"\tHello, W\norld!\\\" \"", 0),
                 new Token(Token.Type.IDENTIFIER, "let", 29),
                 new Token(Token.Type.IDENTIFIER, "++", 33),
                 new Token(Token.Type.OPERATOR, "'", 36),
-                new Token(Token.Type.IDENTIFIER, "b", 37)
+                new Token(Token.Type.IDENTIFIER, "b", 37),
+                new Token(Token.Type.IDENTIFIER, "_", 39)
         );
         Assertions.assertEquals(expected, Lexer.lex(input));
     }
