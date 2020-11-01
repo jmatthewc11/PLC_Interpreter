@@ -31,7 +31,7 @@ final class ParserTests {
                 Arguments.of("Print", "(print)", Arrays.asList(
                         new Ast.Term("print", Arrays.asList()
                 ))),
-                Arguments.of("Multiple", "(print x)\n(print y)\n(print z)", Arrays.asList(      //FIXME: fails, illegal token encountered
+                Arguments.of("Multiple", "(print x)\n(print y)\n(print z)", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("x"))),
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("y"))),
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("z")))

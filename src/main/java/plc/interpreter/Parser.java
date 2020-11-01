@@ -42,7 +42,9 @@ public final class Parser {
         List<Ast> terms = new ArrayList<>();
         while (tokens.has(0)) {
             terms.add(parseAst());
-            tokens.advance();
+            if (!(terms.get(terms.size() - 1) instanceof Ast.Term)) {
+                tokens.advance();
+            }
         }
 
         return new Ast.Term("source", terms);
