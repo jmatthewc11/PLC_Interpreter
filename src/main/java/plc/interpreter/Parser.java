@@ -106,15 +106,21 @@ public final class Parser {
     }
 
     private Ast parseTerm() {
-        tokens.advance();
+        if (tokens.has(1))
+            tokens.advance();
+        else
+            throw new ParseException("Identifier required for term", tokens.get(0).getIndex());
 
         String name;
         if (peek(Token.Type.IDENTIFIER)) {
             name = tokens.get(0).getLiteral();  //make sure first token in term is identifier
-            tokens.advance();
+            if (tokens.has(1))
+                tokens.advance();
+            else
+                throw new ParseException("EOI After Identifier", tokens.get(0).getIndex());
         }
         else
-            throw new ParseException("Identifier required as for term", tokens.get(0).getIndex());
+            throw new ParseException("Identifier required for term", tokens.get(0).getIndex());
 
         List<Ast> args = new ArrayList<>();         //make list of args for term
 
@@ -158,6 +164,10 @@ public final class Parser {
         string = string.replace("\\n", "\n");
         string = string.replace("\\r", "\r");
         string = string.replace("\\t", "\t");
+        string = string.replace("\\b", "\b");
+        string = string.replace("\\b", "\b");
+        string = string.replace("\\\'", "\'");
+        string = string.replace("\\\"", "\"");
         tokens.advance();
 
         return new Ast.StringLiteral(string.substring(1, string.length() - 1));

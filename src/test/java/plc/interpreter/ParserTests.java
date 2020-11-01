@@ -65,7 +65,9 @@ final class ParserTests {
                                 new Ast.Term("f", Arrays.asList(new Ast.Identifier("x")))
                         ))
                 )),
-                Arguments.of("Missing Identifier", "()", null)
+                Arguments.of("Missing Identifier", "()", null),
+                Arguments.of("EOI After Start", "(", null),
+                Arguments.of("EOI After Identifier", "(print", null)
         );
     }
 
@@ -131,6 +133,9 @@ final class ParserTests {
                 Arguments.of("Escape", "(print \"new\\nline\")", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(new Ast.StringLiteral("new\nline")))
                 ))
+//                Arguments.of("All Escapes", "(print \\\"\\b\\n\\r\\t\\\'\\\"\\\\\")", Arrays.asList(
+//                        new Ast.Term("print", Arrays.asList(new Ast.StringLiteral("\\\"\\b\\n\\r\\t\\'\\\"\\\\\"")))
+//                ))
         );
     }
 
