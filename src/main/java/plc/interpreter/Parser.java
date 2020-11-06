@@ -3,6 +3,7 @@ package plc.interpreter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 //FIXME: need to keep track of which closing symbol needed?
 //FIXME: double matches?  Multiple patterns for match/peek?
@@ -106,8 +107,11 @@ public final class Parser {
     }
 
     private Ast parseTerm() {
-        if (tokens.has(1))
+        Stack<String> stack = new Stack<String>();
+        if (tokens.has(1) && (tokens.get(0).getLiteral().equals("(") || tokens.get(0).getLiteral().equals("]"))) {
+            stack.push(tokens.get(0).getLiteral());
             tokens.advance();
+        }
         else
             throw new ParseException("Identifier required for term", tokens.get(0).getIndex());
 
@@ -145,7 +149,21 @@ public final class Parser {
             }
         }
 
-        while (match(")") || match("]")) {}
+        while (peek(")") || peek("]")) {
+            if (stack.isEmpty())
+                throw new ParseException("Missing opening bracket", tokens.get(0).getIndex());
+            String close = tokens.get(0).getLiteral();
+            String open = stack.pop();
+            if (open.equals("(") && close.equals(")")) {
+                tokens.advance();
+            }
+            else if (open.equals("[") && close.equals("]")) {
+                tokens.advance();
+            }
+            else {
+                throw new ParseException("Brackets do not match up", tokens.get(0).getIndex());
+            }
+        }
 
         return new Ast.Term(name, args);    //make a term out of the name, arguments
     }

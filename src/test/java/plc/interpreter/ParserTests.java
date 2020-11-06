@@ -47,27 +47,29 @@ final class ParserTests {
 
     static Stream<Arguments> testTerm() {
         return Stream.of(
-                Arguments.of("Empty Args", "(print)", Arrays.asList(
-                        new Ast.Term("print", Arrays.asList())
-                )),
-                Arguments.of("Single Arg", "(print x)", Arrays.asList(
-                        new Ast.Term("print", Arrays.asList(new Ast.Identifier("x")))
-                )),
-                Arguments.of("Multiple Args", "(print x y z)", Arrays.asList(
-                        new Ast.Term("print", Arrays.asList(
-                                new Ast.Identifier("x"),
-                                new Ast.Identifier("y"),
-                                new Ast.Identifier("z")
-                        ))
-                )),
+//                Arguments.of("Empty Args", "(print)", Arrays.asList(
+//                        new Ast.Term("print", Arrays.asList())
+//                )),
+//                Arguments.of("Single Arg", "(print x)", Arrays.asList(
+//                        new Ast.Term("print", Arrays.asList(new Ast.Identifier("x")))
+//                )),
+//                Arguments.of("Multiple Args", "(print x y z)", Arrays.asList(
+//                        new Ast.Term("print", Arrays.asList(
+//                                new Ast.Identifier("x"),
+//                                new Ast.Identifier("y"),
+//                                new Ast.Identifier("z")
+//                        ))
+//                )),
                 Arguments.of("Nested", "(print (f x))", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(
                                 new Ast.Term("f", Arrays.asList(new Ast.Identifier("x")))
                         ))
-                )),
-                Arguments.of("Missing Identifier", "()", null),
-                Arguments.of("EOI After Start", "(", null),
-                Arguments.of("EOI After Identifier", "(print", null)
+                ))
+//                Arguments.of("Missing Identifier", "()", null),
+//                Arguments.of("EOI After Start", "(", null),
+//                Arguments.of("EOI After Identifier", "(print", null),
+//                Arguments.of("Paren Then Bracket", "(print x]", null),
+//                Arguments.of("Mixed Brackets Again", "[print (f x))", null)
         );
     }
 
