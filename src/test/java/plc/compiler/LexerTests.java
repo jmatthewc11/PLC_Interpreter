@@ -26,7 +26,30 @@ final class LexerTests {
                 Arguments.of("is-empty?", false),
                 Arguments.of("<=>", false),
                 Arguments.of("42=life", false),
-                Arguments.of("why,are,there,commas,", false)
+                Arguments.of("why,are,there,commas,", false),   //5
+                Arguments.of("_f", true),
+                Arguments.of("getName_", true),
+                Arguments.of("life42", true),
+                Arguments.of("A", true),
+                Arguments.of("42life", false),                  //10
+                Arguments.of("get Name", false),
+                Arguments.of("li\fe", false),
+                Arguments.of("life42!", false),
+                Arguments.of("b2/11.", false),
+                Arguments.of("li\\fe", false),                  //15
+                Arguments.of("get.name", false),
+                Arguments.of("..", false),
+                Arguments.of("[]", false),
+                Arguments.of("/", false),
+                Arguments.of("++", false),                      //20
+                Arguments.of("get///Name", false),
+                Arguments.of("", false),
+                Arguments.of("()", false),
+//                Arguments.of("\"", false),                    //FIXME: waiting for string lexing
+                Arguments.of(".42", false),                     //25
+                Arguments.of(".", false),
+                Arguments.of("4", false),
+                Arguments.of("-42854", false)                   //28
         );
     }
 
@@ -42,7 +65,21 @@ final class LexerTests {
                 Arguments.of("-1.0", false),
                 Arguments.of("007.000", false),
                 Arguments.of("1.", false),
-                Arguments.of(".5", false)
+                Arguments.of(".5", false),
+                Arguments.of("982345786", true),
+                Arguments.of("01", true),
+                Arguments.of("0", true),
+                Arguments.of("+436", false),
+                Arguments.of("-436", false),
+                Arguments.of("0.01", false),
+                Arguments.of("", false),
+                Arguments.of("1+", false),
+                Arguments.of("1-", false),
+                Arguments.of(".", false),           //30
+                Arguments.of("1.0.0", false),
+                Arguments.of("1..0", false),
+                Arguments.of("1+1", false),
+                Arguments.of("1-1", false)            //35
         );
     }
 
@@ -58,7 +95,23 @@ final class LexerTests {
                 Arguments.of("-1.0", false),
                 Arguments.of("007.000", true),
                 Arguments.of("1.", false),
-                Arguments.of(".5", false)
+                Arguments.of(".5", false),
+                Arguments.of("0.01", true),
+                Arguments.of("09.01", true),
+                Arguments.of("982345786", false),
+                Arguments.of("+436", false),
+                Arguments.of("-436", false),
+                Arguments.of("-1.0", false),         //10
+                Arguments.of("+1.0", false),
+                Arguments.of("0", false),
+                Arguments.of("01", false),
+                Arguments.of("1.-", false),
+                Arguments.of("+.5", false),
+                Arguments.of("+.", false),
+                Arguments.of("", false),
+                Arguments.of(".", false),           //30
+                Arguments.of("1.0.0", false),
+                Arguments.of("1..0", false)
         );
     }
 
