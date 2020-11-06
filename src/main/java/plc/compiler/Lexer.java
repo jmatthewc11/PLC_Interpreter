@@ -37,7 +37,17 @@ public final class Lexer {
      * also handle skipping whitespace.
      */
     List<Token> lex() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        List<Token> tokens = new ArrayList<>();
+        while (chars.has(0)) {
+            if (chars.get(0) == ' ' || chars.get(0) == '\t' || chars.get(0) == '\r' || chars.get(0) == '\n') {
+                chars.advance();
+                chars.skip();
+                continue;
+            }
+            tokens.add(lexToken());
+//            chars.skip();
+        }
+        return tokens;
     }
 
     /**
@@ -77,7 +87,24 @@ public final class Lexer {
      * </pre>
      */
     Token lexToken() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        if (peek("[0-9]")) {
+            chars.advance();
+            return lexNumber();
+        }
+        else if (peek("\"")) {
+            chars.advance();
+            return lexString();
+        }
+        else if (peek("[A-Za-z_]")) {
+            return lexIdentifier();
+        }
+        else if (peek("[==]", "[!=]")) {
+            return lexOperator();
+        }
+        else {
+            chars.advance();
+            return chars.emit(Token.Type.OPERATOR);
+        }
     }
 
     /**
@@ -85,7 +112,9 @@ public final class Lexer {
      * are allowed in identifiers.
      */
     Token lexIdentifier() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        while (match("[A-Za-z0-9_]")) {}
+
+        return chars.emit(Token.Type.IDENTIFIER);
     }
 
     /**
@@ -96,7 +125,23 @@ public final class Lexer {
      * the emitted token.
      */
     Token lexNumber() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        boolean decimal = false;
+        while (match("[0-9]")) {}
+
+        if (match("[.]")) {
+            decimal = true;
+            if (match("[0-9]")) {
+                while (match("[0-9]"));
+            }
+            else throw new ParseException("Decimal has no numbers after decimal point", chars.index);
+        }
+
+        if (decimal) {
+            return chars.emit(Token.Type.DECIMAL);
+        }
+        else {
+            return chars.emit(Token.Type.INTEGER);
+        }
     }
 
     /**
