@@ -47,29 +47,30 @@ final class ParserTests {
 
     static Stream<Arguments> testTerm() {
         return Stream.of(
-//                Arguments.of("Empty Args", "(print)", Arrays.asList(
-//                        new Ast.Term("print", Arrays.asList())
-//                )),
-//                Arguments.of("Single Arg", "(print x)", Arrays.asList(
-//                        new Ast.Term("print", Arrays.asList(new Ast.Identifier("x")))
-//                )),
-//                Arguments.of("Multiple Args", "(print x y z)", Arrays.asList(
-//                        new Ast.Term("print", Arrays.asList(
-//                                new Ast.Identifier("x"),
-//                                new Ast.Identifier("y"),
-//                                new Ast.Identifier("z")
-//                        ))
-//                )),
-                Arguments.of("Nested", "(print (f x))", Arrays.asList(
+                Arguments.of("Empty Args", "(print)", Arrays.asList(
+                        new Ast.Term("print", Arrays.asList())
+                )),
+                Arguments.of("Single Arg", "(print x)", Arrays.asList(
+                        new Ast.Term("print", Arrays.asList(new Ast.Identifier("x")))
+                )),
+                Arguments.of("Multiple Args", "(print x y z)", Arrays.asList(
+                        new Ast.Term("print", Arrays.asList(
+                                new Ast.Identifier("x"),
+                                new Ast.Identifier("y"),
+                                new Ast.Identifier("z")
+                        ))
+                )),
+                Arguments.of("Nested", "(print [f x])", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(
                                 new Ast.Term("f", Arrays.asList(new Ast.Identifier("x")))
                         ))
-                ))
-//                Arguments.of("Missing Identifier", "()", null),
-//                Arguments.of("EOI After Start", "(", null),
-//                Arguments.of("EOI After Identifier", "(print", null),
-//                Arguments.of("Paren Then Bracket", "(print x]", null),
-//                Arguments.of("Mixed Brackets Again", "[print (f x))", null)
+                )),
+                Arguments.of("Missing Identifier", "()", null),
+                Arguments.of("EOI After Start", "(", null),
+                Arguments.of("EOI After Identifier", "(print", null),
+                Arguments.of("Paren Then Bracket", "(print x]", null),
+                Arguments.of("Mixed Brackets Again", "[print (f x))", null),
+                Arguments.of("Mixed Brackets One More Time", "(print (f x])", null)
         );
     }
 
@@ -104,7 +105,7 @@ final class ParserTests {
                 Arguments.of("Decimal", "(print 1.5)", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(new Ast.NumberLiteral(BigDecimal.valueOf(1.5))))
                 )),
-                Arguments.of("Signed", "(print -2)", Arrays.asList(
+                Arguments.of("Signed", "[print -2]", Arrays.asList(
                         new Ast.Term("print", Arrays.asList(new Ast.NumberLiteral(BigDecimal.valueOf(-2))))
                 )),
                 Arguments.of("Precision", "(print 123456789123456789.123456789123456789)", Arrays.asList(
@@ -143,7 +144,7 @@ final class ParserTests {
 
     @Test
     void testInvalidCharacter() {
-        test("(print $)", null);
+        test("[print $]", null);
     }
 
     @Test

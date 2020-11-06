@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-//FIXME: need to keep track of which closing symbol needed?
-//FIXME: double matches?  Multiple patterns for match/peek?
 /**
  * The parser takes the sequence of tokens emitted by the lexer and turns that
  * into a structured representation of the program, called the Abstract Syntax
@@ -41,8 +39,9 @@ public final class Parser {
      */
     private Ast parse() {
         List<Ast> terms = new ArrayList<>();
+        Stack<String> stack = new Stack<String>();
         while (tokens.has(0)) {
-            terms.add(parseAst());
+            terms.add(parseAst(stack));
             if (!(terms.get(terms.size() - 1) instanceof Ast.Term)) {
                 tokens.advance();
             }
@@ -88,9 +87,9 @@ public final class Parser {
      * }
      * </pre>
      */
-    private Ast parseAst() throws ParseException {
+    private Ast parseAst(Stack<String> stack) throws ParseException {
         if (peek("(") || peek("[")) {
-            return parseTerm();
+            return parseTerm(stack);
         }
         else if (peek(Token.Type.NUMBER)) {
             return parseNum();
@@ -106,9 +105,8 @@ public final class Parser {
         }
     }
 
-    private Ast parseTerm() {
-        Stack<String> stack = new Stack<String>();
-        if (tokens.has(1) && (tokens.get(0).getLiteral().equals("(") || tokens.get(0).getLiteral().equals("]"))) {
+    private Ast parseTerm(Stack<String> stack) {
+        if (tokens.has(1) && (tokens.get(0).getLiteral().equals("(") || tokens.get(0).getLiteral().equals("["))) {
             stack.push(tokens.get(0).getLiteral());
             tokens.advance();
         }
@@ -139,7 +137,7 @@ public final class Parser {
                 args.add(parseIdentifier());
             }
             else if (peek("(") || peek("[")) {
-                args.add(parseAst());
+                args.add(parseAst(stack));
             }
             else if (!tokens.has(0)) {
                 break;
