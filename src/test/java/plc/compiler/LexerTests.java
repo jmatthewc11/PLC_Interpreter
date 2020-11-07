@@ -1,11 +1,13 @@
 package plc.compiler;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
@@ -171,6 +173,102 @@ final class LexerTests {
                 Arguments.of("\r", false),
                 Arguments.of("\t", false)
         );
+    }
+
+    @Test
+    void testExample1() {
+        String input = "(+ 1 -2.0)";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.OPERATOR, "(", 0),
+                new Token(Token.Type.OPERATOR, "+", 1),
+                new Token(Token.Type.INTEGER, "1", 3),
+                new Token(Token.Type.OPERATOR, "-", 5),
+                new Token(Token.Type.DECIMAL, "2.0", 6),
+                new Token(Token.Type.OPERATOR, ")", 9)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @Test
+    void testExample2() {
+        String input = "(print \"Hello, World!\")";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.OPERATOR, "(", 0),
+                new Token(Token.Type.IDENTIFIER, "print", 1),
+                new Token(Token.Type.STRING, "\"Hello, World!\"", 7),
+                new Token(Token.Type.OPERATOR, ")", 22)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @Test
+    void testExample3() {
+        String input = "(let [x 10] (assert-equals? x 10))";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.OPERATOR, "(", 0),
+                new Token(Token.Type.IDENTIFIER, "let", 1),
+                new Token(Token.Type.OPERATOR, "[", 5),
+                new Token(Token.Type.IDENTIFIER, "x", 6),
+                new Token(Token.Type.INTEGER, "10", 8),
+                new Token(Token.Type.OPERATOR, "]", 10),
+                new Token(Token.Type.OPERATOR, "(", 12),
+                new Token(Token.Type.IDENTIFIER, "assert", 13),
+                new Token(Token.Type.OPERATOR, "-", 19),
+                new Token(Token.Type.IDENTIFIER, "equals", 20),
+                new Token(Token.Type.OPERATOR, "?", 26),
+                new Token(Token.Type.IDENTIFIER, "x", 28),
+                new Token(Token.Type.INTEGER, "10", 30),
+                new Token(Token.Type.OPERATOR, ")", 32),
+                new Token(Token.Type.OPERATOR, ")", 33)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @Test
+    void testExample4() {
+        String input = "\n \r[x 10] (23rt x 10.5))";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.OPERATOR, "[", 3),
+                new Token(Token.Type.IDENTIFIER, "x", 4),
+                new Token(Token.Type.INTEGER, "10", 6),
+                new Token(Token.Type.OPERATOR, "]", 8),
+                new Token(Token.Type.OPERATOR, "(", 10),
+                new Token(Token.Type.INTEGER, "23", 11),
+                new Token(Token.Type.IDENTIFIER, "rt", 13),
+                new Token(Token.Type.IDENTIFIER, "x", 16),
+                new Token(Token.Type.DECIMAL, "10.5", 18),
+                new Token(Token.Type.OPERATOR, ")", 22),
+                new Token(Token.Type.OPERATOR, ")", 23)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @Test
+    void testExample5() {
+        String input = "(print \"Hello, World!\" let x 'b''";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.OPERATOR, "(", 0),
+                new Token(Token.Type.IDENTIFIER, "print", 1),
+                new Token(Token.Type.STRING, "\"Hello, World!\"", 7),
+                new Token(Token.Type.IDENTIFIER, "let", 23),
+                new Token(Token.Type.IDENTIFIER, "x", 27),
+                new Token(Token.Type.OPERATOR, "'", 29),
+                new Token(Token.Type.IDENTIFIER, "b", 30),
+                new Token(Token.Type.OPERATOR, "'", 31),
+                new Token(Token.Type.OPERATOR, "'", 32)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
+    }
+
+    @Test
+    void testExample6() {
+        String input = "58.01.29.3";
+        List<Token> expected = Arrays.asList(
+                new Token(Token.Type.DECIMAL, "58.01", 0),
+                new Token(Token.Type.OPERATOR, ".", 5),
+                new Token(Token.Type.DECIMAL, "29.3", 6)
+        );
+        Assertions.assertEquals(expected, Lexer.lex(input));
     }
 
     /**
