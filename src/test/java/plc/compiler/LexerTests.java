@@ -128,7 +128,24 @@ final class LexerTests {
                 Arguments.of("\"Hello,\\nWorld\"", true),
                 Arguments.of("\"unterminated", false),
                 Arguments.of("\"invalid\\escape\"", true),
-                Arguments.of("\"escaped\\\"quote\"", false)
+                Arguments.of("\"escaped\\\"quote\"", false),
+//                Arguments.of("\"Hello,\\\\\nWorld\"", false), //FIXME: all throw exceptions for escape chars
+//                Arguments.of("\"\r\"", false),
+//                Arguments.of("\"\ba9\n\"", false),
+                Arguments.of("\"dsi'b38^_.&(*n_ne\"", true),    //10
+                Arguments.of("\"Hello,\\bWorld\"", true),
+                Arguments.of("\"\\r\"", true),
+                Arguments.of("\" string \\\"abc 123\"", false),  //15
+                Arguments.of("\"Hello \\\" World\"", false),
+                Arguments.of("\"invalid escape \\uXYZ\"", true),
+                Arguments.of("\" string \\\"", true),
+                Arguments.of("\"unterminated", false),
+                Arguments.of("unterminated\"", false),          //20
+                Arguments.of("unterminated", false),
+                Arguments.of("\"\\d\"", true),
+                Arguments.of("\"invalid\\escape\"", true),
+                Arguments.of("\"Hello,\\\\\\World!\"", true),
+                Arguments.of("\"Hello,\\NWorld!\"", true)      //25
         );
     }
 
