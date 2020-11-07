@@ -2,6 +2,7 @@ package plc.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * The lexer works through three main functions:
@@ -92,7 +93,6 @@ public final class Lexer {
             return lexNumber();
         }
         else if (peek("\"")) {
-            chars.advance();
             return lexString();
         }
         else if (peek("[A-Za-z_]")) {
@@ -150,7 +150,19 @@ public final class Lexer {
      * the character is invalid a {@link ParseException} should be thrown.
      */
     Token lexString() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        if (!chars.has(1)) throw new ParseException("Unterminated string", chars.index);
+        else chars.advance();
+
+        while (!peek("\"") && !peek("\n") && !peek("\r") && !peek("\b") && !peek("\t")) {
+            if (!chars.has(1))
+                throw new ParseException("Unterminated string", chars.index);
+            chars.advance();
+        }
+
+        if (match("\""))
+            return chars.emit(Token.Type.STRING);
+        else
+            throw new plc.interpreter.ParseException("Not a valid String literal", chars.index);
     }
 
     /**
