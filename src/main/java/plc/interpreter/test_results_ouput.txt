@@ -73,4 +73,37 @@ Parser Tests:
     Mixed Separators 2 `[print (f x))`: Failed (Expected a ParseException to be thrown)
   String: (12/15)
     All Escapes `(print \"\\b\\n\\r\\t\\\'\\\"\\\\\")`: Failed (expected (source (print \"␈␊␍␉\'\"\\\")), received (source (print \"\\b␊␍␉\\\'\\\"\\\\\")))
-  FizzBuzz `(lang racket)␊␊(define (fizzbuzz n)␊  (for [i (in-range 1 (+ n 1))]␊    (displayln␊      (match (gcd i 15)␊        [case 15 \"FizzBuzz\"]␊        [case 3 \"Fizz\"]␊        [case 5 \"Buzz\"]␊        [else i]))))␊␊(fizzbuzz 100)`: Failed (expected (source (lang racket) (define (fizzbuzz n) (for (i (in-range 1 (+ n 1))) (displayln (match (gcd i 15) (case 15 \"FizzBuzz\") (case 3 \"Fizz\") (case 5 \"Buzz\") (else i))))) (fizzbuzz 100)), received (source (lang racket) (define (fizzbuzz n) (for (i (in-range 1 (+ n 1) (displayln (match (gcd i 15) (case 15 \"FizzBuzz\") (case 3 \"Fizz\") (case 5 \"Buzz\") (else i) (fizzbuzz 100)))))))))
+  FizzBuzz `(lang racket)␊␊(define (fizzbuzz n)␊  (for [i (in-range 1 (+ n 1))]␊    (displayln␊      (match (gcd i 15)␊        [case 15 \"FizzBuzz\"]␊
+
+
+       [case 3 \"Fizz\"]␊        [case 5 \"Buzz\"]␊        [else i]))))␊␊(fizzbuzz 100)`: Failed (expected (source (lang racket) (define (fizzbuzz n) (for (i (in-range 1 (+ n 1)))
+       (displayln (match (gcd i 15) (case 15 \"FizzBuzz\") (case 3 \"Fizz\") (case 5 \"Buzz\") (else i))))) (fizzbuzz 100)), received (source (lang racket)
+       (define (fizzbuzz n) (for (i (in-range 1 (+ n 1) (displayln (match (gcd i 15) (case 15 \"FizzBuzz\") (case 3 \"Fizz\") (case 5 \"Buzz\") (else i)
+       (fizzbuzz 100)))))))))
+
+FINAL EVAL:
+RegexTests: (73/100)
+  Email: (4/19)
+    Submitted: Failed (Missing RegexTests.java)
+    Coverage: Failed (Missing RegexTests.java)
+  File Names: (13/15)
+    Submitted: Failed (Missing RegexTests.java)
+  Even Strings: (13/15)
+    Submitted: Failed (Missing RegexTests.java)
+  Integer List: (13/15)
+    Submitted: Failed (Missing RegexTests.java)
+  Identifier: (10/12)
+    Submitted: Failed (Missing RegexTests.java)
+  Number: (10/12)
+    Submitted Tests: Failed (Missing RegexTests.java)
+  String: (10/12)
+    Submitted: Failed (Missing RegexTests.java)
+
+LexerTests: (100/100)
+
+ParserTests: (93/100)
+  Source: (13/15)
+    Mixed `x 10 \"string\" (print x)`: Failed (Unexpected ParseException (plc.interpreter.ParseException: Illegal token encountered when trying to parse))
+  FizzBuzz `(lang racket)␊␊(define (fizzbuzz n)␊  (for [i (in-range 1 (+ n 1))]␊    (displayln␊      (match (gcd i 15)␊        [case 15 \"FizzBuzz\"]␊        [case 3 \"Fizz\"]␊        [case 5 \"Buzz\"]␊        [else i]))))␊␊(fizzbuzz 100)`: Failed
+  (expected (source (lang racket) (define (fizzbuzz n) (for (i (in-range 1 (+ n 1))) (displayln (match (gcd i 15) (case 15 \"FizzBuzz\") (case 3 \"Fizz\") (case 5 \"Buzz\") (else i))))) (fizzbuzz 100)),
+  received  (source (lang racket) (define (fizzbuzz n) (for (i (in-range 1 (+ n 1) (displayln (match (gcd i 15) (case 15 \"FizzBuzz\") (case 3 \"Fizz\") (case 5 \"Buzz\") (else i) (fizzbuzz 100)))))))))

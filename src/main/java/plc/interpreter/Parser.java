@@ -42,9 +42,6 @@ public final class Parser {
         Stack<String> stack = new Stack<String>();
         while (tokens.has(0)) {
             terms.add(parseAst(stack));
-            if (!(terms.get(terms.size() - 1) instanceof Ast.Term)) {
-                tokens.advance();
-            }
         }
 
         return new Ast.Term("source", terms);
@@ -167,12 +164,8 @@ public final class Parser {
     }
 
     private Ast parseNum() {
-        if (tokens.has(1)) {
-            tokens.advance();
-            return new Ast.NumberLiteral(new BigDecimal(tokens.get(-1).getLiteral()));
-        }
-
-        return new Ast.NumberLiteral(new BigDecimal(tokens.get(0).getLiteral()));
+        tokens.advance();
+        return new Ast.NumberLiteral(new BigDecimal(tokens.get(-1).getLiteral()));
     }
 
     private Ast parseString() {
@@ -190,12 +183,8 @@ public final class Parser {
     }
 
     private Ast parseIdentifier() {
-        if (tokens.has(1)) {
-            tokens.advance();
-            return new Ast.Identifier(tokens.get(-1).getLiteral());
-        }
-
-        return new Ast.Identifier(tokens.get(0).getLiteral());
+        tokens.advance();
+        return new Ast.Identifier(tokens.get(-1).getLiteral());
     }
 
     /**

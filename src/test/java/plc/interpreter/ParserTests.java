@@ -35,7 +35,15 @@ final class ParserTests {
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("x"))),
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("y"))),
                         new Ast.Term("print", Arrays.asList(new Ast.Identifier("z")))
-                ))
+                )),
+                Arguments.of("Mixed", "x 10 \"string\" (print x)", Arrays.asList(
+                        new Ast.Identifier("x"),
+                        new Ast.NumberLiteral(BigDecimal.valueOf(10)),
+                        new Ast.StringLiteral("string"),
+                        new Ast.Term("print", Arrays.asList(
+                                new Ast.Identifier("x")
+                        )))
+                )
         );
     }
 
