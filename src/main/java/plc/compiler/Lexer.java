@@ -98,7 +98,7 @@ public final class Lexer {
         else if (peek("[A-Za-z_]")) {
             return lexIdentifier();
         }
-        else if (peek("[==]", "[!=]")) {
+        else if (peek("[!=]")) {
             return lexOperator();
         }
         else {
@@ -173,7 +173,13 @@ public final class Lexer {
      * unknown characters.
      */
     Token lexOperator() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        if (chars.has(1)) {
+            chars.advance();
+        }
+        if (peek("=")) {
+            chars.advance();
+        }
+        return chars.emit(Token.Type.OPERATOR);
     }
 
     /**

@@ -45,7 +45,7 @@ final class LexerTests {
                 Arguments.of("get///Name", false),
                 Arguments.of("", false),
                 Arguments.of("()", false),
-//                Arguments.of("\"", false),                    //FIXME: waiting for string lexing
+                Arguments.of("\"", false),
                 Arguments.of(".42", false),                     //25
                 Arguments.of(".", false),
                 Arguments.of("4", false),
@@ -146,6 +146,30 @@ final class LexerTests {
                 Arguments.of("\"invalid\\escape\"", true),
                 Arguments.of("\"Hello,\\\\\\World!\"", true),
                 Arguments.of("\"Hello,\\NWorld!\"", true)      //25
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testOperator(String input, boolean success) {
+        test(input, Token.Type.OPERATOR, success);
+    }
+
+    private static Stream<Arguments> testOperator() {
+        return Stream.of(
+                Arguments.of("(", true),
+                Arguments.of("#", true),
+                Arguments.of(" ", false),
+                Arguments.of(" *", false),
+                Arguments.of("\t", false),
+                Arguments.of("|", true),
+                Arguments.of("!=", true),
+                Arguments.of("==", true),
+                Arguments.of("!=_", false),
+                Arguments.of("_", false),
+                Arguments.of("&", true),
+                Arguments.of("\r", false),
+                Arguments.of("\t", false)
         );
     }
 
