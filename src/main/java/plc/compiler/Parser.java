@@ -201,27 +201,32 @@ public final class Parser {
      * Parses the {@code expression} rule.
      */
     public Ast.Expression parseExpression(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        return parseEqualityExpression(stack);
     }
 
     /**
      * Parses the {@code equality-expression} rule.
      */
-    public Ast.Expression parseEqualityExpression() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+    public Ast.Expression parseEqualityExpression(Stack<String> stack) throws ParseException {
+        parseAdditiveExpression(stack);     //FIXME: how to format the expressions in the statements?
+        tokens.advance();
+        if (peek("==") || peek("!=")) {
+            parseAdditiveExpression(stack);
+        }
+        throw new ParseException("Additive expression is incorrect", tokens.index);
     }
 
     /**
      * Parses the {@code additive-expression} rule.
      */
-    public Ast.Expression parseAdditiveExpression() throws ParseException {
+    public Ast.Expression parseAdditiveExpression(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
     /**
      * Parses the {@code multiplicative-expression} rule.
      */
-    public Ast.Expression parseMultiplicativeExpression() throws ParseException {
+    public Ast.Expression parseMultiplicativeExpression(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -231,7 +236,7 @@ public final class Parser {
      * functions. It may be helpful to break these up into other methods but is
      * not strictly necessary.
      */
-    public Ast.Expression parsePrimaryExpression() throws ParseException {
+    public Ast.Expression parsePrimaryExpression(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
