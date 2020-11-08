@@ -87,7 +87,8 @@ public final class Parser {
      * javadocs of {@link #()}.
      */
     public Ast.Statement.Expression parseExpressionStatement(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        Ast.Expression value = parseExpression(stack);
+        return new Ast.Statement.Expression(value);
     }
 
     /**
@@ -140,7 +141,34 @@ public final class Parser {
      * if the next tokens start an if statement, aka {@code if}.
      */
     public Ast.Statement.If parseIfStatement(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        tokens.advance();
+        Ast.Expression condition = parseExpression(stack);
+        if (peek("THEN")) {
+            tokens.advance();
+            if (peek("END")) {
+                return new Ast.Statement.If(condition);     //FIXME: says we don't need statements but AST class says we do
+            }
+            else {
+                List<Ast.Statement> thenStatements = new ArrayList<>();
+                while (!peek("ELSE") && !peek("END")) {
+                    thenStatements.add(parseStatement(stack));      //FIXME: may have multiple statements
+                    tokens.advance();
+                }
+                if (peek("END")) {
+                    return new Ast.Statement.If(condition, thenStatements); //FIXME: says we don't need statements but AST class says we do
+                }
+                else if (peek("ELSE")) {
+                    List<Ast.Statement> elseStatements = new ArrayList<>();
+                    while(!peek("END")) {
+                        elseStatements.add(parseStatement(stack));
+                    }
+                    if (peek("END")) {
+                        return new Ast.Statement.If(condition, thenStatements, elseStatements);
+                    }
+                }
+            }
+        }
+        throw new ParseException("If statement is incorrect", tokens.index);
     }
 
     /**
