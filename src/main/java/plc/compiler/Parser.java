@@ -18,6 +18,9 @@ import java.util.Stack;
  * grammar will have it's own function, and reference to other rules correspond
  * to calling that functions.
  */
+
+//FIXME: may not need the stack passed into every method
+
 public final class Parser {
 
     private final TokenStream tokens;
@@ -64,7 +67,7 @@ public final class Parser {
                 return parseWhileStatement(stack);
             }
             else {
-                tokens.advance();
+                tokens.advance();           //FIXME: this may not work as intended, the last char did not get put in AST
                 if (peek("=")) {
                     return parseAssignmentStatement(stack);
                 }
@@ -92,7 +95,29 @@ public final class Parser {
      * called if the next tokens start a declaration statement, aka {@code let}.
      */
     public Ast.Statement.Declaration parseDeclarationStatement(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        tokens.advance();
+        String name;
+        String type;
+
+        if (peek(Token.Type.IDENTIFIER)) {
+            name = tokens.get(0).getLiteral();
+            tokens.advance();
+            if (peek(":")) {
+                tokens.advance();
+                if (peek(Token.Type.IDENTIFIER)) {
+                    type = tokens.get(0).getLiteral();
+                    tokens.advance();
+                    if (peek("=")) {
+                        tokens.advance();
+                        parseExpressionStatement(stack);
+                    }
+                    else if (peek(";")) {
+                        return new Ast.Statement.Declaration(name, type, null);
+                    }
+                }
+            }
+        }
+        throw new ParseException("Declaration statement incorrect syntax", tokens.index);
     }
 
     /**
