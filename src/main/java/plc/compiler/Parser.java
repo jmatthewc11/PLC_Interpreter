@@ -67,7 +67,7 @@ public final class Parser {
                 return parseWhileStatement(stack);
             }
             else {
-                tokens.advance();           //FIXME: this may not work as intended, the last char did not get put in AST
+                tokens.advance();
                 if (peek("=")) {
                     return parseAssignmentStatement(stack);
                 }
@@ -126,7 +126,13 @@ public final class Parser {
      * {@code identifier} followed by {@code =}.
      */
     public Ast.Statement.Assignment parseAssignmentStatement(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        String name = tokens.get(-1).getLiteral();
+        tokens.advance();
+        if (tokens.has(0)) {
+            Ast.Expression expression = parseExpression(stack);
+            return new Ast.Statement.Assignment(name, expression);
+        }
+        throw new ParseException("Assignment statement is incorrect", tokens.index);
     }
 
     /**
