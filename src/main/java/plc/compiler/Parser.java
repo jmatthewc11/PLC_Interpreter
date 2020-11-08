@@ -3,6 +3,7 @@ package plc.compiler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Stack;
 
 /**
  * The parser takes the sequence of tokens emitted by the lexer and turns that
@@ -36,7 +37,13 @@ public final class Parser {
      * Parses the {@code source} rule.
      */
     public Ast.Source parseSource() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        List<Ast.Statement> statements = new ArrayList<>();
+        Stack<String> stack = new Stack<String>();
+        while (tokens.has(0)) {
+            statements.add(parseStatement(stack));
+        }
+
+        return new Ast.Source(statements);
     }
 
     /**
@@ -45,16 +52,38 @@ public final class Parser {
      * statement, then it is an expression statement. See these methods for
      * clarification on what starts each type of statement.
      */
-    public Ast.Statement parseStatement() throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+    public Ast.Statement parseStatement(Stack<String> stack) throws ParseException {
+        if (peek(Token.Type.IDENTIFIER)) {
+            if (peek("LET")) {
+                return parseDeclarationStatement(stack);
+            }
+            else if (peek("IF")) {
+                return parseIfStatement(stack);
+            }
+            else if (peek("WHILE")) {
+                return parseWhileStatement(stack);
+            }
+            else {
+                tokens.advance();
+                if (peek("=")) {
+                    return parseAssignmentStatement(stack);
+                }
+                else {
+                    return parseExpressionStatement(stack);
+                }
+            }
+        }
+        else {
+            return parseExpressionStatement(stack);
+        }
     }
 
     /**
      * Parses the {@code expression-statement} rule. This method is called if
      * the next tokens do not start another statement type, as explained in the
-     * javadocs of {@link #parseStatement()}.
+     * javadocs of {@link #()}.
      */
-    public Ast.Statement.Expression parseExpressionStatement() throws ParseException {
+    public Ast.Statement.Expression parseExpressionStatement(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -62,7 +91,7 @@ public final class Parser {
      * Parses the {@code declaration-statement} rule. This method should only be
      * called if the next tokens start a declaration statement, aka {@code let}.
      */
-    public Ast.Statement.Declaration parseDeclarationStatement() throws ParseException {
+    public Ast.Statement.Declaration parseDeclarationStatement(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -71,7 +100,7 @@ public final class Parser {
      * called if the next tokens start an assignment statement, aka both an
      * {@code identifier} followed by {@code =}.
      */
-    public Ast.Statement.Assignment parseAssignmentStatement() throws ParseException {
+    public Ast.Statement.Assignment parseAssignmentStatement(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -79,7 +108,7 @@ public final class Parser {
      * Parses the {@code if-statement} rule. This method should only be called
      * if the next tokens start an if statement, aka {@code if}.
      */
-    public Ast.Statement.If parseIfStatement() throws ParseException {
+    public Ast.Statement.If parseIfStatement(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
@@ -87,14 +116,14 @@ public final class Parser {
      * Parses the {@code while-statement} rule. This method should only be
      * called if the next tokens start a while statement, aka {@code while}.
      */
-    public Ast.Statement.While parseWhileStatement() throws ParseException {
+    public Ast.Statement.While parseWhileStatement(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
     /**
      * Parses the {@code expression} rule.
      */
-    public Ast.Expression parseExpression() throws ParseException {
+    public Ast.Expression parseExpression(Stack<String> stack) throws ParseException {
         throw new UnsupportedOperationException(); //TODO
     }
 
