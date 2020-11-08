@@ -176,7 +176,25 @@ public final class Parser {
      * called if the next tokens start a while statement, aka {@code while}.
      */
     public Ast.Statement.While parseWhileStatement(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        tokens.advance();
+        Ast.Expression expression = parseExpression(stack);
+        if (peek("DO")) {
+            tokens.advance();
+            if (peek("END")) {
+                return new Ast.Statement.While(expression);     //FIXME: says we don't need statements but AST class says we do
+            }
+            else {
+                List<Ast.Statement> statements = new ArrayList<>();
+                while (!peek("END")) {
+                    statements.add(parseStatement(stack));      //FIXME: may have multiple statements
+                    tokens.advance();
+                }
+                if (peek("END")) {
+                    return new Ast.Statement.While(expression, statements);
+                }
+            }
+        }
+        throw new ParseException("While statement is incorrect", tokens.index);
     }
 
     /**
