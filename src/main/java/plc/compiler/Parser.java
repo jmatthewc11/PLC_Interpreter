@@ -25,7 +25,7 @@ public final class Parser {
 
     private final TokenStream tokens;
 
-    private Parser(List<Token> tokens) {
+    public Parser(List<Token> tokens) {
         this.tokens = new TokenStream(tokens);
     }
 
@@ -67,8 +67,8 @@ public final class Parser {
                 return parseWhileStatement(stack);
             }
             else {
-                tokens.advance();
-                if (peek("=")) {
+//                tokens.advance();
+                if (peek("=")) {    //FIXME: need to be able to look at next token to check for this
                     return parseAssignmentStatement(stack);
                 }
                 else {
@@ -146,7 +146,7 @@ public final class Parser {
         if (peek("THEN")) {
             tokens.advance();
             if (peek("END")) {
-                return new Ast.Statement.If(condition);     //FIXME: says we don't need statements but AST class says we do
+                return new Ast.Statement.If(condition, null, null);     //FIXME: says we don't need statements but AST class says we do
             }
             else {
                 List<Ast.Statement> thenStatements = new ArrayList<>();
@@ -155,7 +155,7 @@ public final class Parser {
                     tokens.advance();
                 }
                 if (peek("END")) {
-                    return new Ast.Statement.If(condition, thenStatements); //FIXME: says we don't need statements but AST class says we do
+                    return new Ast.Statement.If(condition, thenStatements, null); //FIXME: says we don't need statements but AST class says we do
                 }
                 else if (peek("ELSE")) {
                     List<Ast.Statement> elseStatements = new ArrayList<>();
@@ -181,7 +181,7 @@ public final class Parser {
         if (peek("DO")) {
             tokens.advance();
             if (peek("END")) {
-                return new Ast.Statement.While(expression);     //FIXME: says we don't need statements but AST class says we do
+                return new Ast.Statement.While(expression, null);     //FIXME: says we don't need statements but AST class says we do
             }
             else {
                 List<Ast.Statement> statements = new ArrayList<>();
@@ -210,8 +210,9 @@ public final class Parser {
     public Ast.Expression parseEqualityExpression(Stack<String> stack) throws ParseException {
         parseAdditiveExpression(stack);     //FIXME: how to format the expressions in the statements?
         tokens.advance();
-        if (peek("==") || peek("!=")) {
+        while (peek("==") || peek("!=")) {
             parseAdditiveExpression(stack);
+            tokens.advance();
         }
         throw new ParseException("Additive expression is incorrect", tokens.index);
     }
@@ -220,14 +221,26 @@ public final class Parser {
      * Parses the {@code additive-expression} rule.
      */
     public Ast.Expression parseAdditiveExpression(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        parseMultiplicativeExpression(stack);     //FIXME: how to format the expressions in the statements?
+        tokens.advance();
+        while (peek("+") || peek("-")) {
+            parseMultiplicativeExpression(stack);
+            tokens.advance();
+        }
+        throw new ParseException("Additive expression is incorrect", tokens.index);
     }
 
     /**
      * Parses the {@code multiplicative-expression} rule.
      */
     public Ast.Expression parseMultiplicativeExpression(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        parsePrimaryExpression(stack);     //FIXME: how to format the expressions in the statements?
+        tokens.advance();
+        while (peek("*") || peek("/")) {
+            parsePrimaryExpression(stack);
+            tokens.advance();
+        }
+        throw new ParseException("Multiplicative expression is incorrect", tokens.index);
     }
 
     /**
@@ -237,7 +250,30 @@ public final class Parser {
      * not strictly necessary.
      */
     public Ast.Expression parsePrimaryExpression(Stack<String> stack) throws ParseException {
-        throw new UnsupportedOperationException(); //TODO
+        if (peek(Token.Type.IDENTIFIER)) {
+            if (tokens.get(0).getLiteral().equals("TRUE")) {
+                return new Ast.Expression.Literal(Boolean.TRUE);
+            }
+            else if (tokens.get(0).getLiteral().equals("FALSE")) {
+                return new Ast.Expression.Literal(Boolean.FALSE);
+            }
+
+            else {
+                return new Ast.Expression.Variable(tokens.get(0).getLiteral());
+            }
+        }
+        else if (peek(Token.Type.INTEGER)) {
+
+        }
+        else if (peek(Token.Type.DECIMAL)) {
+
+        }
+        else if (peek(Token.Type.STRING)) {
+            return new Ast.Expression.Literal(tokens.get(0).getLiteral());
+        }
+        else {
+            throw new ParseException("Problem parsing primary expression", tokens.index);
+        }
     }
 
     /**
