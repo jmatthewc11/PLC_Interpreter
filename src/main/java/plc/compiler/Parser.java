@@ -111,10 +111,11 @@ public final class Parser {
                     tokens.advance();
                     if (peek("=")) {
                         tokens.advance();
-                        parseExpressionStatement();
+                        Ast.Expression value = parseExpression();
+                        return new Ast.Statement.Declaration(name, type, Optional.of(value));
                     }
                     else if (peek(";")) {
-                        return new Ast.Statement.Declaration(name, type, null);
+                        return new Ast.Statement.Declaration(name, type, Optional.empty());
                     }
                 }
             }

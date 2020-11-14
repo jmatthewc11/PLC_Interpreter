@@ -68,39 +68,39 @@ final class ParserTests {
                 )
         );
     }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testDeclarationStatement(String test, List<Token> tokens, Ast.Statement.Declaration expected) {
-//        test(tokens, expected, Parser::parseStatement);
-//    }
-//
-//    private static Stream<Arguments> testDeclarationStatement() {
-//        return Stream.of(
-//                Arguments.of("Definition",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "LET", -1),
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, ":", -1),
-//                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1)
-//                        ),
-//                        new Ast.Statement.Declaration("name", "TYPE", Optional.empty())
-//                ),
-//                Arguments.of("Initialization",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "LET", -1),
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, ":", -1),
-//                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
-//                                new Token(Token.Type.OPERATOR, "=", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1)
-//                        ),
-//                        new Ast.Statement.Declaration("name", "TYPE", Optional.of(new Ast.Expression.Variable("expr")))
-//                )
-//        );
-//    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testDeclarationStatement(String test, List<Token> tokens, Ast.Statement.Declaration expected) {
+        test(tokens, expected, Parser::parseStatement);
+    }
+
+    private static Stream<Arguments> testDeclarationStatement() {
+        return Stream.of(
+                Arguments.of("Definition",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        new Ast.Statement.Declaration("name", "TYPE", Optional.empty())
+                ),
+                Arguments.of("Initialization",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        new Ast.Statement.Declaration("name", "TYPE", Optional.of(new Ast.Expression.Variable("expr")))
+                )
+        );
+    }
 //
 //    @ParameterizedTest(name = "{0}")
 //    @MethodSource
