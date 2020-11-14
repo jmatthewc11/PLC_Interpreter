@@ -21,8 +21,6 @@ import java.util.Stack;
  * to calling that functions.
  */
 
-//FIXME: may not need the stack passed into every method
-
 public final class Parser {
 
     private final TokenStream tokens;
@@ -43,14 +41,12 @@ public final class Parser {
      */
     public Ast.Source parseSource() throws ParseException {
         List<Ast.Statement> statements = new ArrayList<>();
-        Stack<String> stack = new Stack<String>();
         while (tokens.has(0)) {
-            statements.add(parseStatement(stack));
+            statements.add(parseStatement());
             if (tokens.get(0).getLiteral().equals(";")) {
                 tokens.advance();
             }
         }
-
         return new Ast.Source(statements);
     }
 
@@ -60,29 +56,29 @@ public final class Parser {
      * statement, then it is an expression statement. See these methods for
      * clarification on what starts each type of statement.
      */
-    public Ast.Statement parseStatement(Stack<String> stack) throws ParseException {
+    public Ast.Statement parseStatement() throws ParseException {
         if (peek(Token.Type.IDENTIFIER)) {
             if (peek("LET")) {
-                return parseDeclarationStatement(stack);
+                return parseDeclarationStatement();
             }
             else if (peek("IF")) {
-                return parseIfStatement(stack);
+                return parseIfStatement();
             }
             else if (peek("WHILE")) {
-                return parseWhileStatement(stack);
+                return parseWhileStatement();
             }
             else {
 //                tokens.advance();
                 if (peek("=")) {    //FIXME: need to be able to look at next token to check for this
-                    return parseAssignmentStatement(stack);
+                    return parseAssignmentStatement();
                 }
                 else {
-                    return parseExpressionStatement(stack);
+                    return parseExpressionStatement();
                 }
             }
         }
         else {
-            return parseExpressionStatement(stack);
+            return parseExpressionStatement();
         }
     }
 
@@ -91,8 +87,8 @@ public final class Parser {
      * the next tokens do not start another statement type, as explained in the
      * javadocs of {@link #()}.
      */
-    public Ast.Statement.Expression parseExpressionStatement(Stack<String> stack) throws ParseException {
-        Ast.Expression value = parseExpression(stack);
+    public Ast.Statement.Expression parseExpressionStatement() throws ParseException {
+        Ast.Expression value = parseExpression();
         return new Ast.Statement.Expression(value);
     }
 
@@ -100,7 +96,7 @@ public final class Parser {
      * Parses the {@code declaration-statement} rule. This method should only be
      * called if the next tokens start a declaration statement, aka {@code let}.
      */
-    public Ast.Statement.Declaration parseDeclarationStatement(Stack<String> stack) throws ParseException {
+    public Ast.Statement.Declaration parseDeclarationStatement() throws ParseException {
         tokens.advance();
         String name;
         String type;
@@ -115,7 +111,7 @@ public final class Parser {
                     tokens.advance();
                     if (peek("=")) {
                         tokens.advance();
-                        parseExpressionStatement(stack);
+                        parseExpressionStatement();
                     }
                     else if (peek(";")) {
                         return new Ast.Statement.Declaration(name, type, null);
@@ -131,11 +127,11 @@ public final class Parser {
      * called if the next tokens start an assignment statement, aka both an
      * {@code identifier} followed by {@code =}.
      */
-    public Ast.Statement.Assignment parseAssignmentStatement(Stack<String> stack) throws ParseException {
+    public Ast.Statement.Assignment parseAssignmentStatement() throws ParseException {
         String name = tokens.get(-1).getLiteral();
         tokens.advance();
         if (tokens.has(0)) {
-            Ast.Expression expression = parseExpression(stack);
+            Ast.Expression expression = parseExpression();
             return new Ast.Statement.Assignment(name, expression);
         }
         throw new ParseException("Assignment statement is incorrect", tokens.index);
@@ -145,9 +141,9 @@ public final class Parser {
      * Parses the {@code if-statement} rule. This method should only be called
      * if the next tokens start an if statement, aka {@code if}.
      */
-    public Ast.Statement.If parseIfStatement(Stack<String> stack) throws ParseException {
+    public Ast.Statement.If parseIfStatement() throws ParseException {
         tokens.advance();
-        Ast.Expression condition = parseExpression(stack);
+        Ast.Expression condition = parseExpression();
         if (peek("THEN")) {
             tokens.advance();
             if (peek("END")) {
@@ -156,7 +152,7 @@ public final class Parser {
             else {
                 List<Ast.Statement> thenStatements = new ArrayList<>();
                 while (!peek("ELSE") && !peek("END")) {
-                    thenStatements.add(parseStatement(stack));      //FIXME: may have multiple statements
+                    thenStatements.add(parseStatement());      //FIXME: may have multiple statements
                     tokens.advance();
                 }
                 if (peek("END")) {
@@ -165,7 +161,7 @@ public final class Parser {
                 else if (peek("ELSE")) {
                     List<Ast.Statement> elseStatements = new ArrayList<>();
                     while(!peek("END")) {
-                        elseStatements.add(parseStatement(stack));
+                        elseStatements.add(parseStatement());
                     }
                     if (peek("END")) {
                         return new Ast.Statement.If(condition, thenStatements, elseStatements);
@@ -180,9 +176,9 @@ public final class Parser {
      * Parses the {@code while-statement} rule. This method should only be
      * called if the next tokens start a while statement, aka {@code while}.
      */
-    public Ast.Statement.While parseWhileStatement(Stack<String> stack) throws ParseException {
+    public Ast.Statement.While parseWhileStatement() throws ParseException {
         tokens.advance();
-        Ast.Expression expression = parseExpression(stack);
+        Ast.Expression expression = parseExpression();
         if (peek("DO")) {
             tokens.advance();
             if (peek("END")) {
@@ -191,7 +187,7 @@ public final class Parser {
             else {
                 List<Ast.Statement> statements = new ArrayList<>();
                 while (!peek("END")) {
-                    statements.add(parseStatement(stack));      //FIXME: may have multiple statements
+                    statements.add(parseStatement());      //FIXME: may have multiple statements
                     tokens.advance();
                 }
                 if (peek("END")) {
@@ -205,20 +201,20 @@ public final class Parser {
     /**
      * Parses the {@code expression} rule.
      */
-    public Ast.Expression parseExpression(Stack<String> stack) throws ParseException {
-        return parseEqualityExpression(stack);
+    public Ast.Expression parseExpression() throws ParseException {
+        return parseEqualityExpression();
     }
 
     /**
      * Parses the {@code equality-expression} rule.
      */
-    public Ast.Expression parseEqualityExpression(Stack<String> stack) throws ParseException {
-        Ast.Expression first_expr = parseAdditiveExpression(stack);     //FIXME: how to format the expressions in the statements?
+    public Ast.Expression parseEqualityExpression() throws ParseException {
+        Ast.Expression first_expr = parseAdditiveExpression();     //FIXME: how to format the expressions in the statements?
         if (tokens.get(0).getLiteral().equals(";")) {
             return first_expr;
         }
         while (peek("==") || peek("!=")) {
-            parseAdditiveExpression(stack);
+            parseAdditiveExpression();
             tokens.advance();
         }
         throw new ParseException("Additive expression is incorrect", tokens.index);
@@ -227,13 +223,13 @@ public final class Parser {
     /**
      * Parses the {@code additive-expression} rule.
      */
-    public Ast.Expression parseAdditiveExpression(Stack<String> stack) throws ParseException {
-        Ast.Expression first_expr = parseMultiplicativeExpression(stack);     //FIXME: how to format the expressions in the statements?
+    public Ast.Expression parseAdditiveExpression() throws ParseException {
+        Ast.Expression first_expr = parseMultiplicativeExpression();     //FIXME: how to format the expressions in the statements?
         if (tokens.get(0).getLiteral().equals(";")) {
             return first_expr;
         }
         while (peek("+") || peek("-")) {
-            parseMultiplicativeExpression(stack);
+            parseMultiplicativeExpression();
             tokens.advance();
         }
         throw new ParseException("Additive expression is incorrect", tokens.index);
@@ -242,13 +238,13 @@ public final class Parser {
     /**
      * Parses the {@code multiplicative-expression} rule.
      */
-    public Ast.Expression parseMultiplicativeExpression(Stack<String> stack) throws ParseException {
-        Ast.Expression first_expr = parsePrimaryExpression(stack);     //FIXME: how to format the expressions in the statements?
+    public Ast.Expression parseMultiplicativeExpression() throws ParseException {
+        Ast.Expression first_expr = parsePrimaryExpression();     //FIXME: how to format the expressions in the statements?
         if (tokens.get(0).getLiteral().equals(";")) {
             return first_expr;
         }
         while (peek("*") || peek("/")) {
-            parsePrimaryExpression(stack);
+            parsePrimaryExpression();
             tokens.advance();
         }
         throw new ParseException("Multiplicative expression is incorrect", tokens.index);
@@ -260,7 +256,7 @@ public final class Parser {
      * functions. It may be helpful to break these up into other methods but is
      * not strictly necessary.
      */
-    public Ast.Expression parsePrimaryExpression(Stack<String> stack) throws ParseException {
+    public Ast.Expression parsePrimaryExpression() throws ParseException {
         if (peek(Token.Type.IDENTIFIER)) {
             if (tokens.get(0).getLiteral().equals("TRUE")) {
                 return new Ast.Expression.Literal(Boolean.TRUE);
@@ -268,13 +264,29 @@ public final class Parser {
             else if (tokens.get(0).getLiteral().equals("FALSE")) {
                 return new Ast.Expression.Literal(Boolean.FALSE);
             }
-
             else {
-                Ast.Expression var = new Ast.Expression.Variable(tokens.get(0).getLiteral());
-//                if (peek(Token.Type.OPERATOR) && tokens.get(1).getLiteral().equals(";")) {
+                if (tokens.get(1).getLiteral().equals("(")) {
+                    List<Ast.Expression> args = new ArrayList<>();
+                    Ast.Expression func = new Ast.Expression.Function(tokens.get(0).getLiteral(), args);
                     tokens.advance();
+                    tokens.advance();
+                    while (!(peek(")"))) {
+                        args.add(parseExpression());
+                    }
+                    if (!peek(")")) {
+                        throw new ParseException("Missing closed parenthesis in expression", tokens.index);
+                    }
+                    tokens.advance();
+                    return func;
+                }
+                else {
+                    Ast.Expression var = new Ast.Expression.Variable(tokens.get(0).getLiteral());
+                    tokens.advance();
+                    while (!(peek(";"))) {
+
+                    }
                     return var;
-//                }
+                }
             }
         }
         else if (peek(Token.Type.INTEGER)) {

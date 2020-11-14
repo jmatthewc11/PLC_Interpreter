@@ -49,25 +49,25 @@ final class ParserTests {
         );
     }
 
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testExpressionStatement(String test, List<Token> tokens, Ast.Statement.Expression expected) {
-//        test(tokens, expected, Parser::parseStatement);
-//    }
-//
-//    private static Stream<Arguments> testExpressionStatement() {
-//        return Stream.of(
-//                Arguments.of("Function Expression",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, "(", -1),
-//                                new Token(Token.Type.OPERATOR, ")", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1)
-//                        ),
-//                        new Ast.Statement.Expression(new Ast.Expression.Function("name", Arrays.asList()))
-//                )
-//        );
-//    }
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testExpressionStatement(String test, List<Token> tokens, Ast.Statement.Expression expected) {
+        test(tokens, expected, Parser::parseStatement);
+    }
+
+    private static Stream<Arguments> testExpressionStatement() {
+        return Stream.of(
+                Arguments.of("Function Expression",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        new Ast.Statement.Expression(new Ast.Expression.Function("name", Arrays.asList()))
+                )
+        );
+    }
 //
 //    @ParameterizedTest(name = "{0}")
 //    @MethodSource
