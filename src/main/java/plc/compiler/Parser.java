@@ -264,7 +264,7 @@ public final class Parser {
                 return new Ast.Expression.Literal(Boolean.FALSE);
             }
             else {
-                if (tokens.get(1).getLiteral().equals("(")) {
+                if (tokens.has(1) && tokens.get(1).getLiteral().equals("(")) {
                     List<Ast.Expression> args = new ArrayList<>();
                     Ast.Expression func = new Ast.Expression.Function(tokens.get(0).getLiteral(), args);
                     tokens.advance();
@@ -289,10 +289,8 @@ public final class Parser {
 //                }
                 else {
                     Ast.Expression var = new Ast.Expression.Variable(tokens.get(0).getLiteral());
-                    tokens.advance();
-                    while (!(peek(";")) && !peek("DO")) {
-
-                    }
+                    if (tokens.has(1))
+                        tokens.advance();
                     return var;
                 }
             }

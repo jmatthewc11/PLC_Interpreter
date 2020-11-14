@@ -293,22 +293,22 @@ final class ParserTests {
 //                )
 //        );
 //    }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testVariableExpression(String test, List<Token> tokens, Ast.Expression.Variable expected) {
-//        test(tokens, expected, Parser::parseExpression);
-//    }
-//
-//    private static Stream<Arguments> testVariableExpression() {
-//        return Stream.of(
-//                Arguments.of("Variable",
-//                        Arrays.asList(new Token(Token.Type.IDENTIFIER, "name", -1)),
-//                        new Ast.Expression.Variable("name")
-//                )
-//        );
-//    }
-//
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testVariableExpression(String test, List<Token> tokens, Ast.Expression.Variable expected) {
+        test(tokens, expected, Parser::parseExpression);
+    }
+
+    private static Stream<Arguments> testVariableExpression() {
+        return Stream.of(
+                Arguments.of("Variable",
+                        Arrays.asList(new Token(Token.Type.IDENTIFIER, "name", -1)),
+                        new Ast.Expression.Variable("name")
+                )
+        );
+    }
+
 //    @ParameterizedTest(name = "{0}")
 //    @MethodSource
 //    void testFunctionExpression(String test, List<Token> tokens, Ast.Expression.Function expected) {
