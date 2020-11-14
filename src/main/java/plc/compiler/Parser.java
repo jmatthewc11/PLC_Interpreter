@@ -68,8 +68,7 @@ public final class Parser {
                 return parseWhileStatement();
             }
             else {
-//                tokens.advance();
-                if (peek("=")) {    //FIXME: need to be able to look at next token to check for this
+                if (tokens.get(1).getLiteral().equals("=")) {
                     return parseAssignmentStatement();
                 }
                 else {
@@ -129,9 +128,9 @@ public final class Parser {
      * {@code identifier} followed by {@code =}.
      */
     public Ast.Statement.Assignment parseAssignmentStatement() throws ParseException {
-        String name = tokens.get(-1).getLiteral();
+        String name = tokens.get(0).getLiteral();
         tokens.advance();
-        if (tokens.has(0)) {
+        if (match("=")) {
             Ast.Expression expression = parseExpression();
             return new Ast.Statement.Assignment(name, expression);
         }
@@ -211,7 +210,7 @@ public final class Parser {
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
         Ast.Expression first_expr = parseAdditiveExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";")) {
+        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO")) {
             return first_expr;
         }
         while (peek("==") || peek("!=")) {
@@ -226,7 +225,7 @@ public final class Parser {
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
         Ast.Expression first_expr = parseMultiplicativeExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";")) {
+        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO")) {
             return first_expr;
         }
         while (peek("+") || peek("-")) {
@@ -241,7 +240,7 @@ public final class Parser {
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
         Ast.Expression first_expr = parsePrimaryExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";")) {
+        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO")) {
             return first_expr;
         }
         while (peek("*") || peek("/")) {
@@ -280,10 +279,19 @@ public final class Parser {
                     tokens.advance();
                     return func;
                 }
+//                if (tokens.get(1).getLiteral().equals("DO")) {
+//                    List<Ast.Expression> args = new ArrayList<>();
+//                    Ast.Expression condition = new Ast.Expression.Variable(tokens.get(0).getLiteral());
+//                    tokens.advance();
+//                    tokens.advance();
+//
+//                    tokens.advance();
+//                    return func;
+//                }
                 else {
                     Ast.Expression var = new Ast.Expression.Variable(tokens.get(0).getLiteral());
                     tokens.advance();
-                    while (!(peek(";"))) {
+                    while (!(peek(";")) && !peek("DO")) {
 
                     }
                     return var;

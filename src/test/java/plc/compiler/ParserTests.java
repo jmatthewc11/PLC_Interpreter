@@ -101,27 +101,26 @@ final class ParserTests {
                 )
         );
     }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testAssignmentStatement(String test, List<Token> tokens, Ast.Statement.Assignment expected) {
-//        test(tokens, expected, Parser::parseStatement);
-//    }
-//
-//    private static Stream<Arguments> testAssignmentStatement() {
-//        return Stream.of(
-//                Arguments.of("Assignment",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, "=", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1)
-//                        ),
-//                        new Ast.Statement.Assignment("name", new Ast.Expression.Variable("expr"))
-//                )
-//        );
-//    }
-//
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testAssignmentStatement(String test, List<Token> tokens, Ast.Statement.Assignment expected) {
+        test(tokens, expected, Parser::parseStatement);
+    }
+
+    private static Stream<Arguments> testAssignmentStatement() {
+        return Stream.of(
+                Arguments.of("Assignment",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        new Ast.Statement.Assignment("name", new Ast.Expression.Variable("expr"))
+                )
+        );
+    }
 //
 //    @ParameterizedTest(name = "{0}")
 //    @MethodSource
@@ -167,30 +166,30 @@ final class ParserTests {
 //        );
 //    }
 //
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testWhileStatement(String test, List<Token> tokens, Ast.Statement.While expected) {
-//        test(tokens, expected, Parser::parseStatement);
-//    }
-//
-//    static Stream<Arguments> testWhileStatement() {
-//        return Stream.of(
-//                Arguments.of("While",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "WHILE", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-//                                new Token(Token.Type.IDENTIFIER, "DO", -1),
-//                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1),
-//                                new Token(Token.Type.IDENTIFIER, "END", -1)
-//                        ),
-//                        new Ast.Statement.While(
-//                                new Ast.Expression.Variable("expr"),
-//                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt")))
-//                        )
-//                )
-//        );
-//    }
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testWhileStatement(String test, List<Token> tokens, Ast.Statement.While expected) {
+        test(tokens, expected, Parser::parseStatement);
+    }
+
+    static Stream<Arguments> testWhileStatement() {
+        return Stream.of(
+                Arguments.of("While",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "DO", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "END", -1)
+                        ),
+                        new Ast.Statement.While(
+                                new Ast.Expression.Variable("expr"),
+                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt")))
+                        )
+                )
+        );
+    }
 //
 //    @ParameterizedTest(name = "{0}")
 //    @MethodSource
