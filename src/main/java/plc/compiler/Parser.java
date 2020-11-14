@@ -286,15 +286,6 @@ public final class Parser {
                     }
                     return func;
                 }
-//                if (tokens.get(1).getLiteral().equals("DO")) {
-//                    List<Ast.Expression> args = new ArrayList<>();
-//                    Ast.Expression condition = new Ast.Expression.Variable(tokens.get(0).getLiteral());
-//                    tokens.advance();
-//                    tokens.advance();
-//
-//                    tokens.advance();
-//                    return func;
-//                }
                 else {
                     Ast.Expression var = new Ast.Expression.Variable(tokens.get(0).getLiteral());
                     if (tokens.has(1))
@@ -302,6 +293,13 @@ public final class Parser {
                     return var;
                 }
             }
+        }
+        else if (match("(")) {
+            Ast.Expression expr = parseExpression();
+            if (match(")"))
+                return new Ast.Expression.Group(expr);
+            else
+                throw new ParseException("Missing closing parenthesis for grouping", tokens.index);
         }
         else if (peek(Token.Type.INTEGER)) {
             return new Ast.Expression.Literal(new BigInteger(tokens.get(0).getLiteral()));

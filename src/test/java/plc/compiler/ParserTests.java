@@ -218,37 +218,37 @@ final class ParserTests {
         );
     }
 
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testGroupExpression(String test, List<Token> tokens, Ast.Expression.Group expected) {
-//        test(tokens, expected, Parser::parseExpression);
-//    }
-//
-//    private static Stream<Arguments> testGroupExpression() {
-//        return Stream.of(
-//                Arguments.of("Grouped Variable",
-//                        Arrays.asList(
-//                                new Token(Token.Type.OPERATOR, "(", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-//                                new Token(Token.Type.OPERATOR, ")", -1)
-//                        ),
-//                        new Ast.Expression.Group(new Ast.Expression.Variable("expr"))
-//                ),
-//                Arguments.of("Grouped Binary",
-//                        Arrays.asList(
-//                                new Token(Token.Type.OPERATOR, "(", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
-//                                new Token(Token.Type.OPERATOR, "+", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
-//                                new Token(Token.Type.OPERATOR, ")", -1)
-//                        ),
-//                        new Ast.Expression.Group(new Ast.Expression.Binary("+",
-//                                new Ast.Expression.Variable("expr1"),
-//                                new Ast.Expression.Variable("expr2")
-//                        ))
-//                )
-//        );
-//    }
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testGroupExpression(String test, List<Token> tokens, Ast.Expression.Group expected) {
+        test(tokens, expected, Parser::parseExpression);
+    }
+
+    private static Stream<Arguments> testGroupExpression() {
+        return Stream.of(
+                Arguments.of("Grouped Variable",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        new Ast.Expression.Group(new Ast.Expression.Variable("expr"))
+                ),
+                Arguments.of("Grouped Binary",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "+", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        new Ast.Expression.Group(new Ast.Expression.Binary("+",
+                                new Ast.Expression.Variable("expr1"),
+                                new Ast.Expression.Variable("expr2")
+                        ))
+                )
+        );
+    }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource
