@@ -87,8 +87,7 @@ public final class Parser {
      * javadocs of {@link #()}.
      */
     public Ast.Statement.Expression parseExpressionStatement() throws ParseException {
-        Ast.Expression value = parseExpression();
-        return new Ast.Statement.Expression(value);
+        return new Ast.Statement.Expression(parseExpression());
     }
 
     /**
@@ -210,7 +209,7 @@ public final class Parser {
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
         Ast.Expression first_expr = parseAdditiveExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO")) {
+        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || !tokens.has(1)) {
             return first_expr;
         }
         while (peek("==") || peek("!=")) {
@@ -225,7 +224,7 @@ public final class Parser {
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
         Ast.Expression first_expr = parseMultiplicativeExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO")) {
+        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || !tokens.has(1)) {
             return first_expr;
         }
         while (peek("+") || peek("-")) {
@@ -240,7 +239,7 @@ public final class Parser {
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
         Ast.Expression first_expr = parsePrimaryExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO")) {
+        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || !tokens.has(1)) {
             return first_expr;
         }
         while (peek("*") || peek("/")) {
@@ -305,7 +304,9 @@ public final class Parser {
             return new Ast.Expression.Literal(new BigDecimal(tokens.get(0).getLiteral()));
         }
         else if (peek(Token.Type.STRING)) {
-            return new Ast.Expression.Literal(tokens.get(0).getLiteral());
+            String string = tokens.get(0).getLiteral();
+            string = string.substring(1, string.length() - 1);
+            return new Ast.Expression.Literal(string);
         }
         else {
             throw new ParseException("Problem parsing primary expression", tokens.index);
