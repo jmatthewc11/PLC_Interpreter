@@ -209,7 +209,7 @@ public final class Parser {
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
         Ast.Expression first_expr = parseAdditiveExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || !tokens.has(1)) {
+        if (!tokens.has(1) || tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || tokens.get(0).getLiteral().equals(",")) {
             return first_expr;
         }
         while (peek("==") || peek("!=")) {
@@ -224,7 +224,7 @@ public final class Parser {
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
         Ast.Expression first_expr = parseMultiplicativeExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || !tokens.has(1)) {
+        if (!tokens.has(1) || tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || tokens.get(0).getLiteral().equals(",")) {
             return first_expr;
         }
         while (peek("+") || peek("-")) {
@@ -239,7 +239,7 @@ public final class Parser {
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
         Ast.Expression first_expr = parsePrimaryExpression();     //FIXME: how to format the expressions in the statements?
-        if (tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || !tokens.has(1)) {
+        if (!tokens.has(1) || tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || tokens.get(0).getLiteral().equals(",")) {
             return first_expr;
         }
         while (peek("*") || peek("/")) {
@@ -271,6 +271,10 @@ public final class Parser {
                     tokens.advance();
                     while (!(peek(")"))) {
                         args.add(parseExpression());
+                        if (match(",")) {}
+                        else if (!peek(")")) {
+                            throw new ParseException("Invalid expression", tokens.index);
+                        }
                     }
                     if (!peek(")")) {
                         throw new ParseException("Missing closed parenthesis in expression", tokens.index);

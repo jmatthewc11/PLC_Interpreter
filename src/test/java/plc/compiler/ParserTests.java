@@ -309,40 +309,40 @@ final class ParserTests {
         );
     }
 
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testFunctionExpression(String test, List<Token> tokens, Ast.Expression.Function expected) {
-//        test(tokens, expected, Parser::parseExpression);
-//    }
-//
-//    private static Stream<Arguments> testFunctionExpression() {
-//        return Stream.of(
-//                Arguments.of("Zero Arguments",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, "(", -1),
-//                                new Token(Token.Type.OPERATOR, ")", -1)
-//                        ),
-//                        new Ast.Expression.Function("name", Arrays.asList())
-//                ),
-//                Arguments.of("Multiple Arguments",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, "(", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
-//                                new Token(Token.Type.OPERATOR, ",", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
-//                                new Token(Token.Type.OPERATOR, ",", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr3", -1),
-//                                new Token(Token.Type.OPERATOR, ")", -1)
-//                        ),
-//                        new Ast.Expression.Function("name", Arrays.asList(
-//                                new Ast.Expression.Variable("expr1"),
-//                                new Ast.Expression.Variable("expr2"),
-//                                new Ast.Expression.Variable("expr3")
-//                        ))
-//                ),
-//                Arguments.of("Complex Argument",
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testFunctionExpression(String test, List<Token> tokens, Ast.Expression.Function expected) {
+        test(tokens, expected, Parser::parseExpression);
+    }
+
+    private static Stream<Arguments> testFunctionExpression() {
+        return Stream.of(
+                Arguments.of("Zero Arguments",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        new Ast.Expression.Function("name", Arrays.asList())
+                ),
+                Arguments.of("Multiple Arguments",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, ",", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
+                                new Token(Token.Type.OPERATOR, ",", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr3", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        new Ast.Expression.Function("name", Arrays.asList(
+                                new Ast.Expression.Variable("expr1"),
+                                new Ast.Expression.Variable("expr2"),
+                                new Ast.Expression.Variable("expr3")
+                        ))
+                )
+//                Arguments.of("Complex Argument",  //FIXME: wait for binary operators to work
 //                        Arrays.asList(
 //                                new Token(Token.Type.IDENTIFIER, "name", -1),
 //                                new Token(Token.Type.OPERATOR, "(", -1),
@@ -358,8 +358,8 @@ final class ParserTests {
 //                                )
 //                        ))
 //                )
-//        );
-//    }
+        );
+    }
 //
 //    @Test
 //    void testExample1() {
