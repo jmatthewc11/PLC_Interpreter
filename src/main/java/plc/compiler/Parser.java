@@ -208,45 +208,50 @@ public final class Parser {
      * Parses the {@code equality-expression} rule.
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
-        Ast.Expression first_expr = parseAdditiveExpression();     //FIXME: how to format the expressions in the statements?
-        if (!tokens.has(1) || tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || tokens.get(0).getLiteral().equals(",")) {
+        Ast.Expression first_expr = parseAdditiveExpression();
+        if (!tokens.has(1) || peek(";") || peek("DO") || peek(",")) {
             return first_expr;
         }
-        while (peek("==") || peek("!=")) {
-            parseAdditiveExpression();
-            tokens.advance();
+        if (match("!=") || match("==")) {
+            return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseAdditiveExpression());
         }
-        throw new ParseException("Additive expression is incorrect", tokens.index);
+        else {
+            throw new ParseException("Additive expression is missing operator", tokens.index);
+        }
     }
 
     /**
      * Parses the {@code additive-expression} rule.
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
-        Ast.Expression first_expr = parseMultiplicativeExpression();     //FIXME: how to format the expressions in the statements?
-        if (!tokens.has(1) || tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || tokens.get(0).getLiteral().equals(",")) {
+        Ast.Expression first_expr = parseMultiplicativeExpression();
+        if (!tokens.has(1) || peek(";") || peek("DO") || peek(",") || peek("==") || peek("!=")) {
             return first_expr;
         }
-        while (peek("+") || peek("-")) {
-            parseMultiplicativeExpression();
-            tokens.advance();
+
+        if (match("+") || match("-")) {
+            return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseMultiplicativeExpression());
         }
-        throw new ParseException("Additive expression is incorrect", tokens.index);
+        else {
+            throw new ParseException("Additive expression is missing operator", tokens.index);
+        }
     }
 
     /**
      * Parses the {@code multiplicative-expression} rule.
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
-        Ast.Expression first_expr = parsePrimaryExpression();     //FIXME: how to format the expressions in the statements?
-        if (!tokens.has(1) || tokens.get(0).getLiteral().equals(";") || tokens.get(0).getLiteral().equals("DO") || tokens.get(0).getLiteral().equals(",")) {
+        Ast.Expression first_expr = parsePrimaryExpression();
+        if (!tokens.has(1) || peek(";") || peek("DO") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
             return first_expr;
         }
-        while (peek("*") || peek("/")) {
-            parsePrimaryExpression();
-            tokens.advance();
+
+        if (match("*") || match("/")) {
+            return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parsePrimaryExpression());
         }
-        throw new ParseException("Multiplicative expression is incorrect", tokens.index);
+        else {
+            throw new ParseException("Multiplicative expression is missing operator", tokens.index);
+        }
     }
 
     /**
@@ -257,10 +262,10 @@ public final class Parser {
      */
     public Ast.Expression parsePrimaryExpression() throws ParseException {
         if (peek(Token.Type.IDENTIFIER)) {
-            if (tokens.get(0).getLiteral().equals("TRUE")) {
+            if (peek("TRUE")) {
                 return new Ast.Expression.Literal(Boolean.TRUE);
             }
-            else if (tokens.get(0).getLiteral().equals("FALSE")) {
+            else if (peek("FALSE")) {
                 return new Ast.Expression.Literal(Boolean.FALSE);
             }
             else {
@@ -276,10 +281,9 @@ public final class Parser {
                             throw new ParseException("Invalid expression", tokens.index);
                         }
                     }
-                    if (!peek(")")) {
+                    if (!match(")")) {
                         throw new ParseException("Missing closed parenthesis in expression", tokens.index);
                     }
-                    tokens.advance();
                     return func;
                 }
 //                if (tokens.get(1).getLiteral().equals("DO")) {
@@ -307,8 +311,7 @@ public final class Parser {
         }
         else if (peek(Token.Type.STRING)) {
             String string = tokens.get(0).getLiteral();
-            string = string.substring(1, string.length() - 1);
-            return new Ast.Expression.Literal(string);
+            return new Ast.Expression.Literal(string.substring(1, string.length() - 1));
         }
         else {
             throw new ParseException("Problem parsing primary expression", tokens.index);

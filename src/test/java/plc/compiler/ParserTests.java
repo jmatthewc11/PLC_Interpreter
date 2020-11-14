@@ -217,7 +217,7 @@ final class ParserTests {
                 )
         );
     }
-//
+
 //    @ParameterizedTest(name = "{0}")
 //    @MethodSource
 //    void testGroupExpression(String test, List<Token> tokens, Ast.Expression.Group expected) {
@@ -249,50 +249,50 @@ final class ParserTests {
 //                )
 //        );
 //    }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testBinaryExpression(String test, List<Token> tokens, Ast.Expression.Binary expected) {
-//        test(tokens, expected, Parser::parseExpression);
-//    }
-//
-//    private static Stream<Arguments> testBinaryExpression() {
-//        return Stream.of(
-//                Arguments.of("Binary Equality",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
-//                                new Token(Token.Type.OPERATOR, "==", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
-//                        ),
-//                        new Ast.Expression.Binary("==",
-//                                new Ast.Expression.Variable("expr1"),
-//                                new Ast.Expression.Variable("expr2")
-//                        )
-//                ),
-//                Arguments.of("Binary Addition",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
-//                                new Token(Token.Type.OPERATOR, "+", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
-//                        ),
-//                        new Ast.Expression.Binary("+",
-//                                new Ast.Expression.Variable("expr1"),
-//                                new Ast.Expression.Variable("expr2")
-//                        )
-//                ),
-//                Arguments.of("Binary Multiplication",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
-//                                new Token(Token.Type.OPERATOR, "*", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
-//                        ),
-//                        new Ast.Expression.Binary("*",
-//                                new Ast.Expression.Variable("expr1"),
-//                                new Ast.Expression.Variable("expr2")
-//                        )
-//                )
-//        );
-//    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testBinaryExpression(String test, List<Token> tokens, Ast.Expression.Binary expected) {
+        test(tokens, expected, Parser::parseExpression);
+    }
+
+    private static Stream<Arguments> testBinaryExpression() {
+        return Stream.of(
+                Arguments.of("Binary Equality",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "==", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
+                        ),
+                        new Ast.Expression.Binary("==",
+                                new Ast.Expression.Variable("expr1"),
+                                new Ast.Expression.Variable("expr2")
+                        )
+                ),
+                Arguments.of("Binary Addition",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "+", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
+                        ),
+                        new Ast.Expression.Binary("+",
+                                new Ast.Expression.Variable("expr1"),
+                                new Ast.Expression.Variable("expr2")
+                        )
+                ),
+                Arguments.of("Binary Multiplication",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "*", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
+                        ),
+                        new Ast.Expression.Binary("*",
+                                new Ast.Expression.Variable("expr1"),
+                                new Ast.Expression.Variable("expr2")
+                        )
+                )
+        );
+    }
 
     @ParameterizedTest(name = "{0}")
     @MethodSource
@@ -341,23 +341,23 @@ final class ParserTests {
                                 new Ast.Expression.Variable("expr2"),
                                 new Ast.Expression.Variable("expr3")
                         ))
+                ),
+                Arguments.of("Complex Argument",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "+", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        new Ast.Expression.Function("name", Arrays.asList(
+                                new Ast.Expression.Binary("+",
+                                        new Ast.Expression.Variable("expr1"),
+                                        new Ast.Expression.Variable("expr2")
+                                )
+                        ))
                 )
-//                Arguments.of("Complex Argument",  //FIXME: wait for binary operators to work
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "name", -1),
-//                                new Token(Token.Type.OPERATOR, "(", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
-//                                new Token(Token.Type.OPERATOR, "+", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
-//                                new Token(Token.Type.OPERATOR, ")", -1)
-//                        ),
-//                        new Ast.Expression.Function("name", Arrays.asList(
-//                                new Ast.Expression.Binary("+",
-//                                        new Ast.Expression.Variable("expr1"),
-//                                        new Ast.Expression.Variable("expr2")
-//                                )
-//                        ))
-//                )
         );
     }
 //
