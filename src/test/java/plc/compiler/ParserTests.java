@@ -121,51 +121,51 @@ final class ParserTests {
                 )
         );
     }
-//
-//    @ParameterizedTest(name = "{0}")
-//    @MethodSource
-//    void testIfStatement(String test, List<Token> tokens, Ast.Statement.If expected) {
-//        test(tokens, expected, Parser::parseStatement);
-//    }
-//
-//    static Stream<Arguments> testIfStatement() {
-//        return Stream.of(
-//                Arguments.of("Then",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "IF", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-//                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
-//                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1),
-//                                new Token(Token.Type.IDENTIFIER, "END", -1)
-//                        ),
-//                        new Ast.Statement.If(
-//                                new Ast.Expression.Variable("expr"),
-//                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt"))),
-//                                Arrays.asList()
-//                        )
-//                ),
-//                Arguments.of("Else",
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "IF", -1),
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-//                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
-//                                new Token(Token.Type.IDENTIFIER, "stmt1", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1),
-//                                new Token(Token.Type.IDENTIFIER, "ELSE", -1),
-//                                new Token(Token.Type.IDENTIFIER, "stmt2", -1),
-//                                new Token(Token.Type.OPERATOR, ";", -1),
-//                                new Token(Token.Type.IDENTIFIER, "END", -1)
-//                        ),
-//                        new Ast.Statement.If(
-//                                new Ast.Expression.Variable("expr"),
-//                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt1"))),
-//                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt2")))
-//                        )
-//                )
-//        );
-//    }
-//
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    void testIfStatement(String test, List<Token> tokens, Ast.Statement.If expected) {
+        test(tokens, expected, Parser::parseStatement);
+    }
+
+    static Stream<Arguments> testIfStatement() {
+        return Stream.of(
+                Arguments.of("Then",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "IF", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "END", -1)
+                        ),
+                        new Ast.Statement.If(
+                                new Ast.Expression.Variable("expr"),
+                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt"))),
+                                Arrays.asList()
+                        )
+                ),
+                Arguments.of("Else",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "IF", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt1", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "ELSE", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt2", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "END", -1)
+                        ),
+                        new Ast.Statement.If(
+                                new Ast.Expression.Variable("expr"),
+                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt1"))),
+                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt2")))
+                        )
+                )
+        );
+    }
+
     @ParameterizedTest(name = "{0}")
     @MethodSource
     void testWhileStatement(String test, List<Token> tokens, Ast.Statement.While expected) {

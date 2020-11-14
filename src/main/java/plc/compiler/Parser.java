@@ -58,13 +58,13 @@ public final class Parser {
      */
     public Ast.Statement parseStatement() throws ParseException {
         if (peek(Token.Type.IDENTIFIER)) {
-            if (peek("LET")) {
+            if (match("LET")) {
                 return parseDeclarationStatement();
             }
-            else if (peek("IF")) {
+            else if (match("IF")) {
                 return parseIfStatement();
             }
-            else if (peek("WHILE")) {
+            else if (match("WHILE")) {
                 return parseWhileStatement();
             }
             else {
@@ -95,7 +95,6 @@ public final class Parser {
      * called if the next tokens start a declaration statement, aka {@code let}.
      */
     public Ast.Statement.Declaration parseDeclarationStatement() throws ParseException {
-        tokens.advance();
         String name;
         String type;
 
@@ -141,28 +140,28 @@ public final class Parser {
      * if the next tokens start an if statement, aka {@code if}.
      */
     public Ast.Statement.If parseIfStatement() throws ParseException {
-        tokens.advance();
         Ast.Expression condition = parseExpression();
+        List<Ast.Statement> thenStatements = new ArrayList<>();
+        List<Ast.Statement> elseStatements = new ArrayList<>();
         if (peek("THEN")) {
             tokens.advance();
             if (peek("END")) {
-                return new Ast.Statement.If(condition, null, null);     //FIXME: says we don't need statements but AST class says we do
+                return new Ast.Statement.If(condition, thenStatements, elseStatements);     //FIXME: says we don't need statements but AST class says we do
             }
             else {
-                List<Ast.Statement> thenStatements = new ArrayList<>();
                 while (!peek("ELSE") && !peek("END")) {
                     thenStatements.add(parseStatement());      //FIXME: may have multiple statements
                     tokens.advance();
                 }
                 if (peek("END")) {
-                    return new Ast.Statement.If(condition, thenStatements, null); //FIXME: says we don't need statements but AST class says we do
+                    return new Ast.Statement.If(condition, thenStatements, elseStatements);
                 }
-                else if (peek("ELSE")) {
-                    List<Ast.Statement> elseStatements = new ArrayList<>();
+                else if (match("ELSE")) {
                     while(!peek("END")) {
                         elseStatements.add(parseStatement());
+                        tokens.advance();
                     }
-                    if (peek("END")) {
+                    if (match("END")) {
                         return new Ast.Statement.If(condition, thenStatements, elseStatements);
                     }
                 }
@@ -176,10 +175,8 @@ public final class Parser {
      * called if the next tokens start a while statement, aka {@code while}.
      */
     public Ast.Statement.While parseWhileStatement() throws ParseException {
-        tokens.advance();
         Ast.Expression expression = parseExpression();
-        if (peek("DO")) {
-            tokens.advance();
+        if (match("DO")) {
             if (peek("END")) {
                 return new Ast.Statement.While(expression, null);     //FIXME: says we don't need statements but AST class says we do
             }
@@ -209,7 +206,7 @@ public final class Parser {
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
         Ast.Expression first_expr = parseAdditiveExpression();
-        if (!tokens.has(1) || peek(";") || peek("DO") || peek(",")) {
+        if (!tokens.has(1) || peek(";") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",")) {
             return first_expr;
         }
         if (match("!=") || match("==")) {
@@ -225,7 +222,7 @@ public final class Parser {
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
         Ast.Expression first_expr = parseMultiplicativeExpression();
-        if (!tokens.has(1) || peek(";") || peek("DO") || peek(",") || peek("==") || peek("!=")) {
+        if (!tokens.has(1) || peek(";") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=")) {
             return first_expr;
         }
 
@@ -242,7 +239,7 @@ public final class Parser {
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
         Ast.Expression first_expr = parsePrimaryExpression();
-        if (!tokens.has(1) || peek(";") || peek("DO") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
+        if (!tokens.has(1) || peek(";") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
             return first_expr;
         }
 
