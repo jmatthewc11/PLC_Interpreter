@@ -360,70 +360,70 @@ final class ParserTests {
                 )
         );
     }
-//
-//    @Test
-//    void testExample1() {
-//        /* LET first: INTEGER = 1;
-//         * WHILE first != 10 DO
-//         *   PRINT(first);
-//         *   first = first + 1;
-//         * END
-//         */
-//        List<Token> input = Arrays.asList(
-//                new Token(Token.Type.IDENTIFIER, "LET", -1),
-//                new Token(Token.Type.IDENTIFIER, "first", -1),
-//                new Token(Token.Type.OPERATOR, ":", -1),
-//                new Token(Token.Type.IDENTIFIER, "INTEGER", -1),
-//                new Token(Token.Type.OPERATOR, "=", -1),
-//                new Token(Token.Type.INTEGER, "1", -1),
-//                new Token(Token.Type.OPERATOR, ";", -1),
-//
-//                new Token(Token.Type.IDENTIFIER, "WHILE", -1),
-//                new Token(Token.Type.IDENTIFIER, "first", -1),
-//                new Token(Token.Type.OPERATOR, "!=", -1),
-//                new Token(Token.Type.INTEGER, "10", -1),
-//                new Token(Token.Type.IDENTIFIER, "DO", -1),
-//
-//                new Token(Token.Type.IDENTIFIER, "PRINT", -1),
-//                new Token(Token.Type.OPERATOR, "(", -1),
-//                new Token(Token.Type.IDENTIFIER, "first", -1),
-//                new Token(Token.Type.OPERATOR, ")", -1),
-//                new Token(Token.Type.OPERATOR, ";", -1),
-//
-//                new Token(Token.Type.IDENTIFIER, "first", -1),
-//                new Token(Token.Type.OPERATOR, "=", -1),
-//                new Token(Token.Type.IDENTIFIER, "first", -1),
-//                new Token(Token.Type.OPERATOR, "+", -1),
-//                new Token(Token.Type.INTEGER, "1", -1),
-//                new Token(Token.Type.OPERATOR, ";", -1),
-//
-//                new Token(Token.Type.IDENTIFIER, "END", -1)
-//        );
-//        Ast.Source expected = new Ast.Source(Arrays.asList(
-//                new Ast.Statement.Declaration("first", "INTEGER",
-//                        Optional.of(new Ast.Expression.Literal(BigInteger.valueOf(1)))),
-//                new Ast.Statement.While(
-//                        new Ast.Expression.Binary("!=",
-//                                new Ast.Expression.Variable("first"),
-//                                new Ast.Expression.Literal(BigInteger.valueOf(10))
-//                        ),
-//                        Arrays.asList(
-//                                new Ast.Statement.Expression(
-//                                        new Ast.Expression.Function("PRINT", Arrays.asList(
-//                                                new Ast.Expression.Variable("first"))
-//                                        )
-//                                ),
-//                                new Ast.Statement.Assignment("first",
-//                                        new Ast.Expression.Binary("+",
-//                                                new Ast.Expression.Variable("first"),
-//                                                new Ast.Expression.Literal(BigInteger.valueOf(1))
-//                                        )
-//                                )
-//                        )
-//                )
-//        ));
-//        test(input, expected, Parser::parseSource);
-//    }
+
+    @Test
+    void testExample1() {
+        /* LET first: INTEGER = 1;
+         * WHILE first != 10 DO
+         *   PRINT(first);
+         *   first = first + 1;
+         * END
+         */
+        List<Token> input = Arrays.asList(
+                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                new Token(Token.Type.IDENTIFIER, "first", -1),
+                new Token(Token.Type.OPERATOR, ":", -1),
+                new Token(Token.Type.IDENTIFIER, "INTEGER", -1),
+                new Token(Token.Type.OPERATOR, "=", -1),
+                new Token(Token.Type.INTEGER, "1", -1),
+                new Token(Token.Type.OPERATOR, ";", -1),
+
+                new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                new Token(Token.Type.IDENTIFIER, "first", -1),
+                new Token(Token.Type.OPERATOR, "!=", -1),
+                new Token(Token.Type.INTEGER, "10", -1),
+                new Token(Token.Type.IDENTIFIER, "DO", -1),
+
+                new Token(Token.Type.IDENTIFIER, "PRINT", -1),
+                new Token(Token.Type.OPERATOR, "(", -1),
+                new Token(Token.Type.IDENTIFIER, "first", -1),
+                new Token(Token.Type.OPERATOR, ")", -1),
+                new Token(Token.Type.OPERATOR, ";", -1),
+
+                new Token(Token.Type.IDENTIFIER, "first", -1),
+                new Token(Token.Type.OPERATOR, "=", -1),
+                new Token(Token.Type.IDENTIFIER, "first", -1),
+                new Token(Token.Type.OPERATOR, "+", -1),
+                new Token(Token.Type.INTEGER, "1", -1),
+                new Token(Token.Type.OPERATOR, ";", -1),
+
+                new Token(Token.Type.IDENTIFIER, "END", -1)
+        );
+        Ast.Source expected = new Ast.Source(Arrays.asList(
+                new Ast.Statement.Declaration("first", "INTEGER",
+                        Optional.of(new Ast.Expression.Literal(BigInteger.valueOf(1)))),
+                new Ast.Statement.While(
+                        new Ast.Expression.Binary("!=",
+                                new Ast.Expression.Variable("first"),
+                                new Ast.Expression.Literal(BigInteger.valueOf(10))
+                        ),
+                        Arrays.asList(
+                                new Ast.Statement.Expression(
+                                        new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Variable("first"))
+                                        )
+                                ),
+                                new Ast.Statement.Assignment("first",
+                                        new Ast.Expression.Binary("+",
+                                                new Ast.Expression.Variable("first"),
+                                                new Ast.Expression.Literal(BigInteger.valueOf(1))
+                                        )
+                                )
+                        )
+                )
+        ));
+        test(input, expected, Parser::parseSource);
+    }
 
     /**
      * Standard test function. If expected is null, a ParseException is expected

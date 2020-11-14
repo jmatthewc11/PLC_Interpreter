@@ -43,7 +43,7 @@ public final class Parser {
         List<Ast.Statement> statements = new ArrayList<>();
         while (tokens.has(0)) {
             statements.add(parseStatement());
-            if (tokens.get(0).getLiteral().equals(";")) {
+            if (tokens.has(0) && peek(";")) {
                 tokens.advance();
             }
         }
@@ -98,16 +98,12 @@ public final class Parser {
         String name;
         String type;
 
-        if (peek(Token.Type.IDENTIFIER)) {
-            name = tokens.get(0).getLiteral();
-            tokens.advance();
-            if (peek(":")) {
-                tokens.advance();
-                if (peek(Token.Type.IDENTIFIER)) {
-                    type = tokens.get(0).getLiteral();
-                    tokens.advance();
-                    if (peek("=")) {
-                        tokens.advance();
+        if (match(Token.Type.IDENTIFIER)) {
+            name = tokens.get(-1).getLiteral();
+            if (match(":")) {
+                if (match(Token.Type.IDENTIFIER)) {
+                    type = tokens.get(-1).getLiteral();
+                    if (match("=")) {
                         Ast.Expression value = parseExpression();
                         return new Ast.Statement.Declaration(name, type, Optional.of(value));
                     }
@@ -143,10 +139,9 @@ public final class Parser {
         Ast.Expression condition = parseExpression();
         List<Ast.Statement> thenStatements = new ArrayList<>();
         List<Ast.Statement> elseStatements = new ArrayList<>();
-        if (peek("THEN")) {
-            tokens.advance();
+        if (match("THEN")) {
             if (peek("END")) {
-                return new Ast.Statement.If(condition, thenStatements, elseStatements);     //FIXME: says we don't need statements but AST class says we do
+                return new Ast.Statement.If(condition, thenStatements, elseStatements);
             }
             else {
                 while (!peek("ELSE") && !peek("END")) {
@@ -186,7 +181,7 @@ public final class Parser {
                     statements.add(parseStatement());      //FIXME: may have multiple statements
                     tokens.advance();
                 }
-                if (peek("END")) {
+                if (match("END")) {
                     return new Ast.Statement.While(expression, statements);
                 }
             }
@@ -206,9 +201,10 @@ public final class Parser {
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
         Ast.Expression first_expr = parseAdditiveExpression();
-        if (!tokens.has(1) || peek(";") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",")) {
+        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",")) {
             return first_expr;
         }
+
         if (match("!=") || match("==")) {
             return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseAdditiveExpression());
         }
@@ -222,7 +218,7 @@ public final class Parser {
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
         Ast.Expression first_expr = parseMultiplicativeExpression();
-        if (!tokens.has(1) || peek(";") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=")) {
+        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=")) {
             return first_expr;
         }
 
@@ -239,7 +235,7 @@ public final class Parser {
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
         Ast.Expression first_expr = parsePrimaryExpression();
-        if (!tokens.has(1) || peek(";") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
+        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
             return first_expr;
         }
 
@@ -299,13 +295,24 @@ public final class Parser {
                 throw new ParseException("Missing closing parenthesis for grouping", tokens.index);
         }
         else if (peek(Token.Type.INTEGER)) {
+            if (tokens.has(1)) {
+                tokens.advance();
+                return new Ast.Expression.Literal(new BigInteger(tokens.get(-1).getLiteral()));
+            }
             return new Ast.Expression.Literal(new BigInteger(tokens.get(0).getLiteral()));
         }
         else if (peek(Token.Type.DECIMAL)) {
+            if (tokens.has(1)) {
+                tokens.advance();
+                return new Ast.Expression.Literal(new BigDecimal(tokens.get(-1).getLiteral()));
+            }
             return new Ast.Expression.Literal(new BigDecimal(tokens.get(0).getLiteral()));
         }
         else if (peek(Token.Type.STRING)) {
             String string = tokens.get(0).getLiteral();
+            if (tokens.has(1)) {
+                tokens.advance();
+            }
             return new Ast.Expression.Literal(string.substring(1, string.length() - 1));
         }
         else {
