@@ -27,10 +27,10 @@ final class ParserTests {
 
     private static Stream<Arguments> testSource() {
         return Stream.of(
-//                Arguments.of("Zero Statements",
-//                        Arrays.asList(),
-//                        new Ast.Source(Arrays.asList())
-//                ),
+                Arguments.of("Zero Statements",
+                        Arrays.asList(),
+                        new Ast.Source(Arrays.asList())
+                ),
                 Arguments.of("Multiple Statements",
                         Arrays.asList(
                                 new Token(Token.Type.IDENTIFIER, "stmt1", -1),

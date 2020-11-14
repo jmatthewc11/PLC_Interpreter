@@ -1,5 +1,7 @@
 package plc.compiler;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,6 +46,9 @@ public final class Parser {
         Stack<String> stack = new Stack<String>();
         while (tokens.has(0)) {
             statements.add(parseStatement(stack));
+            if (tokens.get(0).getLiteral().equals(";")) {
+                tokens.advance();
+            }
         }
 
         return new Ast.Source(statements);
@@ -208,8 +213,10 @@ public final class Parser {
      * Parses the {@code equality-expression} rule.
      */
     public Ast.Expression parseEqualityExpression(Stack<String> stack) throws ParseException {
-        parseAdditiveExpression(stack);     //FIXME: how to format the expressions in the statements?
-        tokens.advance();
+        Ast.Expression first_expr = parseAdditiveExpression(stack);     //FIXME: how to format the expressions in the statements?
+        if (tokens.get(0).getLiteral().equals(";")) {
+            return first_expr;
+        }
         while (peek("==") || peek("!=")) {
             parseAdditiveExpression(stack);
             tokens.advance();
@@ -221,8 +228,10 @@ public final class Parser {
      * Parses the {@code additive-expression} rule.
      */
     public Ast.Expression parseAdditiveExpression(Stack<String> stack) throws ParseException {
-        parseMultiplicativeExpression(stack);     //FIXME: how to format the expressions in the statements?
-        tokens.advance();
+        Ast.Expression first_expr = parseMultiplicativeExpression(stack);     //FIXME: how to format the expressions in the statements?
+        if (tokens.get(0).getLiteral().equals(";")) {
+            return first_expr;
+        }
         while (peek("+") || peek("-")) {
             parseMultiplicativeExpression(stack);
             tokens.advance();
@@ -234,8 +243,10 @@ public final class Parser {
      * Parses the {@code multiplicative-expression} rule.
      */
     public Ast.Expression parseMultiplicativeExpression(Stack<String> stack) throws ParseException {
-        parsePrimaryExpression(stack);     //FIXME: how to format the expressions in the statements?
-        tokens.advance();
+        Ast.Expression first_expr = parsePrimaryExpression(stack);     //FIXME: how to format the expressions in the statements?
+        if (tokens.get(0).getLiteral().equals(";")) {
+            return first_expr;
+        }
         while (peek("*") || peek("/")) {
             parsePrimaryExpression(stack);
             tokens.advance();
@@ -259,14 +270,18 @@ public final class Parser {
             }
 
             else {
-                return new Ast.Expression.Variable(tokens.get(0).getLiteral());
+                Ast.Expression var = new Ast.Expression.Variable(tokens.get(0).getLiteral());
+//                if (peek(Token.Type.OPERATOR) && tokens.get(1).getLiteral().equals(";")) {
+                    tokens.advance();
+                    return var;
+//                }
             }
         }
         else if (peek(Token.Type.INTEGER)) {
-
+            return new Ast.Expression.Literal(new BigInteger(tokens.get(0).getLiteral()));
         }
         else if (peek(Token.Type.DECIMAL)) {
-
+            return new Ast.Expression.Literal(new BigDecimal(tokens.get(0).getLiteral()));
         }
         else if (peek(Token.Type.STRING)) {
             return new Ast.Expression.Literal(tokens.get(0).getLiteral());
