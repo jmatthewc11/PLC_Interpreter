@@ -367,20 +367,62 @@ final class ParserTests {
 
     static Stream<Arguments> testWhileStatement() {
         return Stream.of(
-                Arguments.of("While",
-                        Arrays.asList(
-                                new Token(Token.Type.IDENTIFIER, "WHILE", -1),
-                                new Token(Token.Type.IDENTIFIER, "expr", -1),
-                                new Token(Token.Type.IDENTIFIER, "DO", -1),
-                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
-                                new Token(Token.Type.OPERATOR, ";", -1),
-                                new Token(Token.Type.IDENTIFIER, "END", -1)
-                        ),
-                        new Ast.Statement.While(
-                                new Ast.Expression.Variable("expr"),
-                                Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt")))
-                        )
-                )
+            Arguments.of("While",
+                    Arrays.asList(
+                            new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                            new Token(Token.Type.IDENTIFIER, "expr", -1),
+                            new Token(Token.Type.IDENTIFIER, "DO", -1),
+                            new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                            new Token(Token.Type.OPERATOR, ";", -1),
+                            new Token(Token.Type.IDENTIFIER, "END", -1)
+                    ),
+                    new Ast.Statement.While(
+                            new Ast.Expression.Variable("expr"),
+                            Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt")))
+                    )
+            ),
+            Arguments.of("While",
+                    Arrays.asList(
+                            new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                            new Token(Token.Type.IDENTIFIER, "expr", -1),
+                            new Token(Token.Type.IDENTIFIER, "DO", -1),
+                            new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                            new Token(Token.Type.OPERATOR, ";", -1),
+                            new Token(Token.Type.OPERATOR, ";", -1),
+                            new Token(Token.Type.IDENTIFIER, "END", -1)
+                    ),
+                    null
+            ),
+            Arguments.of("While",
+                    Arrays.asList(
+                            new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                            new Token(Token.Type.IDENTIFIER, "expr", -1),
+                            new Token(Token.Type.IDENTIFIER, "DO", -1),
+                            new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                            new Token(Token.Type.OPERATOR, ";", -1)
+                    ),
+                    null
+            ),
+            Arguments.of("While",
+                    Arrays.asList(
+                            new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                            new Token(Token.Type.IDENTIFIER, "DO", -1),
+                            new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                            new Token(Token.Type.OPERATOR, ";", -1),
+                            new Token(Token.Type.IDENTIFIER, "END", -1)
+                    ),
+                    null
+            ),
+            Arguments.of("While",
+                    Arrays.asList(
+                            new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+                            new Token(Token.Type.IDENTIFIER, "expr", -1),
+                            new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                            new Token(Token.Type.OPERATOR, ";", -1),
+                            new Token(Token.Type.IDENTIFIER, "END", -1)
+                    ),
+                    null
+            )
         );
     }
 
