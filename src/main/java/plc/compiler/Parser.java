@@ -42,9 +42,14 @@ public final class Parser {
     public Ast.Source parseSource() throws ParseException {
         List<Ast.Statement> statements = new ArrayList<>();
         while (tokens.has(0)) {
-            statements.add(parseStatement());
+            Ast.Statement statement = parseStatement();
+            statements.add(statement);
             if (tokens.has(0) && peek(";")) {
+                if (statement instanceof Ast.Statement.Declaration)
+                    throw new ParseException("Extra semicolon", tokens.index);
                 tokens.advance();
+                if (peek(";"))
+                    throw new ParseException("Extra semicolon", tokens.index);
             }
         }
         return new Ast.Source(statements);
@@ -105,9 +110,19 @@ public final class Parser {
                     type = tokens.get(-1).getLiteral();
                     if (match("=")) {
                         Ast.Expression value = parseExpression();
-                        return new Ast.Statement.Declaration(name, type, Optional.of(value));
+                        if (peek(";")) {
+                            tokens.advance();
+                            if (peek(";"))
+                                throw new ParseException("Too many semicolons", tokens.index);
+                            return new Ast.Statement.Declaration(name, type, Optional.of(value));
+                        }
+                        else
+                            throw new ParseException("Missing semicolon", tokens.index);
                     }
                     else if (peek(";")) {
+                        tokens.advance();
+                        if (peek(";"))
+                            throw new ParseException("Too many semicolons", tokens.index);
                         return new Ast.Statement.Declaration(name, type, Optional.empty());
                     }
                 }
@@ -126,7 +141,10 @@ public final class Parser {
         tokens.advance();
         if (match("=")) {
             Ast.Expression expression = parseExpression();
-            return new Ast.Statement.Assignment(name, expression);
+            if (peek(";"))
+                tokens.advance();
+                if (!peek(";"))
+                    return new Ast.Statement.Assignment(name, expression);
         }
         throw new ParseException("Assignment statement is incorrect", tokens.index);
     }

@@ -45,6 +45,16 @@ final class ParserTests {
                                 new Ast.Statement.Expression(new Ast.Expression.Variable("stmt2")),
                                 new Ast.Statement.Expression(new Ast.Expression.Variable("stmt3"))
                         ))
+                ),
+                Arguments.of("Multiple Semicolons",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "stmt1", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt2", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
                 )
         );
     }
@@ -66,6 +76,14 @@ final class ParserTests {
                         ),
                         new Ast.Statement.Expression(new Ast.Expression.Function("name", Arrays.asList()))
                 )
+//                Arguments.of("Function Expression",       //FIXME: fails, don't know how to fix
+//                        Arrays.asList(
+//                                new Token(Token.Type.IDENTIFIER, "name", -1),
+//                                new Token(Token.Type.OPERATOR, ")", -1),
+//                                new Token(Token.Type.OPERATOR, ";", -1)
+//                        ),
+//                        null
+//                )
 //                Arguments.of("No Semicolon",      //FIXME: how would this fail but the variable test case would pass?
 //                        Arrays.asList(
 //                                new Token(Token.Type.IDENTIFIER, "expr", -1)
@@ -104,6 +122,91 @@ final class ParserTests {
                                 new Token(Token.Type.OPERATOR, ";", -1)
                         ),
                         new Ast.Statement.Declaration("name", "TYPE", Optional.of(new Ast.Expression.Variable("expr")))
+                ),
+                Arguments.of("Initialization",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.OPERATOR, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Initialization",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Definition",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Initialization",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.OPERATOR, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.OPERATOR, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Definition",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Definition",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Definition",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "LET", -1),
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, ":", -1),
+                                new Token(Token.Type.IDENTIFIER, "TYPE", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
                 )
         );
     }
@@ -124,6 +227,44 @@ final class ParserTests {
                                 new Token(Token.Type.OPERATOR, ";", -1)
                         ),
                         new Ast.Statement.Assignment("name", new Ast.Expression.Variable("expr"))
+                ),
+                Arguments.of("Assignment",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Assignment",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.OPERATOR, "+", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Assignment",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "name", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.OPERATOR, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Assignment",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "name", -1),
+                                new Token(Token.Type.OPERATOR, "=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
                 )
         );
     }
