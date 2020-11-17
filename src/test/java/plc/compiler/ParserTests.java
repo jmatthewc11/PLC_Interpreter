@@ -309,6 +309,52 @@ final class ParserTests {
                                 Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt1"))),
                                 Arrays.asList(new Ast.Statement.Expression(new Ast.Expression.Variable("stmt2")))
                         )
+                ),
+                Arguments.of("Then",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "IF", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "END", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Then",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "IF", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Then",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "IF", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "END", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Else",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "IF", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+                                new Token(Token.Type.IDENTIFIER, "THEN", -1),
+                                new Token(Token.Type.IDENTIFIER, "stmt1", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "ELSE", -1),
+                                new Token(Token.Type.OPERATOR, "stmt2", -1),
+                                new Token(Token.Type.OPERATOR, ";", -1),
+                                new Token(Token.Type.IDENTIFIER, "END", -1)
+                        ),
+                        null
                 )
         );
     }

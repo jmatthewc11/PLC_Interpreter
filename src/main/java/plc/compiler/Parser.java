@@ -141,10 +141,10 @@ public final class Parser {
         tokens.advance();
         if (match("=")) {
             Ast.Expression expression = parseExpression();
-            if (peek(";"))
-                tokens.advance();
-                if (!peek(";"))
+            if (peek(";")) {
+                if (!(tokens.has(1) && tokens.get(1).getLiteral().equals(";")))
                     return new Ast.Statement.Assignment(name, expression);
+            }
         }
         throw new ParseException("Assignment statement is incorrect", tokens.index);
     }
