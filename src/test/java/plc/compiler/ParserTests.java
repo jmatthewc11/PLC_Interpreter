@@ -481,6 +481,47 @@ final class ParserTests {
                                 new Ast.Expression.Variable("expr1"),
                                 new Ast.Expression.Variable("expr2")
                         ))
+                ),
+                Arguments.of("Grouped Binary",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "!=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        new Ast.Expression.Group(new Ast.Expression.Binary("!=",
+                                new Ast.Expression.Variable("expr1"),
+                                new Ast.Expression.Variable("expr2")
+                        ))
+                ),
+                Arguments.of("Grouped Binary",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "!=", -1),
+                                new Token(Token.Type.OPERATOR, "!=", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Grouped Binary",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "*", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Grouped Variable",
+                        Arrays.asList(
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.OPERATOR, "/", -1),
+                                new Token(Token.Type.OPERATOR, ")", -1)
+                        ),
+                        null
                 )
         );
     }
