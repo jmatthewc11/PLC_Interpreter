@@ -66,6 +66,12 @@ final class ParserTests {
                         ),
                         new Ast.Statement.Expression(new Ast.Expression.Function("name", Arrays.asList()))
                 )
+//                Arguments.of("No Semicolon",      //FIXME: how would this fail but the variable test case would pass?
+//                        Arrays.asList(
+//                                new Token(Token.Type.IDENTIFIER, "expr", -1)
+//                        ),
+//                        null
+//                )
         );
     }
 
@@ -422,6 +428,37 @@ final class ParserTests {
                         )
                 )
         ));
+        test(input, expected, Parser::parseSource);
+    }
+
+
+    @Test
+    void testExample2() {
+        List<Token> input = Arrays.asList(
+                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                new Token(Token.Type.OPERATOR, "+", -1)
+        );
+        Ast.Source expected = null;
+        test(input, expected, Parser::parseSource);
+    }
+
+    @Test
+    void testExample3() {
+        List<Token> input = Arrays.asList(
+                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                new Token(Token.Type.OPERATOR, "*", -1)
+        );
+        Ast.Source expected = null;
+        test(input, expected, Parser::parseSource);
+    }
+
+    @Test
+    void testExample4() {
+        List<Token> input = Arrays.asList(
+                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                new Token(Token.Type.OPERATOR, "!=", -1)
+        );
+        Ast.Source expected = null;
         test(input, expected, Parser::parseSource);
     }
 

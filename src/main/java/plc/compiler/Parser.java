@@ -68,7 +68,7 @@ public final class Parser {
                 return parseWhileStatement();
             }
             else {
-                if (tokens.get(1).getLiteral().equals("=")) {
+                if (tokens.has(1) && tokens.get(1).getLiteral().equals("=")) {
                     return parseAssignmentStatement();
                 }
                 else {
@@ -145,7 +145,7 @@ public final class Parser {
             }
             else {
                 while (!peek("ELSE") && !peek("END")) {
-                    thenStatements.add(parseStatement());      //FIXME: may have multiple statements
+                    thenStatements.add(parseStatement());
                     tokens.advance();
                 }
                 if (peek("END")) {
@@ -173,12 +173,12 @@ public final class Parser {
         Ast.Expression expression = parseExpression();
         if (match("DO")) {
             if (peek("END")) {
-                return new Ast.Statement.While(expression, null);     //FIXME: says we don't need statements but AST class says we do
+                return new Ast.Statement.While(expression, null);
             }
             else {
                 List<Ast.Statement> statements = new ArrayList<>();
                 while (!peek("END")) {
-                    statements.add(parseStatement());      //FIXME: may have multiple statements
+                    statements.add(parseStatement());
                     tokens.advance();
                 }
                 if (match("END")) {
@@ -201,12 +201,15 @@ public final class Parser {
      */
     public Ast.Expression parseEqualityExpression() throws ParseException {
         Ast.Expression first_expr = parseAdditiveExpression();
-        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",")) {
-            return first_expr;
+        if (match("!=") || match("==")) {
+            if (tokens.has(0))
+                return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseAdditiveExpression());
+            else
+                throw new ParseException("Missing second arg for equality expression", tokens.index);
         }
 
-        if (match("!=") || match("==")) {
-            return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseAdditiveExpression());
+        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",")) {
+            return first_expr;
         }
         else {
             throw new ParseException("Additive expression is missing operator", tokens.index);
@@ -218,12 +221,15 @@ public final class Parser {
      */
     public Ast.Expression parseAdditiveExpression() throws ParseException {
         Ast.Expression first_expr = parseMultiplicativeExpression();
-        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=")) {
-            return first_expr;
+        if (match("+") || match("-")) {
+            if (tokens.has(0))
+                return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseMultiplicativeExpression());
+            else
+                throw new ParseException("Missing second arg for additive expression", tokens.index);
         }
 
-        if (match("+") || match("-")) {
-            return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parseMultiplicativeExpression());
+        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=")) {
+            return first_expr;
         }
         else {
             throw new ParseException("Additive expression is missing operator", tokens.index);
@@ -235,12 +241,15 @@ public final class Parser {
      */
     public Ast.Expression parseMultiplicativeExpression() throws ParseException {
         Ast.Expression first_expr = parsePrimaryExpression();
-        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
-            return first_expr;
+        if (match("*") || match("/")) {
+            if (tokens.has(0))
+                return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parsePrimaryExpression());
+            else
+                throw new ParseException("Missing second arg for multiplicative expression", tokens.index);
         }
 
-        if (match("*") || match("/")) {
-            return new Ast.Expression.Binary(tokens.get(-1).getLiteral(), first_expr, parsePrimaryExpression());
+        if (!tokens.has(1) || peek(";") || peek(")") || peek("DO") || peek("THEN") || peek("ELSE") || peek("END") || peek(",") || peek("==") || peek("!=") || peek("+") || peek("-")) {
+            return first_expr;
         }
         else {
             throw new ParseException("Multiplicative expression is missing operator", tokens.index);
