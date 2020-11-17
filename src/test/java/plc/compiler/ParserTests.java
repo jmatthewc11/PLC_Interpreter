@@ -566,6 +566,22 @@ final class ParserTests {
                                 new Ast.Expression.Variable("expr1"),
                                 new Ast.Expression.Variable("expr2")
                         )
+                ),
+                Arguments.of("Binary Multiplication",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "(", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
+                        ),
+                        null
+                ),
+                Arguments.of("Binary Multiplication",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "expr1", -1),
+                                new Token(Token.Type.OPERATOR, "\"", -1),
+                                new Token(Token.Type.IDENTIFIER, "expr2", -1)
+                        ),
+                        null
                 )
         );
     }
