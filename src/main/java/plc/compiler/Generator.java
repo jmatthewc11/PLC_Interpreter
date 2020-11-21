@@ -30,8 +30,11 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Source ast) {
+        writer.write("public final class Main {");
+        newline(1);
+        writer.write("public static void main(String[] args {");
 
-        // TODO:  Generate Java to handle Source node.
+        // TODO: go to each method as needed
 
         return null;
     }
