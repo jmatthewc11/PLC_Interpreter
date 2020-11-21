@@ -1,6 +1,11 @@
 package plc.compiler;
 
 import java.io.PrintWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.List;
+
+//FIXME: will probably have general problems with semicolons/indents
 
 public final class Generator implements Ast.Visitor<Void> {
 
@@ -34,7 +39,10 @@ public final class Generator implements Ast.Visitor<Void> {
         newline(1);
         writer.write("public static void main(String[] args {");
 
-        // TODO: go to each method as needed, based on what is next in the AST
+        //get the list of statements in the AST, visit each one
+        List<Ast.Statement> statements = ast.getStatements();
+        for (Ast.Statement statement : statements)
+            visit(statement);
 
         writer.write("}");
         return null;
@@ -47,33 +55,30 @@ public final class Generator implements Ast.Visitor<Void> {
         return null;
     }
 
-    //FIXME: getValue() will change based on the value, see BOOLEAN example
-    // will have to unwrap the literal, most likely
+    //TODO: hopefully get() returns an expression and can visit accordingly
     @Override
     public Void visit(Ast.Statement.Declaration ast) {
         writer.write(ast.getType() + " " + ast.getName());
         if (ast.getValue().isPresent()) {
             writer.write(" = ");
-            visit(ast.getValue().get());
+
+            //writes a string as normal
+            if (ast.getType().equals("STRING"))
+                writer.write("\"" + ast.getValue() + "\"");
+
+            //goes to visit Expression.Literal method for conversion
+            else
+                visit(ast.getValue().get());
         }
-
-//        if (ast.getValue().get() instanceof Ast.Expression.Literal) { //FIXME: go to different visit based on type of expression?
-//            visit(ast.getValue().get());
-//        }
-//            visit(ast.getValue()); //FIXME: visit expression statement instead of trying to parse out here?
-
-//            if (ast.getType().equals("BOOLEAN"))  //FIXME: conversion to boolean?
-//                writer.write(String.valueOf(Boolean.parseBoolean(ast.getValue().toString().toLowerCase())));
-//            else if (ast.getType().equals("STRING"))
-//                writer.write("\"" + ast.getValue() + "\"");
-//        }
         writer.write(";");
         return null;
     }
 
     @Override
     public Void visit(Ast.Statement.Assignment ast) {
-        writer.write(ast.getName() + " = " + ast.getExpression() + ";");
+        writer.write(ast.getName() + " = ");
+        visit(ast.getExpression());
+        writer.write(";");
         return null;
     }
 
@@ -93,10 +98,15 @@ public final class Generator implements Ast.Visitor<Void> {
         return null;
     }
 
+    //FIXME: have to make sure these conversions are correct
     @Override
     public Void visit(Ast.Expression.Literal ast) {
-
-        // TODO:  Generate Java to handle Literal node.
+        if (ast.getValue() instanceof BigInteger)           //unwrap integer types
+            writer.write(((BigInteger) ast.getValue()).intValue());
+        else if (ast.getValue() instanceof BigDecimal)      //unwrap decimal types
+            writer.print(((BigDecimal) ast.getValue()).doubleValue());
+        else                                                //unwrap boolean types
+            writer.print(Boolean.parseBoolean(ast.getValue().toString()));
 
         return null;
     }
@@ -123,10 +133,19 @@ public final class Generator implements Ast.Visitor<Void> {
         return null;
     }
 
-    //FIXME: might have problem with argument type (literal or not) and number of args (comma separated, no space after comma)
+    //FIXME: may have problems printing a literal vs. a variable
     @Override
     public Void visit(Ast.Expression.Function ast) {
-        writer.write(ast.getName() + "(" + ast.getArguments() + ");");
+        writer.write(ast.getName() + "(");
+        List<Ast.Expression> args = ast.getArguments();
+
+        for(int i = 0; i < args.size(); i++) {
+            visit(args.get(i));
+            if (args.get(i + 1) != null) {
+                writer.write(",");
+            }
+        }
+        writer.write(")");
         return null;
     }
 
