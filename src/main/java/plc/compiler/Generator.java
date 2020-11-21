@@ -34,32 +34,46 @@ public final class Generator implements Ast.Visitor<Void> {
         newline(1);
         writer.write("public static void main(String[] args {");
 
-        // TODO: go to each method as needed
+        // TODO: go to each method as needed, based on what is next in the AST
 
+        writer.write("}");
         return null;
     }
 
     @Override
     public Void visit(Ast.Statement.Expression ast) {
-
         // TODO:  Generate Java to handle Expression node.
 
         return null;
     }
 
+    //FIXME: getValue() will change based on the value, see BOOLEAN example
+    // will have to unwrap the literal, most likely
     @Override
     public Void visit(Ast.Statement.Declaration ast) {
+        writer.write(ast.getType() + " " + ast.getName());
+        if (ast.getValue().isPresent()) {
+            writer.write(" = ");
+            visit(ast.getValue().get());
+        }
 
-        // TODO:  Generate Java to handle Declaration node.
+//        if (ast.getValue().get() instanceof Ast.Expression.Literal) { //FIXME: go to different visit based on type of expression?
+//            visit(ast.getValue().get());
+//        }
+//            visit(ast.getValue()); //FIXME: visit expression statement instead of trying to parse out here?
 
+//            if (ast.getType().equals("BOOLEAN"))  //FIXME: conversion to boolean?
+//                writer.write(String.valueOf(Boolean.parseBoolean(ast.getValue().toString().toLowerCase())));
+//            else if (ast.getType().equals("STRING"))
+//                writer.write("\"" + ast.getValue() + "\"");
+//        }
+        writer.write(";");
         return null;
     }
 
     @Override
     public Void visit(Ast.Statement.Assignment ast) {
-
-        // TODO:  Generate Java to handle Assignment node.
-
+        writer.write(ast.getName() + " = " + ast.getExpression() + ";");
         return null;
     }
 
@@ -105,17 +119,14 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Expression.Variable ast) {
-
-        // TODO:  Generate Java to handle Variable node.
-
+        writer.write(ast.getName());
         return null;
     }
 
+    //FIXME: might have problem with argument type (literal or not) and number of args (comma separated, no space after comma)
     @Override
     public Void visit(Ast.Expression.Function ast) {
-
-        // TODO:  Generate Java to handle Function node.
-
+        writer.write(ast.getName() + "(" + ast.getArguments() + ");");
         return null;
     }
 
