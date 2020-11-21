@@ -50,8 +50,7 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Statement.Expression ast) {
-        // TODO:  Generate Java to handle Expression node.
-
+        visit(ast.getExpression());
         return null;
     }
 
@@ -61,14 +60,7 @@ public final class Generator implements Ast.Visitor<Void> {
         writer.write(ast.getType() + " " + ast.getName());
         if (ast.getValue().isPresent()) {
             writer.write(" = ");
-
-            //writes a string as normal
-            if (ast.getType().equals("STRING"))
-                writer.write("\"" + ast.getValue() + "\"");
-
-            //goes to visit Expression.Literal method for conversion
-            else
-                visit(ast.getValue().get());
+            visit(ast.getValue().get());
         }
         writer.write(";");
         return null;
@@ -105,8 +97,10 @@ public final class Generator implements Ast.Visitor<Void> {
             writer.write(((BigInteger) ast.getValue()).intValue());
         else if (ast.getValue() instanceof BigDecimal)      //unwrap decimal types
             writer.print(((BigDecimal) ast.getValue()).doubleValue());
-        else                                                //unwrap boolean types
+        else if (ast.getValue() instanceof Boolean)         //unwrap boolean types
             writer.print(Boolean.parseBoolean(ast.getValue().toString()));
+        else                                                //write a string
+            writer.write("\"" + ast.getValue() + "\"");
 
         return null;
     }
@@ -133,7 +127,7 @@ public final class Generator implements Ast.Visitor<Void> {
         return null;
     }
 
-    //FIXME: may have problems printing a literal vs. a variable
+    //FIXME: may have problems printing a literal vs. a variable...
     @Override
     public Void visit(Ast.Expression.Function ast) {
         writer.write(ast.getName() + "(");
@@ -141,7 +135,8 @@ public final class Generator implements Ast.Visitor<Void> {
 
         for(int i = 0; i < args.size(); i++) {
             visit(args.get(i));
-            if (args.get(i + 1) != null) {
+            args.remove(i);
+            if (args.size() > 0) {
                 writer.write(",");
             }
         }
