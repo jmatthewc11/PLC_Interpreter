@@ -1,0 +1,28 @@
+LET i : INTEGER = 2;
+LET n : INTEGER = 5;
+LET zero : INTEGER;
+
+WHILE n != 0 DO
+  zero = n - i * ( n / i );
+  IF zero != 1 THEN
+  ELSE
+  END
+
+  IF zero != 1 THEN
+    PRINT("even");
+  ELSE
+  END
+
+  IF zero != 1 THEN
+  ELSE
+    PRINT("odd");
+  END
+
+  IF zero != 1 THEN
+    PRINT("even");
+  ELSE
+    PRINT("odd");
+  END
+
+  n = n - 1;
+END

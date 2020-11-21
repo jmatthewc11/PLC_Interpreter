@@ -1,0 +1,30 @@
+LET score : INTEGER;
+score = score / 10;
+
+IF score == 10 THEN
+  PRINT("A");
+END
+IF score == 9 THEN
+  PRINT("A");
+END
+IF score == 8 THEN
+  PRINT("B");
+END
+IF score == 7 THEN
+  PRINT("C");
+END
+IF SCORE == 6 THEN
+  PRINT("D");
+END
+
+IF score != 10 THEN
+  IF score != 9 THEN
+    IF score != 8 THEN
+      IF score != 7 THEN
+        IF score != 6 THEN
+          PRINT("E");
+        END
+      END
+    END
+  END
+END

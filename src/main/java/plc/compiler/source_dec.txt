@@ -1,0 +1,11 @@
+LET str : STRING = "hello";
+PRINT(str);
+LET i : INTEGER;
+i = 5;
+x = 10;
+y = "why?";
+PRINT(x,y);
+IF i==x THEN
+  PRINT(i);
+ELSE
+END

@@ -1,0 +1,6 @@
+LET test : BOOLEAN = TRUE;
+IF test THEN
+  PRINT("success!");
+ELSE
+  PRINT("failure?");
+END
