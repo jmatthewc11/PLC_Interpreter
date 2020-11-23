@@ -36,11 +36,11 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Source ast) {
-        writer.write("public final class Main {");
+        print("public final class Main {");
         indent++;
         newline(indent);
         newline(indent);
-        writer.write("public static void main(String[] args {");
+        print("public static void main(String[] args {");
         indent++;
         newline(indent);
 
@@ -51,8 +51,7 @@ public final class Generator implements Ast.Visitor<Void> {
             newline(indent);
         }
 
-        indent = 0;
-        newline(indent);
+        newline(0);
         writer.write("}");
         return null;
     }
@@ -66,20 +65,19 @@ public final class Generator implements Ast.Visitor<Void> {
     //TODO: hopefully get() returns an expression and can visit accordingly
     @Override
     public Void visit(Ast.Statement.Declaration ast) {
-        writer.write(ast.getType() + " " + ast.getName());
+        print(ast.getType() + " " + ast.getName());
         if (ast.getValue().isPresent()) {
-            writer.write(" = ");
-            visit(ast.getValue().get());
+            print(" = ", ast.getValue().get());
         }
-        writer.write(";");
+        print(";");
         return null;
     }
 
     @Override
     public Void visit(Ast.Statement.Assignment ast) {
-        writer.write(ast.getName() + " = ");
+        print(ast.getName() + " = ");
         visit(ast.getExpression());
-        writer.write(";");
+        print(";");
         return null;
     }
 
@@ -87,9 +85,9 @@ public final class Generator implements Ast.Visitor<Void> {
     public Void visit(Ast.Statement.If ast) {
         List<Ast.Statement> then_statements = ast.getThenStatements();
         List<Ast.Statement> else_statements = ast.getElseStatements();
-        writer.write("if (" + ast.getCondition() + ") {");
+        print("if (" + ast.getCondition() + ") {");
         if (then_statements.isEmpty())
-            writer.write("}");
+            print("}");
         else {
             indent++;
             newline(indent);
@@ -102,11 +100,11 @@ public final class Generator implements Ast.Visitor<Void> {
                 }
                 newline(indent);
             }
-            writer.write("}");
+            print("}");
         }
 
         if (!else_statements.isEmpty()) {
-            writer.write(" else {");
+            print(" else {");
             indent++;
             newline(indent);
             for (int i = 0; i < else_statements.size(); i++) {
@@ -118,7 +116,7 @@ public final class Generator implements Ast.Visitor<Void> {
                 }
                 newline(indent);
             }
-            writer.write("}");
+            print("}");
         }
 
         return null;
@@ -126,7 +124,7 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Statement.While ast) {
-        writer.write("WHILE ( " + ast.getCondition() + ") {");
+        print("WHILE ( " + ast.getCondition() + ") {");
         indent++;
         newline(indent);
 
@@ -141,7 +139,7 @@ public final class Generator implements Ast.Visitor<Void> {
             newline(indent);
         }
 
-        writer.write("}");
+        print("}");
         return null;
     }
 
@@ -149,13 +147,13 @@ public final class Generator implements Ast.Visitor<Void> {
     @Override
     public Void visit(Ast.Expression.Literal ast) {
         if (ast.getValue() instanceof BigInteger)           //unwrap integer types
-            writer.write(((BigInteger) ast.getValue()).intValue());
+            print(((BigInteger) ast.getValue()).intValue());
         else if (ast.getValue() instanceof BigDecimal)      //unwrap decimal types
-            writer.print(((BigDecimal) ast.getValue()).doubleValue());
+            print(((BigDecimal) ast.getValue()).doubleValue());
         else if (ast.getValue() instanceof Boolean)         //unwrap boolean types
-            writer.print(Boolean.parseBoolean(ast.getValue().toString()));
+            print(Boolean.parseBoolean(ast.getValue().toString()));
         else                                                //write a string
-            writer.write("\"" + ast.getValue() + "\"");
+            print("\"" + ast.getValue() + "\"");
 
         return null;
     }
@@ -163,7 +161,7 @@ public final class Generator implements Ast.Visitor<Void> {
     //FIXME: how to add semicolon at the end?  How to deal with nested expressions?
     @Override
     public Void visit(Ast.Expression.Group ast) {
-        writer.write("(" + ast.getExpression() + ")");
+        print("(" + ast.getExpression() + ")");
 
         return null;
     }
@@ -178,24 +176,24 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Expression.Variable ast) {
-        writer.write(ast.getName());
+        print(ast.getName());
         return null;
     }
 
     //FIXME: may have problems printing a literal vs. a variable...
     @Override
     public Void visit(Ast.Expression.Function ast) {
-        writer.write(ast.getName() + "(");
+        print(ast.getName() + "(");
         List<Ast.Expression> args = ast.getArguments();
 
         for(int i = 0; i < args.size(); i++) {
             visit(args.get(i));
             args.remove(i);
             if (args.size() > 0) {
-                writer.write(",");
+                print(",");
             }
         }
-        writer.write(")");
+        print(")");
         return null;
     }
 
