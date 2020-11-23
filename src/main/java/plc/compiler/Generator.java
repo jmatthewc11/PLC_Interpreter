@@ -77,8 +77,29 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Statement.If ast) {
+        List<Ast.Statement> then_statements = ast.getThenStatements();
+        List<Ast.Statement> else_statements = ast.getElseStatements();
+        writer.write("if (" + ast.getCondition() + ") {");
+        if (then_statements.isEmpty())
+            writer.write("}");
+        else {
+            newline(1);
+            for (Ast.Statement then_statement : then_statements) {
+                visit(then_statement);
+                newline(0);
+            }
+            writer.write("}");
+        }
 
-        // TODO:  Generate Java to handle If node.
+        if (!else_statements.isEmpty()) {
+            writer.write(" else {");
+            newline(1);
+            for (Ast.Statement else_statement : else_statements) {
+                visit(else_statement);
+                newline(0);
+            }
+            writer.write("}");
+        }
 
         return null;
     }
@@ -89,8 +110,10 @@ public final class Generator implements Ast.Visitor<Void> {
 
         List<Ast.Statement> statements = ast.getStatements();
         newline(1);
-        for (Ast.Statement statement : statements)
+        for (Ast.Statement statement : statements) {
             visit(statement);
+            newline(0);
+        }
 
         writer.write("}");
         return null;
