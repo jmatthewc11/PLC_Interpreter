@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
-//FIXME: will probably have general problems with semicolons/indents
+//FIXME: will probably have general problems with semicolons/indents, use indent variable
 // watch for reducing indent for ending }
 
 public final class Generator implements Ast.Visitor<Void> {
@@ -37,14 +37,22 @@ public final class Generator implements Ast.Visitor<Void> {
     @Override
     public Void visit(Ast.Source ast) {
         writer.write("public final class Main {");
-        newline(1);
+        indent++;
+        newline(indent);
+        newline(indent);
         writer.write("public static void main(String[] args {");
+        indent++;
+        newline(indent);
 
         //get the list of statements in the AST, visit each one
         List<Ast.Statement> statements = ast.getStatements();
-        for (Ast.Statement statement : statements)
+        for (Ast.Statement statement : statements) {
             visit(statement);
+            newline(indent);
+        }
 
+        indent = 0;
+        newline(indent);
         writer.write("}");
         return null;
     }
@@ -83,20 +91,32 @@ public final class Generator implements Ast.Visitor<Void> {
         if (then_statements.isEmpty())
             writer.write("}");
         else {
-            newline(1);
-            for (Ast.Statement then_statement : then_statements) {
-                visit(then_statement);
-                newline(0);
+            indent++;
+            newline(indent);
+            for (int i = 0; i < then_statements.size(); i++) {
+                visit(then_statements.get(i));
+                if (i == then_statements.size() - 1) {
+                    indent--;
+                    newline(indent);
+                    break;
+                }
+                newline(indent);
             }
             writer.write("}");
         }
 
         if (!else_statements.isEmpty()) {
             writer.write(" else {");
-            newline(1);
-            for (Ast.Statement else_statement : else_statements) {
-                visit(else_statement);
-                newline(0);
+            indent++;
+            newline(indent);
+            for (int i = 0; i < else_statements.size(); i++) {
+                visit(else_statements.get(1));
+                if (i == else_statements.size() - 1) {
+                    indent--;
+                    newline(indent);
+                    break;
+                }
+                newline(indent);
             }
             writer.write("}");
         }
@@ -107,12 +127,18 @@ public final class Generator implements Ast.Visitor<Void> {
     @Override
     public Void visit(Ast.Statement.While ast) {
         writer.write("WHILE ( " + ast.getCondition() + ") {");
+        indent++;
+        newline(indent);
 
         List<Ast.Statement> statements = ast.getStatements();
-        newline(1);
-        for (Ast.Statement statement : statements) {
-            visit(statement);
-            newline(0);
+        for (int i = 0; i < statements.size(); i++) {
+            visit(statements.get(i));
+            if (i == statements.size() - 1) {
+                indent--;
+                newline(indent);
+                break;
+            }
+            newline(indent);
         }
 
         writer.write("}");
@@ -134,10 +160,10 @@ public final class Generator implements Ast.Visitor<Void> {
         return null;
     }
 
+    //FIXME: how to add semicolon at the end?  How to deal with nested expressions?
     @Override
     public Void visit(Ast.Expression.Group ast) {
-
-        // TODO:  Generate Java to handle Group node.
+        writer.write("(" + ast.getExpression() + ")");
 
         return null;
     }
