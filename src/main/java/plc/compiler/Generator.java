@@ -6,6 +6,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 //FIXME: will probably have general problems with semicolons/indents
+// watch for reducing indent for ending }
 
 public final class Generator implements Ast.Visitor<Void> {
 
@@ -84,9 +85,14 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Statement.While ast) {
+        writer.write("WHILE ( " + ast.getCondition() + ") {");
 
-        // TODO:  Generate Java to handle While node.
+        List<Ast.Statement> statements = ast.getStatements();
+        newline(1);
+        for (Ast.Statement statement : statements)
+            visit(statement);
 
+        writer.write("}");
         return null;
     }
 
