@@ -207,7 +207,7 @@ public final class Parser {
                 List<Ast.Statement> statements = new ArrayList<>();
                 while (!peek("END")) {
                     statements.add(parseStatement());
-                    tokens.advance();
+                    match(";");
                 }
                 if (match("END")) {
                     return new Ast.Statement.While(expression, statements);
