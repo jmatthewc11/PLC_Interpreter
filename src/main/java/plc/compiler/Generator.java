@@ -119,7 +119,7 @@ public final class Generator implements Ast.Visitor<Void> {
             indent++;
             newline(indent);
             for (int i = 0; i < else_statements.size(); i++) {
-                visit(else_statements.get(1));
+                visit(else_statements.get(i));
                 if (i == else_statements.size() - 1) {
                     indent--;
                     newline(indent);

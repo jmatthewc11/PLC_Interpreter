@@ -45,7 +45,7 @@ public final class Parser {
             Ast.Statement statement = parseStatement();
             statements.add(statement);
             if (tokens.has(0)) {
-                if (tokens.get(0).getLiteral().equals("END")) {
+                if (tokens.get(0).getLiteral().equals("END") && !tokens.has(1)) {
                     break;
                 }
                 if (peek(";")) {
@@ -288,9 +288,13 @@ public final class Parser {
     public Ast.Expression parsePrimaryExpression() throws ParseException {
         if (peek(Token.Type.IDENTIFIER)) {
             if (peek("TRUE")) {
+                if (tokens.has(1))
+                    tokens.advance();
                 return new Ast.Expression.Literal(Boolean.TRUE);
             }
             else if (peek("FALSE")) {
+                if (tokens.has(1))
+                    tokens.advance();
                 return new Ast.Expression.Literal(Boolean.FALSE);
             }
             else {
