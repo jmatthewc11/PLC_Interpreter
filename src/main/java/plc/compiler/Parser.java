@@ -45,8 +45,13 @@ public final class Parser {
             Ast.Statement statement = parseStatement();
             statements.add(statement);
             if (tokens.has(0)) {
-                if (tokens.get(0).getLiteral().equals("END") && !tokens.has(1)) {
-                    break;
+                if (tokens.get(0).getLiteral().equals("END")) {
+                    if (!tokens.has(1)) {
+                        break;
+                    }
+                    else {
+                        tokens.advance();
+                    }
                 }
                 if (peek(";")) {
                     if (statement instanceof Ast.Statement.Declaration)
