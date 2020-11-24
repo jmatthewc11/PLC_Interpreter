@@ -94,7 +94,9 @@ public final class Generator implements Ast.Visitor<Void> {
     public Void visit(Ast.Statement.If ast) {
         List<Ast.Statement> then_statements = ast.getThenStatements();
         List<Ast.Statement> else_statements = ast.getElseStatements();
-        print("if (" + ast.getCondition() + ") {");
+        print("if (");
+        visit(ast.getCondition());
+        print(") {");
         if (then_statements.isEmpty())
             print("}");
         else {
@@ -133,7 +135,9 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Statement.While ast) {
-        print("WHILE " + visit(ast.getCondition()) + " {");
+        print("while (");
+        visit(ast.getCondition());
+        print(") {");
         indent++;
         newline(indent);
 
@@ -170,14 +174,18 @@ public final class Generator implements Ast.Visitor<Void> {
     //FIXME: how to add semicolon at the end?  How to deal with nested expressions?
     @Override
     public Void visit(Ast.Expression.Group ast) {
-        print("(" + visit(ast.getExpression()) + ")");
+        print("(");
+        visit(ast.getExpression());
+        print(")");
 
         return null;
     }
 
     @Override
     public Void visit(Ast.Expression.Binary ast) {
-        print(visit(ast.getLeft()) + " " + ast.getOperator() + " " + visit(ast.getRight()));
+        visit(ast.getLeft());
+        print(" " + ast.getOperator() + " ");
+        visit(ast.getRight());
 
         return null;
     }
@@ -197,7 +205,7 @@ public final class Generator implements Ast.Visitor<Void> {
         for(int i = 0; i < args.size(); i++) {
             visit(args.get(i));
             if (i < args.size() - 1) {
-                print(",");
+                print(", ");
             }
         }
         print(")");
