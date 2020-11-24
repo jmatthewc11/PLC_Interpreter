@@ -66,6 +66,7 @@ public final class Generator implements Ast.Visitor<Void> {
     @Override
     public Void visit(Ast.Statement.Expression ast) {
         visit(ast.getExpression());
+        print(";");
         return null;
     }
 
@@ -74,7 +75,8 @@ public final class Generator implements Ast.Visitor<Void> {
     public Void visit(Ast.Statement.Declaration ast) {
         print(ast.getType() + " " + ast.getName());
         if (ast.getValue().isPresent()) {
-            print(" = ", ast.getValue().get());
+            print(" = ");
+            visit(ast.getValue().get());
         }
         print(";");
         return null;
@@ -168,15 +170,14 @@ public final class Generator implements Ast.Visitor<Void> {
     //FIXME: how to add semicolon at the end?  How to deal with nested expressions?
     @Override
     public Void visit(Ast.Expression.Group ast) {
-        print("(" + ast.getExpression() + ")");
+        print("(" + visit(ast.getExpression()) + ")");
 
         return null;
     }
 
     @Override
     public Void visit(Ast.Expression.Binary ast) {
-
-        // TODO:  Generate Java to handle Binary node.
+        print(visit(ast.getLeft()) + " " + ast.getOperator() + " " + visit(ast.getRight()));
 
         return null;
     }
@@ -195,12 +196,11 @@ public final class Generator implements Ast.Visitor<Void> {
 
         for(int i = 0; i < args.size(); i++) {
             visit(args.get(i));
-            args.remove(i);
-            if (args.size() > 0) {
+            if (i < args.size() - 1) {
                 print(",");
             }
         }
-        print(");");
+        print(")");
         return null;
     }
 
