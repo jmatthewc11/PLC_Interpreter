@@ -38,21 +38,28 @@ public final class Generator implements Ast.Visitor<Void> {
     public Void visit(Ast.Source ast) {
         print("public final class Main {");
         indent++;
+        newline(0);
         newline(indent);
-        newline(indent);
-        print("public static void main(String[] args {");
+        print("public static void main(String[] args) {");
         indent++;
         newline(indent);
 
         //get the list of statements in the AST, visit each one
         List<Ast.Statement> statements = ast.getStatements();
-        for (Ast.Statement statement : statements) {
-            visit(statement);
+        for (int i = 0; i < statements.size(); i++) {
+            visit(statements.get(i));
+            if (i == statements.size() - 1) {
+                indent--;
+                newline(indent);
+                break;
+            }
             newline(indent);
         }
-
+        writer.write("}");
+        newline(0);
         newline(0);
         writer.write("}");
+        newline(0);
         return null;
     }
 
@@ -124,7 +131,7 @@ public final class Generator implements Ast.Visitor<Void> {
 
     @Override
     public Void visit(Ast.Statement.While ast) {
-        print("WHILE ( " + ast.getCondition() + ") {");
+        print("WHILE " + visit(ast.getCondition()) + " {");
         indent++;
         newline(indent);
 
@@ -193,7 +200,7 @@ public final class Generator implements Ast.Visitor<Void> {
                 print(",");
             }
         }
-        print(")");
+        print(");");
         return null;
     }
 
