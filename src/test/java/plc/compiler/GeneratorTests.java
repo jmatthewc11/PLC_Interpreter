@@ -44,16 +44,16 @@ public class GeneratorTests {
         Ast input = Parser.parse(Lexer.lex(
                   "LET pi : DECIMAL = 3.14;\n" +
                         "LET r : INTEGER = 10;\n" +
-                        "area = pi * (r * r) * pi;\n" +
-                        "diameter = r * r;"));
+                        "area = pi * (r * r);\n" +
+                        "diameter = r * r / r;"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {",
                 "" ,
                 "    public static void main(String[] args) {" ,
                 "        DECIMAL pi = 3.14;" ,
                 "        INTEGER r = 10;" ,
-                "        area = pi * (r * r) * pi;" ,
-                "        diameter = r * r;" ,
+                "        area = pi * (r * r);" ,
+                "        diameter = r * r / r;" ,
                 "    }" ,
                 "" ,
                 "}"
@@ -207,11 +207,17 @@ public class GeneratorTests {
     @Test
     void testWhileSmall(){
         Ast input = Parser.parse(Lexer.lex(
-                  "LET i : INTEGER = 2;\n" +
-                        "WHILE PRINT(i) DO\n    " +
-                            "PRINT(i);\n    " +
-                            "i = i + 1;\n" +
-                        "END"));
+                    "LET i : INTEGER = 2;\n" +
+                          "WHILE PRINT(i) DO\n    " +
+                              "PRINT(i);\n    " +
+                              "i = i + 1;\n" +
+                          "END\n" +
+                          "IF i != 7.2 THEN\n    " +
+                          "PRINT(\"B\");" +
+                          "\nELSE\n" +
+                          "PRINT(i);" +
+                          "\nEND"
+        ));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
@@ -220,6 +226,11 @@ public class GeneratorTests {
                         "        while (PRINT(i)) {" ,
                         "            PRINT(i);" ,
                         "            i = i + 1;" ,
+                        "        }" ,
+                        "        if (i != 7.2) {" ,
+                        "            PRINT(\"B\");" ,
+                        "        } else {" ,
+                        "            PRINT(i);" ,
                         "        }" ,
                         "    }" ,
                         "" ,
