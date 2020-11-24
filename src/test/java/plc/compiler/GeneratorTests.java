@@ -25,12 +25,13 @@ public class GeneratorTests {
 
     @Test
     void testBiggerPrint(){
-        Ast input = Parser.parse(Lexer.lex("print(\"Hello, World!\");"));
+        Ast input = Parser.parse(Lexer.lex(
+                "cry(\"Hello, World!\");"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
                         "    public static void main(String[] args) {" ,
-                        "        print(\"Hello, World!\");" ,
+                        "        cry(\"Hello, World!\");" ,
                         "    }" ,
                         "" ,
                         "}"
@@ -40,15 +41,19 @@ public class GeneratorTests {
 
     @Test
     void testExpression(){
-
-        Ast input = Parser.parse(Lexer.lex("LET pi : DECIMAL = 3.14;\nLET r : INTEGER = 10;\narea = pi * (r * r);"));
+        Ast input = Parser.parse(Lexer.lex(
+                  "LET pi : DECIMAL = 3.14;\n" +
+                        "LET r : INTEGER = 10;\n" +
+                        "area = pi * (r * r) * pi;\n" +
+                        "diameter = r * r;"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {",
                 "" ,
                 "    public static void main(String[] args) {" ,
                 "        DECIMAL pi = 3.14;" ,
                 "        INTEGER r = 10;" ,
-                "        area = pi * (r * r);" ,
+                "        area = pi * (r * r) * pi;" ,
+                "        diameter = r * r;" ,
                 "    }" ,
                 "" ,
                 "}"
@@ -58,13 +63,15 @@ public class GeneratorTests {
 
     @Test
     void testDeclarationsmall(){
-        Ast input = Parser.parse(Lexer.lex("LET str : STRING = \"hello\";\nPRINT(str);"));
+        Ast input = Parser.parse(Lexer.lex(
+                  "LET str : STRING = \"hello\";\n" +
+                        "PRINT(str, str, str, str);"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {",
                         "",
                         "    public static void main(String[] args) {" ,
                         "        STRING str = \"hello\";" ,
-                        "        PRINT(str);" ,
+                        "        PRINT(str, str, str, str);" ,
                         "    }",
                         "",
                         "}"
@@ -73,7 +80,16 @@ public class GeneratorTests {
     }
     @Test
     void testDeclarationBig(){
-        Ast input = Parser.parse(Lexer.lex("LET str : STRING = \"hello\";\nPRINT(str);\nLET i : INTEGER;\ni = 5;\nx = 10;\ny= \"why?\";\nPRINT(x,y);\nIF i==x THEN\n    PRINT(i);\nELSE\nEND\n"));
+        Ast input = Parser.parse(Lexer.lex(
+                "LET str : STRING = \"hello\";\n" +
+                        "PRINT(str);\n" +
+                        "LET i : INTEGER;\n" +
+                        "i = 5;\n" +
+                        "x = 10;\n" +
+                        "y= \"why?\";\n" +
+                        "PRINT(x,y);\n" +
+                        "IF i==x THEN\n" +
+                        "END\n"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
@@ -85,9 +101,7 @@ public class GeneratorTests {
                         "        x = 10;" ,
                         "        y = \"why?\";" ,
                         "        PRINT(x, y);" ,
-                        "        if (i == x) {" ,
-                        "            PRINT(i);" ,
-                        "        }" ,
+                        "        if (i == x) {}" ,
                         "    }" ,
                         "" ,
                         "}"
@@ -98,13 +112,18 @@ public class GeneratorTests {
     @Test
     void testIfsmall(){
 
-        Ast input = Parser.parse(Lexer.lex("LET score : INTEGER;\nscore = score / 10;\nIF score == 5 THEN\n    PRINT(\"Gus\");\nEND"));
+        Ast input = Parser.parse(Lexer.lex(
+                    "LET score : DECIMAL;\n" +
+                          "score = score / 10;\n" +
+                          "IF score == 5 THEN\n    " +
+                            "PRINT(\"Gus\");\n" +
+                          "END"));
 
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
                         "    public static void main(String[] args) {" ,
-                        "        INTEGER score;" ,
+                        "        DECIMAL score;" ,
                         "        score = score / 10;" ,
                         "        if (score == 5) {" ,
                         "            PRINT(\"Gus\");" ,
@@ -113,28 +132,39 @@ public class GeneratorTests {
                         "" ,
                         "}"
                 ) + System.lineSeparator();
-
         test(input, expected);
-
     }
 
     @Test
     void testIfBig(){
-        Ast input = Parser.parse(Lexer.lex( "LET score : INTEGER;\nscore = score / 10;\nIF score == 10 THEN\n    " +
-                "PRINT(\"A\");\nEND\nIF score == 9 THEN\n    " +
-                "PRINT(\"A\");\nEND\nIF score == 8 THEN\n    " +
-                "PRINT(\"B\");\nEND\nIF score == 7 THEN\n    " +
-                "PRINT(\"C\");\nEND\nIF SCORE == 6 THEN\n    " +
-                "PRINT(\"D\");END\nIF score != 10 THEN\n    " +
-                "IF score != 9 THEN\n        " +
-                "IF score != 8 THEN\n            " +
-                "IF score != 7 THEN\n                " +
-                "IF score != 6 THEN\n    " +
-                "PRINT(\"E\");\n                " +
-                "END\n            " +
-                "END\n        " +
-                "END\n    " +
-                "END\nEND"));
+        Ast input = Parser.parse(Lexer.lex(
+                    "LET score : INTEGER;\n" +
+                        "score = score / 10;\n" +
+                            "IF score == 10 THEN\n    " +
+                                "PRINT(\"A\");\nEND\n" +
+                            "IF score == 9 THEN\n    " +
+                                "PRINT(\"A\");\nEND\n" +
+                            "IF score == 8 THEN\n    " +
+                                "PRINT(\"B\");" +
+                            "\nELSE\n" +
+                                "PRINT(score);" +
+                            "\nEND\n" +
+                            "IF score == 7 THEN\n    " +
+                                "PRINT(\"C\");\n" +
+                            "END\n" +
+                            "IF SCORE == 6 THEN\n" +
+                            "END\n" +
+                            "IF score != 10 THEN\n    " +
+                                 "IF score != 9 THEN\n        " +
+                                    "IF score != 8 THEN\n            " +
+                                        "IF score != 7 THEN\n                " +
+                                            "IF score != 6 THEN\n    " +
+                                                "PRINT(\"E\");\n                " +
+                                            "END\n            " +
+                                        "END\n        " +
+                                    "END\n    " +
+                                "END\n" +
+                            "END"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
@@ -149,13 +179,13 @@ public class GeneratorTests {
                         "        }" ,
                         "        if (score == 8) {" ,
                         "            PRINT(\"B\");" ,
+                        "        } else {" ,
+                        "            PRINT(score);" ,
                         "        }" ,
                         "        if (score == 7) {" ,
                         "            PRINT(\"C\");" ,
                         "        }" ,
-                        "        if (SCORE == 6) {" ,
-                        "            PRINT(\"D\");" ,
-                        "        }" ,
+                        "        if (SCORE == 6) {}" ,
                         "        if (score != 10) {" ,
                         "            if (score != 9) {" ,
                         "                if (score != 8) {" ,
@@ -176,16 +206,20 @@ public class GeneratorTests {
 
     @Test
     void testWhileSmall(){
-        Ast input = Parser.parse(Lexer.lex("LET i : INTEGER = 2;\nWHILE i != 0 DO\n    " +
-                "PRINT(\"bean\");\n    i = i - 1;\nEND"));
+        Ast input = Parser.parse(Lexer.lex(
+                  "LET i : INTEGER = 2;\n" +
+                        "WHILE PRINT(i) DO\n    " +
+                            "PRINT(i);\n    " +
+                            "i = i + 1;\n" +
+                        "END"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
                         "    public static void main(String[] args) {" ,
                         "        INTEGER i = 2;" ,
-                        "        while (i != 0) {" ,
-                        "            PRINT(\"bean\");" ,
-                        "            i = i - 1;" ,
+                        "        while (PRINT(i)) {" ,
+                        "            PRINT(i);" ,
+                        "            i = i + 1;" ,
                         "        }" ,
                         "    }" ,
                         "" ,
@@ -198,20 +232,26 @@ public class GeneratorTests {
     void testWhileBig(){
         Ast input = Parser.parse(Lexer.lex("LET i : INTEGER = 2;" +
                 "\nLET n : INTEGER = 5;" +
-                "\n LET zero: INTEGER;" +
-                "\nWHILE n != 0 DO\n    zero = n - i * ( n / i );" +
+                "\n LET zero: STRING;" +
+                "\nWHILE n != 0 DO\n    " +
+                    "zero = n - i * ( n / i );" +
                 "\n    IF zero != 1 THEN\n    ELSE\n    END\n    IF zero != 1 THEN\n        PRINT(\"even\");" +
                 "\n    ELSE\n    END\n    IF zero != 1 THEN\n    ELSE\n        PRINT(\"odd\");" +
-                "\n    END\n    IF zero != 1 THEN\n        PRINT(\"even\");" +
-                "\n    ELSE\n        PRINT(\"odd\");" +
-                "\n    END\n    n = n - 1;\nEND"));
+                "\n    END\n    " +
+                "IF zero != 1 THEN\n        " +
+                    "PRINT(\"even\");" +
+                "\n    " +
+                "ELSE\n        " +
+                    "PRINT(\"odd\");" +
+                "\n    END\n    n = n - 1;\n" +
+                "PRINT(n);\nEND"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
                         "    public static void main(String[] args) {" ,
                         "        INTEGER i = 2;" ,
                         "        INTEGER n = 5;" ,
-                        "        INTEGER zero;" ,
+                        "        STRING zero;" ,
                         "        while (n != 0) {" ,
                         "            zero = n - i * (n / i);" ,
                         "            if (zero != 1) {}" ,
@@ -227,6 +267,7 @@ public class GeneratorTests {
                         "                PRINT(\"odd\");" ,
                         "            }" ,
                         "            n = n - 1;" ,
+                        "            PRINT(n);" ,
                         "        }" ,
                         "    }" ,
                         "" ,
@@ -237,12 +278,18 @@ public class GeneratorTests {
 
     @Test
     void testLiteral(){
-        Ast input = Parser.parse(Lexer.lex("LET test : BOOLEAN = TRUE;\nIF test THEN\n    PRINT(\"success!\");\nELSE\n    PRINT(\"failure?\");\nEND"));
+        Ast input = Parser.parse(Lexer.lex(
+                  "LET test : BOOLEAN = FALSE;\n" +
+                        "IF test THEN\n    " +
+                            "PRINT(\"success!\");\n" +
+                        "ELSE\n    " +
+                            "PRINT(\"failure?\");\n" +
+                        "END"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
                         "    public static void main(String[] args) {" ,
-                        "        BOOLEAN test = true;" ,
+                        "        BOOLEAN test = false;" ,
                         "        if (test) {" ,
                         "            PRINT(\"success!\");" ,
                         "        } else {" ,
@@ -257,12 +304,13 @@ public class GeneratorTests {
 
     @Test
     void testGroup(){
-        Ast input = Parser.parse(Lexer.lex("LET value : INTEGER = (2 * (10 - 3) + (5 / 2));"));
+        Ast input = Parser.parse(Lexer.lex(
+                "LET value : INTEGER = (2 * (10 - 3) + (5 / 2)) == 10;"));
         String expected = String.join(System.lineSeparator(),
                 "public final class Main {" ,
                         "" ,
                         "    public static void main(String[] args) {" ,
-                        "        INTEGER value = (2 * (10 - 3) + (5 / 2));" ,
+                        "        INTEGER value = (2 * (10 - 3) + (5 / 2)) == 10;" ,
                         "    }" ,
                         "" ,
                         "}"

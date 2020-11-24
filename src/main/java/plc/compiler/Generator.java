@@ -171,7 +171,6 @@ public final class Generator implements Ast.Visitor<Void> {
         return null;
     }
 
-    //FIXME: how to add semicolon at the end?  How to deal with nested expressions?
     @Override
     public Void visit(Ast.Expression.Group ast) {
         print("(");
