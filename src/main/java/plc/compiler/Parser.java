@@ -44,12 +44,17 @@ public final class Parser {
         while (tokens.has(0)) {
             Ast.Statement statement = parseStatement();
             statements.add(statement);
-            if (tokens.has(0) && peek(";")) {
-                if (statement instanceof Ast.Statement.Declaration)
-                    throw new ParseException("Extra semicolon", tokens.index);
-                tokens.advance();
-                if (peek(";"))
-                    throw new ParseException("Extra semicolon", tokens.index);
+            if (tokens.has(0)) {
+                if (tokens.get(0).getLiteral().equals("END")) {
+                    break;
+                }
+                if (peek(";")) {
+                    if (statement instanceof Ast.Statement.Declaration)
+                        throw new ParseException("Extra semicolon", tokens.index);
+                    tokens.advance();
+                    if (peek(";"))
+                        throw new ParseException("Extra semicolon", tokens.index);
+                }
             }
         }
         return new Ast.Source(statements);
