@@ -41,11 +41,13 @@ public final class Generator implements Ast.Visitor<Void> {
         newline(0);
         newline(indent);
         print("public static void main(String[] args) {");
-        indent++;
-        newline(indent);
 
         //get the list of statements in the AST, visit each one
         List<Ast.Statement> statements = ast.getStatements();
+        if (statements.size() > 0) {
+            indent++;
+            newline(indent);
+        }
         for (int i = 0; i < statements.size(); i++) {
             visit(statements.get(i));
             if (i == statements.size() - 1) {

@@ -14,6 +14,20 @@ import org.junit.jupiter.api.Test;
 public class GeneratorTests {
 
     @Test
+    void testEmptySource(){
+        Ast input = Parser.parse(Lexer.lex(
+                ""));
+        String expected = String.join(System.lineSeparator(),
+                "public final class Main {" ,
+                "" ,
+                "    public static void main(String[] args) {}" ,
+                "" ,
+                "}"
+        ) + System.lineSeparator();
+        test(input, expected);
+    }
+
+    @Test
     void testSimplePrint(){
         Ast input = new Ast.Expression.Function("print", Arrays.asList(
                 new Ast.Expression.Literal("Hello, World!")
