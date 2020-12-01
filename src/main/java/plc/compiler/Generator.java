@@ -140,21 +140,25 @@ public final class Generator implements Ast.Visitor<Void> {
         print("while (");
         visit(ast.getCondition());
         print(") {");
-        indent++;
-        newline(indent);
-
         List<Ast.Statement> statements = ast.getStatements();
-        for (int i = 0; i < statements.size(); i++) {
-            visit(statements.get(i));
-            if (i == statements.size() - 1) {
-                indent--;
-                newline(indent);
-                break;
-            }
-            newline(indent);
-        }
 
-        print("}");
+        if (statements == null)
+            print("}");
+        else {
+            indent++;
+            newline(indent);
+
+            for (int i = 0; i < statements.size(); i++) {
+                visit(statements.get(i));
+                if (i == statements.size() - 1) {
+                    indent--;
+                    newline(indent);
+                    break;
+                }
+                newline(indent);
+            }
+            print("}");
+        }
         return null;
     }
 

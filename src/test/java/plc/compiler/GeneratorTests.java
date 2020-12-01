@@ -56,20 +56,20 @@ public class GeneratorTests {
         test(input, expected);
     }
 
-    //TODO: Issue in parser, AST version passes
     @Test
     void testExpressionAST() {
-        Ast.Expression ast = new Ast.Expression.Binary("*",
+        Ast.Expression ast = new Ast.Expression.Binary("-",
                 new Ast.Expression.Literal(new BigDecimal("3.14")),
                 new Ast.Expression.Group(new Ast.Expression.Binary("*",
-                        new Ast.Expression.Variable("r"),
+                        new Ast.Expression.Variable("rr"),
                         new Ast.Expression.Variable("r")
                 ))
         );
-        String expected = "3.14 * (r * r)";
+        String expected = "3.14 - (rr * r)";
         test(ast, expected);
     }
 
+    //TODO: Issue in parser, AST version passes
     @Test
     void testExpression(){
         Ast input = Parser.parse(Lexer.lex(
@@ -95,8 +95,8 @@ public class GeneratorTests {
     @Test
     void testDeclarationSmallAST() {
         Ast.Statement ast = new Ast.Statement.Declaration("str", "STRING",
-                Optional.of(new Ast.Expression.Literal("hello")));
-        String expected = "STRING str = \"hello\";";
+                Optional.of(new Ast.Expression.Literal("HELL_O")));
+        String expected = "STRING str = \"HELL_O\";";
         test(ast, expected);
     }
 
@@ -134,7 +134,7 @@ public class GeneratorTests {
                         new Ast.Expression.Variable("y")
                 ))),
                 new Ast.Statement.If(
-                        new Ast.Expression.Binary("==",
+                        new Ast.Expression.Binary("!=",
                                 new Ast.Expression.Variable("i"),
                                 new Ast.Expression.Variable("x")
                         ),
@@ -157,7 +157,7 @@ public class GeneratorTests {
                 "        x = 10;",
                 "        y = \"why?\";",
                 "        PRINT(x, y);",
-                "        if (i == x) {",
+                "        if (i != x) {",
                 "            PRINT(i);",
                 "        }",
                 "    }",
@@ -208,14 +208,14 @@ public class GeneratorTests {
                 ),
                 Arrays.asList(
                         new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
-                                new Ast.Expression.Literal("five")
+                                new Ast.Expression.Literal("f\"ive")
                         )))
                 ),
                 Arrays.asList()
         );
         String expected = String.join(System.lineSeparator(),
                 "if (score == 5) {",
-                "    PRINT(\"five\");",
+                "    PRINT(\"f\"ive\");",
                 "}"
         );
         test(ast, expected);
@@ -520,10 +520,8 @@ public class GeneratorTests {
         Ast input = Parser.parse(Lexer.lex(
                     "LET i : INTEGER = 2;\n" +
                           "WHILE PRINT(i) DO\n    " +
-                              "PRINT(i);\n    " +
-                              "i = i + 1;\n" +
                           "END\n" +
-                          "IF i != 7.2 THEN\n    " +
+                          "IF i != 7.251 THEN\n    " +
                           "PRINT(\"B\");" +
                           "\nELSE\n" +
                           "PRINT(i);" +
@@ -534,11 +532,8 @@ public class GeneratorTests {
                         "" ,
                         "    public static void main(String[] args) {" ,
                         "        INTEGER i = 2;" ,
-                        "        while (PRINT(i)) {" ,
-                        "            PRINT(i);" ,
-                        "            i = i + 1;" ,
-                        "        }" ,
-                        "        if (i != 7.2) {" ,
+                        "        while (PRINT(i)) {}" ,
+                        "        if (i != 7.251) {" ,
                         "            PRINT(\"B\");" ,
                         "        } else {" ,
                         "            PRINT(i);" ,
