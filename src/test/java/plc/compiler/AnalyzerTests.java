@@ -113,6 +113,18 @@ public final class AnalyzerTests {
                 Arguments.of("Integer Invalid",
                         new Ast.Expression.Literal(BigInteger.valueOf(123456789123456789L)),
                         null
+                ),
+                Arguments.of("Double Valid",
+                        new Ast.Expression.Literal(BigDecimal.valueOf(5165.5415)),
+                        new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 5165.5415)
+                ),
+                Arguments.of("Double Invalid Infinity",
+                        new Ast.Expression.Literal(BigDecimal.valueOf(Double.MIN_VALUE - 9641)),
+                        null
+                ),
+                Arguments.of("Double Invalid Zero",
+                        new Ast.Expression.Literal(BigDecimal.valueOf(Math.pow(2, -1076))),
+                        null
                 )
         );
     }

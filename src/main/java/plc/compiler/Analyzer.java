@@ -97,16 +97,32 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Literal visit(Ast.Expression.Literal ast) throws AnalysisException {
-        //FIXME: validate literals according to specs and return literal with correct value and type
-        // make sure ints and doubles are not out of range
         if (ast.getValue() instanceof Boolean) {
             return new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, ast.getValue());
         }
         else if (ast.getValue() instanceof BigInteger) {
+            String max_val = String.valueOf(Integer.MAX_VALUE);
+            BigInteger max = new BigInteger(max_val);
+
+            String min_val = String.valueOf(Integer.MIN_VALUE);
+            BigInteger min = new BigInteger(min_val);
+
+            if (((BigInteger) ast.getValue()).compareTo(max) > 0 || ((BigInteger) ast.getValue()).compareTo(min) < 0)
+                throw new AnalysisException("Integer value is out of range");
+
             return new Ast.Expression.Literal(Stdlib.Type.INTEGER, ((BigInteger) ast.getValue()).intValue());
         }
         else if (ast.getValue() instanceof BigDecimal) {
-            return new Ast.Expression.Literal(Stdlib.Type.DECIMAL, ((BigDecimal) ast.getValue()).doubleValue());
+            double double_val = ((BigDecimal) ast.getValue()).doubleValue();
+
+            if (double_val == Double.POSITIVE_INFINITY || double_val == Double.NEGATIVE_INFINITY)
+                throw new AnalysisException("Double value is out of range, positive or negative infinity");
+            if (double_val >= Double.MAX_VALUE || double_val <= Double.MIN_VALUE)
+                throw new AnalysisException("Double value is out of range");
+            if (Double.compare(-0.0f, double_val) == 0 || Double.compare(+0.0f, double_val) == 0)
+                throw new AnalysisException("Double value is out of range, positive or negative zero");
+
+            return new Ast.Expression.Literal(Stdlib.Type.DECIMAL, double_val);
         }
         else if (ast.getValue() instanceof String) {
             if (((String) ast.getValue()).matches("[A-Za-z0-9_!?.+-/* ]*"));
