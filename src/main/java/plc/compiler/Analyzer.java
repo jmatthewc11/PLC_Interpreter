@@ -1,8 +1,11 @@
 package plc.compiler;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 /**
  * See the specification for information about what the different visit
@@ -43,13 +46,18 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         }
         String name = ast.getName();
         Stdlib.Type type = Stdlib.getType(ast.getType());
+        boolean isLiteral = false;
+        Optional<Ast.Expression> literal = Optional.empty();
 
         if (ast.getValue().isPresent()) {
             if (ast.getValue().get() instanceof Ast.Expression.Literal) {
-                Ast.Expression.Literal literal = (Ast.Expression.Literal) visit(ast.getValue().get());
-                checkAssignable(literal.type, type);
+                isLiteral = true;
+                literal = Optional.ofNullable(visit(ast.getValue().get()));
+                checkAssignable(literal.get().type, type);
             }
-            checkAssignable(ast.getValue().get().getType(), type);
+            else {
+                checkAssignable(ast.getValue().get().getType(), type);
+            }
         }
 
         try {
@@ -59,6 +67,9 @@ public final class Analyzer implements Ast.Visitor<Ast> {
             throw new AnalysisException("Variable is already defined with the given name");
         }
 
+        if (isLiteral) {
+            return new Ast.Statement.Declaration(name, type.getJvmName(), literal);
+        }
         return new Ast.Statement.Declaration(name, type.getJvmName(), ast.getValue());
     }
 
@@ -86,8 +97,22 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Literal visit(Ast.Expression.Literal ast) throws AnalysisException {
-        throw new UnsupportedOperationException();
-        //TODO: validate literals according to specs and return literal with correct value and type
+        //FIXME: validate literals according to specs and return literal with correct value and type
+        // make sure ints and doubles are not out of range
+        if (ast.getValue() instanceof Boolean) {
+            return new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, ast.getValue());
+        }
+        else if (ast.getValue() instanceof BigInteger) {
+            return new Ast.Expression.Literal(Stdlib.Type.INTEGER, ((BigInteger) ast.getValue()).intValue());
+        }
+        else if (ast.getValue() instanceof BigDecimal) {
+            return new Ast.Expression.Literal(Stdlib.Type.DECIMAL, ((BigDecimal) ast.getValue()).doubleValue());
+        }
+        else if (ast.getValue() instanceof String) {
+            if (((String) ast.getValue()).matches("[A-Za-z0-9_!?.+-/* ]*"));
+                return new Ast.Expression.Literal(Stdlib.Type.STRING, ast.getValue());
+        }
+        throw new AnalysisException("Literal expression is incorrect");
     }
 
     @Override
