@@ -36,11 +36,40 @@ public final class AnalyzerTests {
                         new Ast.Statement.Declaration("x", "BOOLEAN", Optional.empty()),
                         new Ast.Statement.Declaration("x", "boolean", Optional.empty())
                 ),
+                Arguments.of("Define Boolean",
+                        new Ast.Statement.Declaration("_wd40", "BOOLEAN",
+                                Optional.of(new Ast.Expression.Literal("TRUE"))),
+                        new Ast.Statement.Declaration("_wd40", "boolean",
+                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, "TRUE")))
+                ),
                 Arguments.of("Define String",
                         new Ast.Statement.Declaration("y", "STRING",
-                                Optional.of(new Ast.Expression.Literal("string"))),
+                                Optional.of(new Ast.Expression.Literal("string123"))),
                         new Ast.Statement.Declaration("y", "String",
-                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.STRING, "string")))
+                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.STRING, "string123")))
+                ),
+                Arguments.of("Define Int",
+                        new Ast.Statement.Declaration("y_2_k", "INTEGER",
+                                Optional.of(new Ast.Expression.Literal(BigInteger.ZERO))),
+                        new Ast.Statement.Declaration("y_2_k", "int",
+                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.INTEGER, 0)))
+                ),
+                Arguments.of("Define Decimal",
+                        new Ast.Statement.Declaration("y_2_k", "DECIMAL",
+                                Optional.of(new Ast.Expression.Literal(BigDecimal.TEN))),
+                        new Ast.Statement.Declaration("y_2_k", "double",
+                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 10.0)))
+                ),
+                Arguments.of("Declare Wrong Type",
+                        new Ast.Statement.Declaration("irrelevant", "BOOLEAN",
+                                Optional.of(new Ast.Expression.Literal("string"))),
+                        null
+                ),
+                Arguments.of("Integer to Decimal",
+                        new Ast.Statement.Declaration("integer2", "DECIMAL",
+                                Optional.of(new Ast.Expression.Literal(BigInteger.TEN))),
+                        new Ast.Statement.Declaration("integer2", "double",
+                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 10.0)))
                 )
         );
     }

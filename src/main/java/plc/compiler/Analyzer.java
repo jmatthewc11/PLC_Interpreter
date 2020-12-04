@@ -47,13 +47,16 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         String name = ast.getName();
         Stdlib.Type type = Stdlib.getType(ast.getType());
         boolean isLiteral = false;
-        Optional<Ast.Expression> literal = Optional.empty();
+        Ast.Expression.Literal literal = null;
 
         if (ast.getValue().isPresent()) {
             if (ast.getValue().get() instanceof Ast.Expression.Literal) {
                 isLiteral = true;
-                literal = Optional.ofNullable(visit(ast.getValue().get()));
-                checkAssignable(literal.get().type, type);
+                literal = (Ast.Expression.Literal) visit(ast.getValue().get());
+                checkAssignable(literal.getType(), type);
+                if (literal.getType() == Stdlib.Type.INTEGER && type == Stdlib.Type.DECIMAL) {
+                    literal = new Ast.Expression.Literal(type, new Double((int)literal.getValue()));
+                }
             }
             else {
                 checkAssignable(ast.getValue().get().getType(), type);
@@ -68,7 +71,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         }
 
         if (isLiteral) {
-            return new Ast.Statement.Declaration(name, type.getJvmName(), literal);
+            return new Ast.Statement.Declaration(name, type.getJvmName(), Optional.of(literal));
         }
         return new Ast.Statement.Declaration(name, type.getJvmName(), ast.getValue());
     }
@@ -97,7 +100,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Literal visit(Ast.Expression.Literal ast) throws AnalysisException {
-        if (ast.getValue() instanceof Boolean) {
+        if (ast.getValue().equals("TRUE") || ast.getValue().equals("FALSE")) {
             return new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, ast.getValue());
         }
         else if (ast.getValue() instanceof BigInteger) {
