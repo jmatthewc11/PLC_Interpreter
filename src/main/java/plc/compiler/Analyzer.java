@@ -78,7 +78,18 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.Assignment visit(Ast.Statement.Assignment ast) throws AnalysisException {
-        throw new UnsupportedOperationException(); //TODO
+        //FIXME: general structure of what needs to be done, no tests given
+        Stdlib.Type var_type;
+        try {
+            var_type = scope.lookup(ast.getName());
+        }
+        catch (AnalysisException e) {
+            throw new AnalysisException("Variable has not been defined yet, so it cannot be assigned");
+        }
+
+        checkAssignable(ast.getExpression().getType(), var_type);
+
+        return new Ast.Statement.Assignment(ast.getName(), ast.getExpression());
     }
 
     @Override

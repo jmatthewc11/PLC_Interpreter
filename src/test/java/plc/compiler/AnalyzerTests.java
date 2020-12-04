@@ -60,6 +60,10 @@ public final class AnalyzerTests {
                         new Ast.Statement.Declaration("y_2_k", "double",
                                 Optional.of(new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 10.0)))
                 ),
+                Arguments.of("Declare Void",
+                        new Ast.Statement.Declaration("x", "VOID", Optional.empty()),
+                        null
+                ),
                 Arguments.of("Declare Wrong Type",
                         new Ast.Statement.Declaration("irrelevant", "BOOLEAN",
                                 Optional.of(new Ast.Expression.Literal("string"))),
