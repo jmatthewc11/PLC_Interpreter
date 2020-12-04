@@ -36,6 +36,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.Expression visit(Ast.Statement.Expression ast) throws AnalysisException {
+        //FIXME: pretty sure this is for the function stuff
         throw new UnsupportedOperationException(); //TODO
     }
 
