@@ -110,6 +110,38 @@ public final class AnalyzerTests {
                                 Arrays.asList()
                         )
                 ),
+                Arguments.of("Valid But Bigger",
+                        new Ast.Statement.If(
+                                new Ast.Expression.Literal(Boolean.FALSE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("string")))),
+                                        new Ast.Statement.Declaration("_wd40", "BOOLEAN",
+                                                Optional.of(new Ast.Expression.Literal(Boolean.TRUE)))
+                                ),
+                                Arrays.asList(
+                                        new Ast.Statement.Declaration("test_dec", "BOOLEAN",
+                                                Optional.of(new Ast.Expression.Literal(Boolean.TRUE))),
+                                        new Ast.Statement.Assignment("test_dec", new Ast.Expression.Literal(Boolean.FALSE))
+                                )
+                        ),
+                        new Ast.Statement.If(
+                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.FALSE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                                new Ast.Expression.Literal(Stdlib.Type.STRING, "string")
+                                        ))),
+                                        new Ast.Statement.Declaration("_wd40", "boolean",
+                                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE)))
+                                ),
+                                Arrays.asList(  //TODO: also tests assignment
+                                        new Ast.Statement.Declaration("test_dec", "boolean",
+                                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE))),
+                                        new Ast.Statement.Assignment("test_dec",
+                                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.FALSE))
+                                )
+                        )
+                ),
                 Arguments.of("Invalid Condition",
                         new Ast.Statement.If(
                                 new Ast.Expression.Literal("false"),

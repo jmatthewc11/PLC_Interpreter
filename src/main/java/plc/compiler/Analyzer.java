@@ -36,7 +36,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.Expression visit(Ast.Statement.Expression ast) throws AnalysisException {
-        //FIXME: not sure if this is right, or what they're asking for?
+        //FIXME: Can't pass in any kind of expression statement unless it's a function?  Why?
         if (!(ast.getExpression() instanceof Ast.Expression.Function)) {
             throw new AnalysisException("Expression statement must be a function");
         }
@@ -83,7 +83,6 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.Assignment visit(Ast.Statement.Assignment ast) throws AnalysisException {
-        //FIXME: general structure of what needs to be done, no tests given
         Stdlib.Type var_type;
         try {
             var_type = scope.lookup(ast.getName());
@@ -92,9 +91,10 @@ public final class Analyzer implements Ast.Visitor<Ast> {
             throw new AnalysisException("Variable has not been defined yet, so it cannot be assigned");
         }
 
-        checkAssignable(ast.getExpression().getType(), var_type);
+        Ast.Expression eval_expression = visit(ast.getExpression());
+        checkAssignable(eval_expression.type, var_type);
 
-        return new Ast.Statement.Assignment(ast.getName(), ast.getExpression());
+        return new Ast.Statement.Assignment(ast.getName(), eval_expression);
     }
 
     @Override
