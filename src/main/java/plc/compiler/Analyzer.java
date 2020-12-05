@@ -137,7 +137,23 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.While visit(Ast.Statement.While ast) throws AnalysisException {
-        throw new UnsupportedOperationException(); //TODO
+        Ast.Expression condition = ast.getCondition();
+        Ast.Expression.Literal eval_condition = (Ast.Expression.Literal) visit(condition);
+        if (eval_condition.type != Stdlib.Type.BOOLEAN) {
+            throw new AnalysisException("While condition must evaluate to boolean");
+        }
+
+        scope = new Scope(scope);
+        List<Ast.Statement> statements = new ArrayList<>();
+        statements = ast.getStatements();
+        List<Ast.Statement> new_statements = new ArrayList<>();
+
+        for (int i = 0; i < statements.size(); i++) {
+            new_statements.add(visit(statements.get(i)));
+        }
+        scope = scope.getParent();
+
+        return new Ast.Statement.While(eval_condition, new_statements);
     }
 
     /**

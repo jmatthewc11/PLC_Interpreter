@@ -134,7 +134,7 @@ public final class AnalyzerTests {
                                         new Ast.Statement.Declaration("_wd40", "boolean",
                                                 Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE)))
                                 ),
-                                Arrays.asList(  //TODO: also tests assignment
+                                Arrays.asList(  //TODO: also tests assignment, ran a few permutations already
                                         new Ast.Statement.Declaration("test_dec", "boolean",
                                                 Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE))),
                                         new Ast.Statement.Assignment("test_dec",
@@ -173,6 +173,88 @@ public final class AnalyzerTests {
                                         new Ast.Statement.Expression(new Ast.Expression.Literal("string"))
                                 ),
                                 Arrays.asList()
+                        ),
+                        null
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    public void testWhileStatement(String test, Ast.Statement.While ast, Ast.Statement.While expected) {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    public static Stream<Arguments> testWhileStatement() {
+        return Stream.of(
+                Arguments.of("Valid Condition",
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal(Boolean.TRUE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("string")
+                                        )))
+                        )),
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                                new Ast.Expression.Literal(Stdlib.Type.STRING, "string")
+                                        )))
+                                )
+                        )
+                ),
+                Arguments.of("Valid But Bigger",
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal(Boolean.FALSE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("string")))),
+                                        new Ast.Statement.Declaration("wd_40", "STRING",
+                                                Optional.of(new Ast.Expression.Literal("tool"))),
+                                        new Ast.Statement.Assignment("wd_40", new Ast.Expression.Literal("box"))
+                                )
+                        ),
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.FALSE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                                new Ast.Expression.Literal(Stdlib.Type.STRING, "string")
+                                        ))),
+                                        new Ast.Statement.Declaration("wd_40", "String",
+                                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.STRING, "tool"))),
+                                        new Ast.Statement.Assignment("wd_40", new Ast.Expression.Literal(Stdlib.Type.STRING, "box"))
+                                )
+                        )
+                ),
+                Arguments.of("Invalid Condition",
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal("false"),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("string")
+                                        )))
+                                )
+                        ),
+                        null
+                ),
+                Arguments.of("Invalid Condition 2",
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal(1),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("string")
+                                        )))
+                                )
+                        ),
+                        null
+                ),
+                Arguments.of("Invalid Statement",
+                        new Ast.Statement.While(
+                                new Ast.Expression.Literal(Boolean.TRUE),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Literal("string"))
+                                )
                         ),
                         null
                 )
