@@ -36,8 +36,12 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.Expression visit(Ast.Statement.Expression ast) throws AnalysisException {
-        //FIXME: pretty sure this is for the function stuff
-        throw new UnsupportedOperationException(); //TODO
+        //FIXME: not sure if this is right, or what they're asking for?
+        if (!(ast.getExpression() instanceof Ast.Expression.Function)) {
+            throw new AnalysisException("Expression statement must be a function");
+        }
+        Ast.Expression expression = visit(ast.getExpression());
+        return new Ast.Statement.Expression(expression);
     }
 
     @Override
@@ -95,7 +99,40 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.If visit(Ast.Statement.If ast) throws AnalysisException {
-        throw new UnsupportedOperationException(); //TODO
+        Ast.Expression condition = ast.getCondition();
+        List<Ast.Statement> thenStatements = new ArrayList<>();
+        thenStatements = ast.getThenStatements();
+        List<Ast.Statement> elseStatements = new ArrayList<>();
+        elseStatements = ast.getElseStatements();
+
+        if (thenStatements.isEmpty()) {
+            throw new AnalysisException("THEN statements list is empty");
+        }
+
+        Ast.Expression.Literal eval_condition = (Ast.Expression.Literal) visit(condition);
+        if (eval_condition.type != Stdlib.Type.BOOLEAN) {
+            throw new AnalysisException("If condition must evaluate to boolean");
+        }
+
+        scope = new Scope(scope);
+        List<Ast.Statement> new_thenStatements = new ArrayList<>();
+        for (int i = 0; i < thenStatements.size(); i++) {
+            new_thenStatements.add(visit(thenStatements.get(i)));
+        }
+        scope = scope.getParent();
+
+        if (!elseStatements.isEmpty()) {
+            scope = new Scope(scope);
+            List<Ast.Statement> new_elseStatements = new ArrayList<>();
+            for (int i = 0; i < elseStatements.size(); i++) {
+                new_elseStatements.add(visit(elseStatements.get(i)));
+            }
+            scope = scope.getParent();
+            return new Ast.Statement.If(eval_condition, new_thenStatements, new_elseStatements);
+        }
+        else {
+            return new Ast.Statement.If(eval_condition, new_thenStatements, elseStatements);
+        }
     }
 
     @Override
@@ -112,7 +149,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Literal visit(Ast.Expression.Literal ast) throws AnalysisException {
-        if (ast.getValue().equals("TRUE") || ast.getValue().equals("FALSE") || ast.getValue() == Boolean.FALSE || ast.getValue() == Boolean.TRUE) {
+        if (ast.getValue() == Boolean.FALSE || ast.getValue() == Boolean.TRUE) {
             return new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, ast.getValue());
         }
         else if (ast.getValue() instanceof BigInteger) {
@@ -148,7 +185,9 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Group visit(Ast.Expression.Group ast) throws AnalysisException {
+        //FIXME: this is not right somehow, something about visiting the type?
         return new Ast.Expression.Group(visit(ast.getExpression()));
+        //return new Ast.Expression.Group(visit(ast.getExpression(), ast.getExpression().getType()));
     }
 
     @Override

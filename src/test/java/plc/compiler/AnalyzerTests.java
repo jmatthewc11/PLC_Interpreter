@@ -38,9 +38,9 @@ public final class AnalyzerTests {
                 ),
                 Arguments.of("Define Boolean",
                         new Ast.Statement.Declaration("_wd40", "BOOLEAN",
-                                Optional.of(new Ast.Expression.Literal("TRUE"))),
+                                Optional.of(new Ast.Expression.Literal(Boolean.TRUE))),
                         new Ast.Statement.Declaration("_wd40", "boolean",
-                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, "TRUE")))
+                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE)))
                 ),
                 Arguments.of("Define String",
                         new Ast.Statement.Declaration("y", "STRING",
@@ -113,6 +113,18 @@ public final class AnalyzerTests {
                 Arguments.of("Invalid Condition",
                         new Ast.Statement.If(
                                 new Ast.Expression.Literal("false"),
+                                Arrays.asList(
+                                        new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("string")
+                                        )))
+                                ),
+                                Arrays.asList()
+                        ),
+                        null
+                ),
+                Arguments.of("Invalid Condition 2",
+                        new Ast.Statement.If(
+                                new Ast.Expression.Literal(1),
                                 Arrays.asList(
                                         new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
                                                 new Ast.Expression.Literal("string")
