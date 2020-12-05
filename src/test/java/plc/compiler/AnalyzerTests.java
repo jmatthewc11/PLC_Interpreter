@@ -291,6 +291,20 @@ public final class AnalyzerTests {
                                 new Ast.Expression.Literal("c")
                         )),
                         null
+                ),
+                Arguments.of("Print Boolean",
+                        new Ast.Expression.Function("PRINT", Arrays.asList(
+                                new Ast.Expression.Literal(Boolean.FALSE)
+                        )),
+                        new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.FALSE)
+                        ))
+                ),
+                Arguments.of("Fake Function",
+                        new Ast.Expression.Function("anything", Arrays.asList(
+                                new Ast.Expression.Literal("a")
+                        )),
+                        null
                 )
         );
     }

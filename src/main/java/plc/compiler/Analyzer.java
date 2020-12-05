@@ -183,12 +183,42 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Variable visit(Ast.Expression.Variable ast) throws AnalysisException {
-        throw new UnsupportedOperationException(); //TODO
+        //FIXME: general structure of what needs to be done, no tests given
+        Stdlib.Type var_type;
+        try {
+            var_type = scope.lookup(ast.getName());
+        }
+        catch (AnalysisException e) {
+            throw new AnalysisException("Variable is not defined");
+        }
+        return new Ast.Expression.Variable(var_type, ast.getName());
     }
 
     @Override
     public Ast.Expression.Function visit(Ast.Expression.Function ast) throws AnalysisException {
-        throw new UnsupportedOperationException(); //TODO
+        //FIXME: need to make my own function to test type checking, use multiple types to test loop
+        Stdlib.Function lib_function = Stdlib.getFunction(ast.getName(), ast.getArguments().size());
+        List<Stdlib.Type> param_types = lib_function.getParameterTypes();
+
+        int j = 0;
+        ArrayList<Ast.Expression> args = new ArrayList<>();
+        for (int i = 0; i < ast.getArguments().size(); i++) {
+            try {
+                Ast.Expression input_arg = visit(ast.getArguments().get(i));
+                checkAssignable(input_arg.type, param_types.get(j));
+                args.add(input_arg);
+            }
+            catch (AnalysisException e) {
+                if (param_types.size() > j + 1) {
+                    j++;
+                    continue;
+                }
+                else {
+                    throw new AnalysisException("Incorrect parameter types passed in for function");
+                }
+            }
+        }
+        return new Ast.Expression.Function(lib_function.getReturnType(), lib_function.getJvmName(), args);
     }
 
     /**
