@@ -125,6 +125,7 @@ public final class Stdlib {
         registerType(Type.DECIMAL);
         registerType(Type.STRING);
         registerType(Type.ANY);
+        registerType(Type.VOID);
         registerFunction(Function.PRINT);
     }
 

@@ -64,6 +64,10 @@ public final class AnalyzerTests {
                         new Ast.Statement.Declaration("x", "VOID", Optional.empty()),
                         null
                 ),
+                Arguments.of("Declare Garbage Type",
+                        new Ast.Statement.Declaration("x_9", "garbage", Optional.empty()),
+                        null
+                ),
                 Arguments.of("Declare Wrong Type",
                         new Ast.Statement.Declaration("irrelevant", "BOOLEAN",
                                 Optional.of(new Ast.Expression.Literal("string"))),
@@ -180,6 +184,16 @@ public final class AnalyzerTests {
                                 new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 10.0)
                         )
                 ),
+                Arguments.of("Not Equal",
+                        new Ast.Expression.Binary("!=",
+                                new Ast.Expression.Literal(BigInteger.ONE),
+                                new Ast.Expression.Literal("not equal")
+                        ),
+                        new Ast.Expression.Binary(Stdlib.Type.BOOLEAN, "!=",
+                                new Ast.Expression.Literal(Stdlib.Type.INTEGER, 1),
+                                new Ast.Expression.Literal(Stdlib.Type.STRING, "not equal")
+                        )
+                ),
                 Arguments.of("String Concatenation",
                         new Ast.Expression.Binary("+",
                                 new Ast.Expression.Literal(BigInteger.ONE),
@@ -188,6 +202,67 @@ public final class AnalyzerTests {
                         new Ast.Expression.Binary(Stdlib.Type.STRING, "+",
                                 new Ast.Expression.Literal(Stdlib.Type.INTEGER, 1),
                                 new Ast.Expression.Literal(Stdlib.Type.STRING, "b")
+                        )
+                ),
+                Arguments.of("String Subtraction",
+                        new Ast.Expression.Binary("-",
+                                new Ast.Expression.Literal(BigInteger.ONE),
+                                new Ast.Expression.Literal("b")
+                        ),
+                        null
+                ),
+                Arguments.of("Subtraction",
+                        new Ast.Expression.Binary("-",
+                                new Ast.Expression.Literal(BigDecimal.TEN),
+                                new Ast.Expression.Literal(BigInteger.ONE)
+                        ),
+                        new Ast.Expression.Binary(Stdlib.Type.DECIMAL, "-",
+                                new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 10.0),
+                                new Ast.Expression.Literal(Stdlib.Type.INTEGER, 1)
+                        )
+                ),
+                Arguments.of("Void Type",
+                        new Ast.Expression.Binary("+",
+                                new Ast.Expression.Literal(BigInteger.TEN),
+                                new Ast.Expression.Literal(Stdlib.Type.VOID)
+                                ),
+                        null
+                ),
+                Arguments.of("Boolean Type Multiplication",
+                        new Ast.Expression.Binary("*",
+                                new Ast.Expression.Literal(BigInteger.ZERO),
+                                new Ast.Expression.Literal(Boolean.TRUE)
+                        ),
+                        null
+                ),
+                Arguments.of("Decimal Division",
+                        new Ast.Expression.Binary("/",
+                                new Ast.Expression.Literal(BigInteger.TEN),
+                                new Ast.Expression.Literal(BigDecimal.ONE)
+                        ),
+                        new Ast.Expression.Binary(Stdlib.Type.DECIMAL, "/",
+                                new Ast.Expression.Literal(Stdlib.Type.INTEGER, 10),
+                                new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 1.0)
+                        )
+                ),
+                Arguments.of("Integer Addition",
+                        new Ast.Expression.Binary("+",
+                                new Ast.Expression.Literal(BigInteger.ONE),
+                                new Ast.Expression.Literal(BigInteger.TEN)
+                        ),
+                        new Ast.Expression.Binary(Stdlib.Type.INTEGER, "+",
+                                new Ast.Expression.Literal(Stdlib.Type.INTEGER, 1),
+                                new Ast.Expression.Literal(Stdlib.Type.INTEGER, 10)
+                        )
+                ),
+                Arguments.of("Decimal Addition",
+                        new Ast.Expression.Binary("+",
+                                new Ast.Expression.Literal(BigInteger.ONE),
+                                new Ast.Expression.Literal(BigDecimal.TEN)
+                        ),
+                        new Ast.Expression.Binary(Stdlib.Type.DECIMAL, "+",
+                                new Ast.Expression.Literal(Stdlib.Type.INTEGER, 1),
+                                new Ast.Expression.Literal(Stdlib.Type.DECIMAL, 10.0)
                         )
                 )
         );

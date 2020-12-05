@@ -112,7 +112,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Literal visit(Ast.Expression.Literal ast) throws AnalysisException {
-        if (ast.getValue().equals("TRUE") || ast.getValue().equals("FALSE")) {
+        if (ast.getValue().equals("TRUE") || ast.getValue().equals("FALSE") || ast.getValue() == Boolean.FALSE || ast.getValue() == Boolean.TRUE) {
             return new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, ast.getValue());
         }
         else if (ast.getValue() instanceof BigInteger) {
@@ -153,7 +153,32 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Binary visit(Ast.Expression.Binary ast) throws AnalysisException {
-        throw new UnsupportedOperationException(); //TODO
+        Ast.Expression.Literal left = (Ast.Expression.Literal) visit(ast.getLeft());
+        Ast.Expression.Literal right = (Ast.Expression.Literal) visit(ast.getRight());
+        if (left.type == Stdlib.Type.VOID || right.type == Stdlib.Type.VOID)
+            throw new AnalysisException("No void types allowed for equality expressions");
+
+        switch (ast.getOperator()) {
+            case "==":
+            case "!=":
+                return new Ast.Expression.Binary(Stdlib.Type.BOOLEAN, ast.getOperator(), left, right);
+            case "+":
+                if (left.type == Stdlib.Type.STRING || right.type == Stdlib.Type.STRING)
+                    return new Ast.Expression.Binary(Stdlib.Type.STRING, ast.getOperator(), left, right);
+            case "-":
+            case "*":
+            case "/":
+                if (left.type != Stdlib.Type.INTEGER && left.type != Stdlib.Type.DECIMAL)
+                    throw new AnalysisException("Need decimal or integer types for arithmetic operations");
+                else if (right.type != Stdlib.Type.INTEGER && right.type != Stdlib.Type.DECIMAL)
+                    throw new AnalysisException("Need decimal or integer types for arithmetic operations");
+
+                if (left.type == Stdlib.Type.INTEGER && right.type == Stdlib.Type.INTEGER)
+                    return new Ast.Expression.Binary(Stdlib.Type.INTEGER, ast.getOperator(), left, right);
+                else
+                    return new Ast.Expression.Binary(Stdlib.Type.DECIMAL, ast.getOperator(), left, right);
+        }
+        throw new AnalysisException("Issue parsing binary expression");
     }
 
     @Override
