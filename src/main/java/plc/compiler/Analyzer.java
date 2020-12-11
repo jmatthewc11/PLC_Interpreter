@@ -36,7 +36,6 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Statement.Expression visit(Ast.Statement.Expression ast) throws AnalysisException {
-        //FIXME: Can't pass in any kind of expression statement unless it's a function?  Why?
         if (!(ast.getExpression() instanceof Ast.Expression.Function)) {
             throw new AnalysisException("Expression statement must be a function");
         }
@@ -92,7 +91,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         }
 
         Ast.Expression eval_expression = visit(ast.getExpression());
-        checkAssignable(eval_expression.type, var_type);
+        checkAssignable(eval_expression.getType(), var_type);
 
         return new Ast.Statement.Assignment(ast.getName(), eval_expression);
     }
@@ -110,7 +109,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         }
 
         Ast.Expression.Literal eval_condition = (Ast.Expression.Literal) visit(condition);
-        if (eval_condition.type != Stdlib.Type.BOOLEAN) {
+        if (!eval_condition.getType().getName().equals("BOOLEAN")) {
             throw new AnalysisException("If condition must evaluate to boolean");
         }
 
@@ -139,7 +138,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
     public Ast.Statement.While visit(Ast.Statement.While ast) throws AnalysisException {
         Ast.Expression condition = ast.getCondition();
         Ast.Expression.Literal eval_condition = (Ast.Expression.Literal) visit(condition);
-        if (eval_condition.type != Stdlib.Type.BOOLEAN) {
+        if (!eval_condition.getType().getName().equals("BOOLEAN")) {
             throw new AnalysisException("While condition must evaluate to boolean");
         }
 
@@ -165,7 +164,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Literal visit(Ast.Expression.Literal ast) throws AnalysisException {
-        if (ast.getValue() == Boolean.FALSE || ast.getValue() == Boolean.TRUE) {
+        if (ast.getValue() instanceof Boolean) {
             return new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, ast.getValue());
         }
         else if (ast.getValue() instanceof BigInteger) {
@@ -201,16 +200,15 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Group visit(Ast.Expression.Group ast) throws AnalysisException {
-        //FIXME: this is not right somehow, something about visiting the type?
-        return new Ast.Expression.Group(visit(ast.getExpression()));
-        //return new Ast.Expression.Group(visit(ast.getExpression(), ast.getExpression().getType()));
+        Ast.Expression expression = visit(ast.getExpression());
+        return new Ast.Expression.Group(expression.getType(), expression);
     }
 
     @Override
     public Ast.Expression.Binary visit(Ast.Expression.Binary ast) throws AnalysisException {
         Ast.Expression.Literal left = (Ast.Expression.Literal) visit(ast.getLeft());
         Ast.Expression.Literal right = (Ast.Expression.Literal) visit(ast.getRight());
-        if (left.type == Stdlib.Type.VOID || right.type == Stdlib.Type.VOID)
+        if (left.getType().getName().equals("VOID") || right.getType().getName().equals("VOID"))
             throw new AnalysisException("No void types allowed for equality expressions");
 
         switch (ast.getOperator()) {
@@ -218,17 +216,17 @@ public final class Analyzer implements Ast.Visitor<Ast> {
             case "!=":
                 return new Ast.Expression.Binary(Stdlib.Type.BOOLEAN, ast.getOperator(), left, right);
             case "+":
-                if (left.type == Stdlib.Type.STRING || right.type == Stdlib.Type.STRING)
+                if (left.getType().getName().equals("STRING") || right.getType().getName().equals("STRING"))
                     return new Ast.Expression.Binary(Stdlib.Type.STRING, ast.getOperator(), left, right);
             case "-":
             case "*":
             case "/":
-                if (left.type != Stdlib.Type.INTEGER && left.type != Stdlib.Type.DECIMAL)
+                if (!left.getType().getName().equals("INTEGER") && !left.getType().getName().equals("DECIMAL"))
                     throw new AnalysisException("Need decimal or integer types for arithmetic operations");
-                else if (right.type != Stdlib.Type.INTEGER && right.type != Stdlib.Type.DECIMAL)
+                else if (!right.getType().getName().equals("INTEGER") && !right.getType().getName().equals("DECIMAL"))
                     throw new AnalysisException("Need decimal or integer types for arithmetic operations");
 
-                if (left.type == Stdlib.Type.INTEGER && right.type == Stdlib.Type.INTEGER)
+                if (left.getType().getName().equals("INTEGER") && right.getType().getName().equals("INTEGER"))
                     return new Ast.Expression.Binary(Stdlib.Type.INTEGER, ast.getOperator(), left, right);
                 else
                     return new Ast.Expression.Binary(Stdlib.Type.DECIMAL, ast.getOperator(), left, right);
@@ -239,6 +237,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
     @Override
     public Ast.Expression.Variable visit(Ast.Expression.Variable ast) throws AnalysisException {
         //FIXME: general structure of what needs to be done, no tests given
+        // how to actually test?
         Stdlib.Type var_type;
         try {
             var_type = scope.lookup(ast.getName());
@@ -260,7 +259,7 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         for (int i = 0; i < ast.getArguments().size(); i++) {
             try {
                 Ast.Expression input_arg = visit(ast.getArguments().get(i));
-                checkAssignable(input_arg.type, param_types.get(j));
+                checkAssignable(input_arg.getType(), param_types.get(j));
                 args.add(input_arg);
             }
             catch (AnalysisException e) {

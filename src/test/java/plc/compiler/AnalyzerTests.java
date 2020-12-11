@@ -120,9 +120,9 @@ public final class AnalyzerTests {
                                                 Optional.of(new Ast.Expression.Literal(Boolean.TRUE)))
                                 ),
                                 Arrays.asList(
-                                        new Ast.Statement.Declaration("test_dec", "BOOLEAN",
-                                                Optional.of(new Ast.Expression.Literal(Boolean.TRUE))),
-                                        new Ast.Statement.Assignment("test_dec", new Ast.Expression.Literal(Boolean.FALSE))
+                                        new Ast.Statement.Declaration("test_dec", "STRING",
+                                                Optional.of(new Ast.Expression.Literal("folklore"))),
+                                        new Ast.Statement.Assignment("test_dec", new Ast.Expression.Literal("evermore"))
                                 )
                         ),
                         new Ast.Statement.If(
@@ -135,16 +135,16 @@ public final class AnalyzerTests {
                                                 Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE)))
                                 ),
                                 Arrays.asList(  //TODO: also tests assignment, ran a few permutations already
-                                        new Ast.Statement.Declaration("test_dec", "boolean",
-                                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.TRUE))),
+                                        new Ast.Statement.Declaration("test_dec", "String",
+                                                Optional.of(new Ast.Expression.Literal(Stdlib.Type.STRING, "folklore"))),
                                         new Ast.Statement.Assignment("test_dec",
-                                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.FALSE))
+                                                new Ast.Expression.Literal(Stdlib.Type.STRING, "evermore"))
                                 )
                         )
                 ),
                 Arguments.of("Invalid Condition",
                         new Ast.Statement.If(
-                                new Ast.Expression.Literal("false"),
+                                new Ast.Expression.Literal("string"),
                                 Arrays.asList(
                                         new Ast.Statement.Expression(new Ast.Expression.Function("PRINT", Arrays.asList(
                                                 new Ast.Expression.Literal("string")
