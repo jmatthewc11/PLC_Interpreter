@@ -241,8 +241,6 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Variable visit(Ast.Expression.Variable ast) throws AnalysisException {
-        //FIXME: general structure of what needs to be done, no tests given
-        // how to actually test?
         Stdlib.Type var_type;
         try {
             var_type = scope.lookup(ast.getName());
@@ -255,7 +253,6 @@ public final class Analyzer implements Ast.Visitor<Ast> {
 
     @Override
     public Ast.Expression.Function visit(Ast.Expression.Function ast) throws AnalysisException {
-        //FIXME: need to make my own function to test type checking, use multiple types to test loop
         Stdlib.Function lib_function = Stdlib.getFunction(ast.getName(), ast.getArguments().size());
         List<Stdlib.Type> param_types = lib_function.getParameterTypes();
 
