@@ -102,7 +102,11 @@ public final class Parser {
      * javadocs of {@link #()}.
      */
     public Ast.Statement.Expression parseExpressionStatement() throws ParseException {
-        return new Ast.Statement.Expression(parseExpression());
+        Ast.Expression expression = parseExpression();
+        if (!peek(";")) {
+            throw new ParseException("Semicolon required at the end of expression statement", tokens.index);
+        }
+        return new Ast.Statement.Expression(expression);
     }
 
     /**

@@ -75,7 +75,7 @@ final class ParserTests {
                                 new Token(Token.Type.OPERATOR, ";", -1)
                         ),
                         new Ast.Statement.Expression(new Ast.Expression.Function("name", Arrays.asList()))
-                )
+                ),
 //                Arguments.of("Function Expression",       //FIXME: fails, don't know how to fix
 //                        Arrays.asList(
 //                                new Token(Token.Type.IDENTIFIER, "name", -1),
@@ -84,12 +84,12 @@ final class ParserTests {
 //                        ),
 //                        null
 //                )
-//                Arguments.of("No Semicolon",      //FIXME: how would this fail but the variable test case would pass?
-//                        Arrays.asList(
-//                                new Token(Token.Type.IDENTIFIER, "expr", -1)
-//                        ),
-//                        null
-//                )
+                Arguments.of("No Semicolon",
+                        Arrays.asList(
+                                new Token(Token.Type.IDENTIFIER, "expr", -1)
+                        ),
+                        null
+                )
         );
     }
 
@@ -393,6 +393,15 @@ final class ParserTests {
                     ),
                     null
             ),
+//                Arguments.of("While",
+//                        Arrays.asList(  //FIXME: said the test case failed bc it threw an error, but not throwing error now?
+//                                new Token(Token.Type.IDENTIFIER, "WHILE", -1),
+//                                new Token(Token.Type.IDENTIFIER, "expr", -1),
+//                                new Token(Token.Type.IDENTIFIER, "DO", -1),
+//                                new Token(Token.Type.IDENTIFIER, "END", -1)
+//                        ),
+//                        null
+//                ),
             Arguments.of("While",
                     Arrays.asList(
                             new Token(Token.Type.IDENTIFIER, "WHILE", -1),
