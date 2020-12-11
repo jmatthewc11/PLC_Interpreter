@@ -24,7 +24,12 @@ public final class Analyzer implements Ast.Visitor<Ast> {
         if (ast == null) {
             throw new AnalysisException("Source doesn't contain any statements");
         }
-        return ast;
+
+        List<Ast.Statement> statements = new ArrayList<>();
+        for (int i = 0; i < ast.getStatements().size(); i++) {
+            statements.add(visit(ast.getStatements().get(i)));
+        }
+        return new Ast.Source(statements);
     }
 
     /**

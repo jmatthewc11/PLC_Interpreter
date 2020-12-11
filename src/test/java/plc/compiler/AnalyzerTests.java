@@ -7,10 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -431,6 +428,64 @@ public final class AnalyzerTests {
                                 new Ast.Expression.Literal("a")
                         )),
                         null
+                )
+        );
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource
+    public void testSource(String test, Ast.Source ast, Ast.Source expected) {
+        test(ast, expected, Collections.emptyMap());
+    }
+
+    public static Stream<Arguments> testSource() {
+        return Stream.of(
+                Arguments.of("Print One Argument",
+                        new Ast.Source(Arrays.asList(
+                            new Ast.Statement.Expression(
+                                new Ast.Expression.Function("PRINT", Arrays.asList(
+                                    new Ast.Expression.Literal("Hello, World!")
+                                    ))
+                        ))),
+                        new Ast.Source(Arrays.asList(
+                            new Ast.Statement.Expression(
+                                    new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                            new Ast.Expression.Literal(Stdlib.Type.STRING, "Hello, World!")
+                                    ))
+                            )))
+                ),
+                Arguments.of("Print Multiple Args",
+                        new Ast.Source(Arrays.asList(
+                                new Ast.Statement.Expression(
+                                        new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal("Hello, World!")
+                                        ))
+                                ),
+                                new Ast.Statement.Expression(
+                                        new Ast.Expression.Function("PRINT", Arrays.asList(
+                                                new Ast.Expression.Literal(Boolean.FALSE)
+                                        ))
+                                ),
+                                new Ast.Statement.Declaration("test_dec", "STRING",
+                                        Optional.of(new Ast.Expression.Literal("folklore"))),
+                                new Ast.Statement.Assignment("test_dec", new Ast.Expression.Literal("evermore"))
+                        )),
+                        new Ast.Source(Arrays.asList(
+                                new Ast.Statement.Expression(
+                                        new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                                new Ast.Expression.Literal(Stdlib.Type.STRING, "Hello, World!")
+                                        ))
+                                ),
+                                new Ast.Statement.Expression(
+                                        new Ast.Expression.Function(Stdlib.Type.VOID, "System.out.println", Arrays.asList(
+                                                new Ast.Expression.Literal(Stdlib.Type.BOOLEAN, Boolean.FALSE)
+                                        ))
+                                ),
+                                new Ast.Statement.Declaration("test_dec", "String",
+                                        Optional.of(new Ast.Expression.Literal(Stdlib.Type.STRING, "folklore"))),
+                                new Ast.Statement.Assignment("test_dec",
+                                        new Ast.Expression.Literal(Stdlib.Type.STRING, "evermore"))
+                        ))
                 )
         );
     }

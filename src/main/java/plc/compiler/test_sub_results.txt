@@ -1,0 +1,10 @@
+AnalyzerTests: (23/25)
+  Source: (2/3)
+    Valid Source `Source{statements=[Expression{expression=Function{name=\'PRINT\', arguments=[Literal{value=Hello, World!, type=null}], type=null}}]}`:
+    Failed (Expected Source{statements=[Expression{expression=Function{name=\'System.out.println\', arguments=[Literal{value=Hello, World!, type=Type{name=\'STRING\', jvmName=\'String\'}}], type=Type{name=\'VOID\', jvmName=\'Void\'}}}]},
+    received         Source{statements=[Expression{expression=Function{name=\'PRINT\', arguments=[Literal{value=Hello, World!, type=null}], type=null}}]}.)
+  Expression: (7/8)
+    Group: (1/2)
+      Literal Valid `Group{expression=Literal{value=10, type=null}, type=null}`:
+      Failed (Expected Group{expression=Literal{value=10, type=Type{name=\'INTEGER\', jvmName=\'int\'}}, type=Type{name=\'INTEGER\', jvmName=\'int\'}},
+      received         Group{expression=Literal{value=10, type=Type{name=\'INTEGER\', jvmName=\'int\'}}, type=null}.)
